@@ -71,6 +71,7 @@ public:
     Number& operator+=(FracRoot<Ints...> const& x);
     Number  operator+(Number const& a) const;    
     Number& operator+=(Number const& x) const;
+    Number  operator-() const;
     Number  operator-(Number const& a) const;
     Number& operator-=(Number const& x);
     Number  operator*(Number const& x) const;

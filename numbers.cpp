@@ -370,6 +370,19 @@ Number<Ints...>& Number<Ints...>::operator+=(Number const& x) const{
 }
 
 
+
+template <int... Ints>
+Number<Ints...> Number<Ints...>::operator-() const{
+
+    Number result;
+    for(auto &[root, frac]: digits){
+        result.digits[root] = -frac;
+    }
+
+    return result;
+}
+
+
 template <int... Ints>
 Number<Ints...> Number<Ints...>::operator-(Number const& a) const{
     auto it1 = digits.begin();

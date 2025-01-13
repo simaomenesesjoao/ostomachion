@@ -8,16 +8,20 @@ template <int... Ints> class Point;
 template <int... Ints>
 class Angle{
     using Num = Number<Ints...>;
-    using Point = Point<Ints...>;
+    using Poin = Point<Ints...>;
 public:
     Angle(int x, int y);
     Angle(Num const& c, Num const& s);
-    Angle(Point const& point);
+    Angle(Poin const& point);
+    Angle();
     Angle operator+(Angle const& a) const;
     Angle operator-(Angle const& a) const;
+    Angle operator-() const;
     Num get_cos() const;
     Num get_sin() const;
-    // template <typename T> T to() const;
+
+    template <int... Args>
+    friend std::ostream& operator<<(std::ostream&, Angle<Args...> const &);
 private:
     Num sin, cos;
 
@@ -40,6 +44,9 @@ public:
     Num distance(Num const& x) const;
     Num get_x() const;
     Num get_y() const;
+
+    template <int... Args>
+    friend std::ostream& operator<<(std::ostream&, Point<Args...> const &);
 
 private:
     Num x, y;

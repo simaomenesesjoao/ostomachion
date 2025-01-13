@@ -13,12 +13,20 @@ Angle<Ints...>::Angle(int x, int y){
 
 template <int... Ints>
 Angle<Ints...>::Angle(Num const& cos, Num const& sin):
-    cos(cos), sin(sin){}
+    sin(sin), cos(cos){}
+
+template <int... Ints>
+Angle<Ints...>::Angle(Poin const& P){
+    Number<Ints...> x = P.get_x();
+    Number<Ints...> y = P.get_y();
+    Number<Ints...> norm2 = x*x + y*y;
+
+    cos = ? ;
+}
 
 
 template <int... Ints>
-Angle<Ints...>::Angle(Point const& P):
-    cos(P.get_x()), sin(P.get_y){}
+Angle<Ints...>::Angle(){};
 
 
 template <int... Ints>
@@ -43,14 +51,25 @@ Angle<Ints...> Angle<Ints...>::operator-(Angle const& a) const{
 }
 
 template <int... Ints>
-template <typename T>
-T Angle<Ints...>::to() const{
-    T pi = 2*std::acos(0.0);
-    T angle = std::atan2(sin.template to<T>(), cos.template to<T>())/pi*180;
-    if(angle<0)
-        angle += 180;
-    return angle;
-};
+Angle<Ints...> Angle<Ints...>::operator-() const{
+    return Angle(-cos, -sin);
+}
+
+template <int... Ints>
+std::ostream& operator<<(std::ostream& stream, Angle<Ints...> const& angle){
+    stream << "ang=(" << angle.get_sin() << " " << angle.get_cos() << ")";
+    return stream;    
+}
+
+// template <int... Ints>
+// template <typename T>
+// T Angle<Ints...>::to() const{
+//     T pi = 2*std::acos(0.0);
+//     T angle = std::atan2(sin.template to<T>(), cos.template to<T>())/pi*180;
+//     if(angle<0)
+//         angle += 180;
+//     return angle;
+// };
 
 
 
@@ -92,7 +111,11 @@ Number<Ints...> Point<Ints...>::get_y() const{
     return y;  
 }
 
-
+template <int... Ints>
+std::ostream& operator<<(std::ostream& stream, Point<Ints...> const& point){
+    stream << "(x,y)=(" << point.get_x() << " " << point.get_y() << ")";
+    return stream;    
+}
 
 
 #endif // PVECTORS_C

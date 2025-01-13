@@ -93,6 +93,22 @@ int main(){
 
     }
 
+
+    {
+        std::cout << "Testing unary Number operations -: " << std::endl;
+        FracRoot<2,5> a{{1,2},5};
+        FracRoot<2,5> b{{-3,2},2};
+        Number<2,5> x{a}, y{b}, z;
+        z = x + y;
+        
+        std::cout << "z: " << z << std::endl;
+        std::cout << "-z: " << -z << std::endl;
+
+
+    }
+
+
+
     {
         std::cout << "Testing is_pos for <>." << std::endl;
 

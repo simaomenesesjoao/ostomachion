@@ -28,7 +28,7 @@ int main(){
         Angle<2,3> a{1,-1};
         Point<2,3> Q = P.rotate(a);
         std::cout << Q.get_x() << " " << Q.get_y() << std::endl;
-        std::cout << "angle: " << a.to<double>() <<  std::endl;
+        // std::cout << "angle: " << a.to<double>() <<  std::endl;
     }
 
 
