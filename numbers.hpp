@@ -78,15 +78,15 @@ public:
     template <typename T> Number operator*(T const& x) const;
     bool operator==(Number const& x) const;
     bool operator==(int x) const;
-    bool operator>(Number const& x);
+    bool operator>(Number const& x) const;
     bool operator>(int x) const;
     bool operator<(Number const& x) const;
     bool operator<(int x) const;
     template <typename T> explicit operator T() const;
+    bool is_zero() const;
 
 private:
     std::map<int, FracRoot<Ints...>> digits;
-    bool is_zero() const;
     template <int A, int... Ints2> friend bool is_pos(Number<A, Ints2...> const& x);
     template <int... Ints2> friend bool is_pos(Number<Ints2...> const& x);
 };

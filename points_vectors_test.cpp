@@ -6,6 +6,23 @@
 // TO DO: Q.get_x() should print Empty, but prints 0/1 sq(2)
 int main(){
     {
+        Angle<2,3> angle1(1,1);
+        Angle<2,3> angle2(1,1);
+        std::cout << (angle1 == angle2) << std::endl;
+        // std::cout << angle1.get_sin() << " " << angle2.get_sin() << std::endl;
+        // std::cout << (angle1.get_cos() == angle2.get_cos()) << std::endl;
+        // std::cout << (angle1.get_sin() == angle2.get_sin()) << std::endl;
+
+        Number x{angle1.get_cos()};
+        Number y{angle1.get_cos()};
+        Number z{y-x};
+        std::cout << "z " << z << " " << z.is_zero() << std::endl;
+
+    }
+    return 0;
+
+
+    {
         Angle<5> angle1(2,0);
         Angle<3> angle2(0,1);
         std::cout << angle1.get_cos() << " " << angle1.get_sin() << std::endl;

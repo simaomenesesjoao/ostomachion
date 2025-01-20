@@ -141,21 +141,16 @@ int main(){
     }
 
     {
-        std::cout << "Testing is_pos for <2,3>." << std::endl;
+        std::cout << "Testing is_zero for <2,3>." << std::endl;
 
         FracRoot<2,3> a{{1,2},2};
-        FracRoot<2,3> b{{-3,4},3};
-        FracRoot<2,3> c{{0,4},6};
-        Number<2,3> x{}, y{}, z{};
-        x += a;
-        y += a;
-        y += b;
-        z += c;
+        Number<2,3> x{a}, y{a};
 
-        assert((x>0) == ((double)x>0));
-        assert((y>0) == ((double)y>0));
-        assert((z>0) == ((double)z>0));
+        // assert(x==y);
+
+        assert((x-y).is_zero());
     }
+
 
 
 

@@ -475,7 +475,7 @@ bool Number<Ints...>::operator==(int x) const{
 }
 
 template <int... Ints>
-bool Number<Ints...>::operator>(Number const& x){
+bool Number<Ints...>::operator>(Number const& x) const{
     return is_pos(*this-x);
 }
 

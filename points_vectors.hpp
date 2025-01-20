@@ -17,8 +17,12 @@ public:
     Angle operator+(Angle const& a) const;
     Angle operator-(Angle const& a) const;
     Angle operator-() const;
+    bool operator==(Angle const& a) const;
+    bool operator!=(Angle const& a) const;
+    bool is_zero() const;
     Num get_cos() const;
     Num get_sin() const;
+    template <typename T> explicit operator T() const;
 
     template <int... Args>
     friend std::ostream& operator<<(std::ostream&, Angle<Args...> const &);
@@ -39,7 +43,7 @@ public:
     Point operator+(Point const& P) const;
     Point operator-(Point const& P) const;
     Point operator*(Num const& x) const;
-    Point operator==(Num const& x) const;
+    bool operator==(Point const& P) const;
 
     Num distance(Num const& x) const;
     Num get_x() const;
@@ -47,6 +51,7 @@ public:
 
     template <int... Args>
     friend std::ostream& operator<<(std::ostream&, Point<Args...> const &);
+    void print();
 
 private:
     Num x, y;
