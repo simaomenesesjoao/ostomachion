@@ -160,7 +160,11 @@ FracRoot<Ints...> FracRoot<Ints...>::operator-(FracRoot const & other) const{
 
 template <int... Ints>
 bool FracRoot<Ints...>::operator==(int x) const{
-    return x == get_num() and get_den()==1 and get_root()==1;
+    if(x==0){
+        return x == get_num();
+    } else {
+        return x == get_num() and get_den()==1 and get_root()==1;
+    }
 }
 
 template <int... Ints>

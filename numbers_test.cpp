@@ -7,6 +7,7 @@
 
 int main(){
 
+
     {
         std::cout << "Testing fractions: " << std::endl;
         Fraction x{4,3}, y{2,5};
@@ -47,7 +48,7 @@ int main(){
 
 
     {
-        std::cout << "Testing FracRoot subtraction: " << std::endl;
+        std::cout << "Testing FracRoot product and subtraction: " << std::endl;
         FracRoot<1,2,5> x{{6,3},40};
         FracRoot<1,2,5> y{{3,6},5};
         FracRoot<1,2,5> z{{4,6},5};
@@ -57,6 +58,7 @@ int main(){
 
 
     {
+        std::cout << "Testing FracRoot product and addition: " << std::endl;
         FracRoot<> x{{6,3},1};
         FracRoot<> y{{3,6},1};
         std::cout << x*y << std::endl;
@@ -64,6 +66,14 @@ int main(){
     }
 
 
+    {
+        std::cout << "Testing FracRoot comparison" << std::endl;
+        FracRoot<2,5> x{{1,2},1};
+        FracRoot<2,5> y{{3,2},1};
+
+        assert((y-x)==1);
+        assert((x-x)==0);
+    }
 
     {
         std::cout << "Testing Number constructors: " << std::endl;
@@ -145,8 +155,6 @@ int main(){
 
         FracRoot<2,3> a{{1,2},2};
         Number<2,3> x{a}, y{a};
-
-        // assert(x==y);
 
         assert((x-y).is_zero());
     }
