@@ -86,16 +86,19 @@ private:
 public:
     // std::list<Nod> nodes;
     LL_Node<Nod> *head;
-    unsigned size_ll{0};
+    unsigned size_ll;
     
 
     Polygon(std::vector<std::vector<int>> points){
         // Turn the list of points into nodes, set them as the vertices of 
         // the polygon and calculate the angles between them
 
+
         std::vector<int> last_point = points.back();
         int prev_x{last_point.at(0)}, prev_y{last_point.at(1)};
         LL_Node<Nod> *current;
+
+        size_ll = 0;
 
         // std::cout << "Creating polygon" << std::endl;
         for(auto& point: points){
@@ -133,6 +136,27 @@ public:
             prev = current;
             current = current->next;
         }
+    }
+
+    Polygon(Polygon const& other_poly){
+
+        LL_Node<Nod> *node, *other_node;
+        other_node = other_poly.head->next;
+
+        head = new LL_Node<Nod>(other_poly.head->data);
+        node = head;
+        
+
+        for(unsigned i=1; i<other_poly.size_ll; i++){
+            node->next = new LL_Node<Nod>(other_node->data);
+            node->next->prev = node;
+
+            other_node = other_node->next;
+            node = node->next;
+
+        }
+        size_ll = other_poly.size_ll;
+
     }
 
     ~Polygon(){
@@ -328,7 +352,7 @@ public:
         return true;
     }
 
-    void print(){
+    void print() const{
         LL_Node<Nod> *ll_node = head;
         for(unsigned i=0; i<size_ll; i++){
             Nod& node = ll_node->data;

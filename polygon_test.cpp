@@ -8,6 +8,14 @@ int main(){
     using Nod = Node<2,5,13, 17>;
 
     {
+        std::cout << "Testing polygon copy" << std::endl;
+        Poly poly1({{0,0}, {0,12}, {12,12}});
+        Poly poly2(poly1);
+   
+        assert(poly2 == poly1);
+    }
+
+    {
         std::cout << "Testing simple merge" << std::endl;
         Poly poly1({{0,0}, {0,12}, {12,12}});
         Poly poly2({{0,0}, {0,6}, {6,6}});
