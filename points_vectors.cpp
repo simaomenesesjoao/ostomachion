@@ -143,6 +143,30 @@ std::ostream& operator<<(std::ostream& stream, Point<Ints...> const& point){
     return stream;    
 }
 
+template <int... Ints>
+Number<Ints...> Point<Ints...>::dot(Point<Ints...> const& other){
+    return x*other.x + y*other.y;
+}
+
+bool edges_intersect(Point<Ints...> const& P1, Point<Ints... > const& P2, Point<Ints...> const& Q1, Points<Ints...> const& Q2){
+    using V = Points<Ints...>;
+    using Num = Number<Ints...>;
+    V q{Q2-Q1}, p{P2-P1}, v{P1-Q1};
+
+    // Check if the edges are parallel
+    if(q.get_x()*p.get_y() == q.get_y()*p.get_x()){
+        return false;
+    }
+    
+    // Find vectors perpendicular to each of the edges
+    V perp_q{q.get_y(), -q.get_x()}, perp_p{p.get_y(), -p.get_x()};
+    Num pdv = perp_p.dot(v);
+    Num qdv = perp_q.dot(v);
+
+    return 0 < pdv && 0 < qdv && -pdv/perp_p.dot(q) < 1 && qdv/perp_q.dot(p);
+
+
+}
 
 
 #endif // PVECTORS_C

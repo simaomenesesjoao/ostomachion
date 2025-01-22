@@ -48,6 +48,7 @@ public:
     Num distance(Num const& x) const;
     Num get_x() const;
     Num get_y() const;
+    Num dot(Point const&) const;
 
     template <int... Args>
     friend std::ostream& operator<<(std::ostream&, Point<Args...> const &);
@@ -57,6 +58,7 @@ private:
     Num x, y;
 };
 
-
+template <int... Ints>
+bool edges_intersect(Point<Ints...> const& P1, Point<Ints... > const& P2, Point<Ints...> const& Q1, Points<Ints...> const& Q2);
 
 #endif // PVECTORS_H

@@ -362,6 +362,29 @@ public:
         }
     }
 
+    void flip_x(){
+        // Flip the polygon along x, but preserve orientation. In practice, 
+        // this means changing the sign of every quantity which depends on x
+        LL_Node<Nod> *current{head}, *temp;
+
+        for(unsigned i=0; i<size_ll; i++){
+            temp = current->next;
+            current->next = current->prev;
+            current->prev = temp;
+            current.data.position.x = -current.data.position.x;
+
+            auto& start = current.data.angle_start;
+            start = Ang({-start.cos, start.sin});
+
+            auto& end = current.data.angle_end;
+            end = Ang({-end.cos, end.sin});
+            
+            current = temp;
+        }
+
+
+    }
+
 };
 
 template <int... Ints>
