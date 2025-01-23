@@ -371,13 +371,12 @@ public:
             temp = current->next;
             current->next = current->prev;
             current->prev = temp;
-            current.data.position.x = -current.data.position.x;
+            current->data.position = {-current->data.position.get_x(), current->data.position.get_y()};
 
-            auto& start = current.data.angle_start;
-            start = Ang({-start.cos, start.sin});
-
-            auto& end = current.data.angle_end;
-            end = Ang({-end.cos, end.sin});
+            auto start = current->data.angle_start;
+            auto end = current->data.angle_end;
+            current->data.angle_start = Ang{-end.get_cos(), end.get_sin()};
+            current->data.angle_end = Ang{-start.get_cos(), start.get_sin()};
             
             current = temp;
         }

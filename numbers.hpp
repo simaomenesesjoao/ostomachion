@@ -84,6 +84,8 @@ public:
     bool operator<(int x) const;
     template <typename T> explicit operator T() const;
     bool is_zero() const;
+    Number conjugate(int) const;
+    Number inverse() const;
 
 private:
     std::map<int, FracRoot<Ints...>> digits;

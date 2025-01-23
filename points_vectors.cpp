@@ -16,16 +16,6 @@ template <int... Ints>
 Angle<Ints...>::Angle(Num const& cos, Num const& sin):
     sin(sin), cos(cos){}
 
-// template <int... Ints>
-// Angle<Ints...>::Angle(Poin const& P){
-//     Number<Ints...> x = P.get_x();
-//     Number<Ints...> y = P.get_y();
-//     Number<Ints...> norm2 = x*x + y*y;
-
-//     // cos = ? ;
-// }
-
-
 template <int... Ints>
 Angle<Ints...>::Angle(){};
 
@@ -144,12 +134,13 @@ std::ostream& operator<<(std::ostream& stream, Point<Ints...> const& point){
 }
 
 template <int... Ints>
-Number<Ints...> Point<Ints...>::dot(Point<Ints...> const& other){
+Number<Ints...> Point<Ints...>::dot(Point<Ints...> const& other) const{
     return x*other.x + y*other.y;
 }
 
-bool edges_intersect(Point<Ints...> const& P1, Point<Ints... > const& P2, Point<Ints...> const& Q1, Points<Ints...> const& Q2){
-    using V = Points<Ints...>;
+template <int... Ints>
+bool edges_intersect(Point<Ints...> const& P1, Point<Ints... > const& P2, Point<Ints...> const& Q1, Point<Ints...> const& Q2){
+    using V = Point<Ints...>;
     using Num = Number<Ints...>;
     V q{Q2-Q1}, p{P2-P1}, v{P1-Q1};
 

@@ -45,7 +45,7 @@ public:
     Point operator*(Num const& x) const;
     bool operator==(Point const& P) const;
 
-    Num distance(Num const& x) const;
+    // Num distance(Num const& x) const;
     Num get_x() const;
     Num get_y() const;
     Num dot(Point const&) const;
@@ -59,6 +59,6 @@ private:
 };
 
 template <int... Ints>
-bool edges_intersect(Point<Ints...> const& P1, Point<Ints... > const& P2, Point<Ints...> const& Q1, Points<Ints...> const& Q2);
+bool edges_intersect(Point<Ints...> const& P1, Point<Ints... > const& P2, Point<Ints...> const& Q1, Point<Ints...> const& Q2);
 
 #endif // PVECTORS_H

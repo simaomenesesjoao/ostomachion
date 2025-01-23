@@ -16,6 +16,37 @@ int main(){
     }
 
     {
+        std::cout << "Testing polygon flip_x" << std::endl;
+        Poly poly1({{0,0}, {0,12}, {12,12}});
+        Poly poly2({{0,0}, {-12,12}, {0,12}});
+        
+        // LL_Node<Nod> *curr = poly1.head;
+        // for(int i=0; i<poly1.size_ll; i++){
+        //     curr->data.print();
+        //     curr = curr->next;
+        // }
+        
+        poly1.flip_x();
+        // std::cout << "After flip" << std::endl;
+   
+        // curr = poly1.head;
+        // for(int i=0; i<poly1.size_ll; i++){
+        //     curr->data.print();
+        //     curr = curr->next;
+        // }
+
+        // std::cout << "poly2" << std::endl;
+
+        // curr = poly2.head;
+        // for(int i=0; i<poly1.size_ll; i++){
+        //     curr->data.print();
+        //     curr = curr->next;
+        // }
+
+        assert(poly2 == poly1);
+    }
+
+    {
         std::cout << "Testing simple merge" << std::endl;
         Poly poly1({{0,0}, {0,12}, {12,12}});
         Poly poly2({{0,0}, {0,6}, {6,6}});

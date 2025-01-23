@@ -203,6 +203,42 @@ bool Number<Ints...>::is_zero() const{
     return digits.empty();
 }
 
+template <int... Ints>
+Number<Ints...> Number<Ints...>::conjugate(int prime) const {
+
+
+    Number<Ints...> conj{}; 
+    
+    for(auto& digit: digits){
+        auto& root = digit.first;
+        auto& fracroot = digit.second;
+        if(root % prime == 0){
+            conj += -fracroot;
+        } else {
+            conj += fracroot;
+        }
+    }
+    return conj;
+}
+
+#include <iostream>
+template <int... Ints>
+Number<Ints...> Number<Ints...>::inverse() const{
+
+    std::vector<int> primes{2,5};
+    Number<Ints...> num{1}, den{*this};
+    for(auto& prime: primes){
+        Number<Ints...> conj = den.conjugate(prime);
+        num = num*conj;
+        den = den*conj;
+    }
+
+    std::cout << "den: " << den  << std::endl;
+
+    return num;//   *Fraction{1,den};
+
+}
+
 template <int A, int... Ints>
 bool is_pos(Number<A, Ints...> const& x){
 

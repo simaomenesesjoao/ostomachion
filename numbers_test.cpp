@@ -159,6 +159,32 @@ int main(){
         assert((x-y).is_zero());
     }
 
+    {
+        std::cout << "Testing conjugation" << std::endl;
+
+        FracRoot<2,5> a{{3,1},1};
+        FracRoot<2,5> c{{1,2},5};
+        FracRoot<2,5> b{{-3,2},2};
+        
+        Number<2,5> z{a,b,c};
+        std::cout << z <<  "conjugate2: " << z.conjugate(2) << 
+            "conjugate5: " << z.conjugate(5) << std::endl;
+        
+    }
+
+    {
+        std::cout << "Testing inverse" << std::endl;
+
+        FracRoot<2,5> a{{3,1},1};
+        FracRoot<2,5> c{{1,2},5};
+        FracRoot<2,5> b{{-3,2},2};
+        
+        Number<2,5> z{a,b,c};
+        std::cout << z << " " << z.inverse() << std::endl;
+        std::cout << "prod:" <<  z*z.inverse() << std::endl;
+        
+    }
+
 
 
 
