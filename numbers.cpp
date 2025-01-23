@@ -32,6 +32,12 @@ Fraction operator-(Fraction const& x, Fraction const& y){
     return Fraction(y.den*x.num - y.num*x.den, y.den*x.den);
 }
 
+Fraction operator<(Fraction const& x, Fraction const& y){
+    int num_negatives = (x.get_den() < 0) + (y.get_den() < 0);
+    a/b < c/d == 
+    return Fraction(y.den*x.num - y.num*x.den, y.den*x.den);
+}
+
 int Fraction::get_num() const{
     return num;
 }
@@ -234,8 +240,10 @@ Number<Ints...> Number<Ints...>::inverse() const{
     }
 
     std::cout << "den: " << den  << std::endl;
+    std::cout << "den digit: " << den.digits[1].get_num() << std::endl;
 
-    return num;//   *Fraction{1,den};
+
+    return num*Fraction{den.digits[1].get_den(),den.digits[1].get_num()};
 
 }
 
@@ -495,7 +503,15 @@ template <typename T>
 Number<Ints...> Number<Ints...>::operator*(T const& x) const{
     Number product{};
     for(auto& [root, digit]: digits)
-        product += digit*x;
+        if(x<0){
+            product += (-digit)*(-x);
+        } else {
+            product += digit*x;
+
+        }
+        
+
+        
         
     return product;
 }

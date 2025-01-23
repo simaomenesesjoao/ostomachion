@@ -18,6 +18,9 @@ public:
     Fraction operator-() const;
     Fraction operator*(Fraction const& other) const;
     Fraction operator/(Fraction const& other) const;
+    friend bool operator<(int, Fraction const&);
+    friend bool operator<(Fraction const&, int);
+    friend bool operator<(Fraction const&, Fraction const&);
     friend Fraction operator+(Fraction const& x, Fraction const& y);
     friend Fraction operator-(Fraction const& x, Fraction const& y);
     
