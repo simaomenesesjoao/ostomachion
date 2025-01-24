@@ -4,7 +4,6 @@
 #include "points_vectors.cpp"
 #include <cassert>
 
-// TO DO: Q.get_x() should print Empty, but prints 0/1 sq(2)
 int main(){
 
     {
@@ -42,6 +41,23 @@ int main(){
         Angle<2,3> a{1,-1};
         Point<2,3> Q = P.rotate(a);
         std::cout << Q.get_x() << " " << Q.get_y() << std::endl;    
+    }
+
+    {
+        std::cout << "Testing edges intersect" << std::endl;
+        using P = Point<2,3>;
+        P A{0,0}, B{1,2}, C{0,1}, D{1,0}, E{1,-1};
+
+        //   | B
+        //   C
+        // --AD---->
+        //   |E
+
+        assert(edges_intersect(A, B, C, D) == true);
+        assert(edges_intersect(A, E, C, D) == false);
+        assert(edges_intersect(A, B, D, E) == false);
+        assert(edges_intersect(A, C, A, D) == false);
+        assert(edges_intersect(C,-C, A, D) == false);
     }
 
 

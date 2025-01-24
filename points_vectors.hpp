@@ -42,6 +42,7 @@ public:
     Point rotate(Ang const& a) const;
     Point operator+(Point const& P) const;
     Point operator-(Point const& P) const;
+    Point operator-() const;
     Point operator*(Num const& x) const;
     bool operator==(Point const& P) const;
 
