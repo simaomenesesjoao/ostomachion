@@ -78,6 +78,7 @@ public:
     Number  operator-(Number const& a) const;
     Number& operator-=(Number const& x);
     Number  operator*(Number const& x) const;
+    Number  operator/(Number const& x) const;
     template <typename T> Number operator*(T const& x) const;
     bool operator==(Number const& x) const;
     bool operator==(int x) const;

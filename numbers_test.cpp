@@ -9,12 +9,27 @@ int main(){
 
 
     {
-        std::cout << "Testing fractions: " << std::endl;
+        std::cout << "Testing fractions subtraction: " << std::endl;
         Fraction x{4,3}, y{2,5};
         std::cout << x << std::endl;
         std::cout << x-y << std::endl;
     }
 
+
+    {
+        std::cout << "Testing negative fractions: " << std::endl;
+        Fraction x{-4,3}, y{2,-5}, z{-1,-1};
+        std::cout << x << " " << y << " " << z << std::endl;
+    }
+
+    {
+        std::cout << "Testing fractions comparison <: " << std::endl;
+        Fraction x{4,3}, y{2,5};
+        
+        std::cout << (x<y) << std::endl;
+    }
+
+    
     
     {
         int x = 2;
@@ -113,8 +128,6 @@ int main(){
         
         std::cout << "z: " << z << std::endl;
         std::cout << "-z: " << -z << std::endl;
-
-
     }
 
 
@@ -161,31 +174,35 @@ int main(){
 
     {
         std::cout << "Testing conjugation" << std::endl;
-
         FracRoot<2,5> a{{3,1},1};
-        FracRoot<2,5> c{{1,2},5};
         FracRoot<2,5> b{{-3,2},2};
+        FracRoot<2,5> c{{1,2},5};
         
         Number<2,5> z{a,b,c};
-        std::cout << z <<  "conjugate2: " << z.conjugate(2) << 
-            "conjugate5: " << z.conjugate(5) << std::endl;
-        
+        Number<2,5> z2{a,-b,c};
+        Number<2,5> z5{a,b,-c};
+
+        assert(z.conjugate(2) == z2);
+        assert(z.conjugate(5) == z5);
     }
 
     {
         std::cout << "Testing inverse" << std::endl;
-
         FracRoot<2,5> a{{3,1},1};
-        FracRoot<2,5> c{{1,2},5};
-        FracRoot<2,5> b{{-3,2},2};
-        
+        FracRoot<2,5> b{{-3,2},2};  
+        FracRoot<2,5> c{{1,2},5};      
         Number<2,5> z{a,b,c};
-        std::cout << z << " " << z.inverse() << std::endl;
-        std::cout << "prod:" <<  z*z.inverse() << std::endl;
-        
+        assert(z*z.inverse() == 1);
     }
 
-
-
-
+    {
+        std::cout << "Testing operator /" << std::endl;
+        FracRoot<2,5> a{{3,1},1};
+        FracRoot<2,5> b{{-3,2},2};   
+        FracRoot<2,5> c{{1,2},5};     
+        Number<2,5> x{a,b,c};
+        Number<2,5> y{b,-c};
+        Number<2,5> z{x/y};
+        assert(y*z == x);
+    }
 }

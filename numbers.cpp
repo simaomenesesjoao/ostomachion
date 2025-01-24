@@ -7,9 +7,12 @@
 
 Fraction::Fraction(int n, int d):num{n}, den{d}{
     int gcd = std::gcd(num, den);
-    // std::cout << "gcd: " << gcd << std::endl;
     num /= gcd;
     den /= gcd;
+    if(den<0){
+        den = -den;
+        num = -num;
+    }
 }
 
 Fraction Fraction::operator-() const{
@@ -32,10 +35,18 @@ Fraction operator-(Fraction const& x, Fraction const& y){
     return Fraction(y.den*x.num - y.num*x.den, y.den*x.den);
 }
 
-Fraction operator<(Fraction const& x, Fraction const& y){
+bool operator<(Fraction const& x, Fraction const& y){
     int num_negatives = (x.get_den() < 0) + (y.get_den() < 0);
-    a/b < c/d == 
-    return Fraction(y.den*x.num - y.num*x.den, y.den*x.den);
+    int sign = num_negatives % 2 == 0? 1: -1;
+    return x.get_num()*y.get_den()*sign < y.get_num()*x.get_den()*sign;
+}
+
+bool operator<(Fraction const& x, int y){
+    return x < Fraction{y,1};
+}
+
+bool operator<(int x, Fraction const& y){
+    return Fraction{x,1} < y;
 }
 
 int Fraction::get_num() const{
@@ -230,18 +241,13 @@ Number<Ints...> Number<Ints...>::conjugate(int prime) const {
 #include <iostream>
 template <int... Ints>
 Number<Ints...> Number<Ints...>::inverse() const{
-
-    std::vector<int> primes{2,5};
     Number<Ints...> num{1}, den{*this};
-    for(auto& prime: primes){
+
+    ([&](auto prime){
         Number<Ints...> conj = den.conjugate(prime);
         num = num*conj;
         den = den*conj;
-    }
-
-    std::cout << "den: " << den  << std::endl;
-    std::cout << "den digit: " << den.digits[1].get_num() << std::endl;
-
+    }(Ints), ...);
 
     return num*Fraction{den.digits[1].get_den(),den.digits[1].get_num()};
 
@@ -493,10 +499,26 @@ Number<Ints...> Number<Ints...>::operator*(Number const& x) const{
     for(auto& [root1, digit1]: digits)
         for(auto& [root2, digit2]: x.digits)
             product += digit1*digit2;
-        
+
+    // Restore the canonical form by removing zeros
+    std::vector<int> erase;
+    for(auto& [root, fracroot]: product.digits){
+        if(fracroot.get_num() == 0){
+            erase.push_back(root);
+        }
+    }
+
+    for(auto& root: erase){
+        product.digits.erase(root);
+    }
+    
     return product;
 }
 
+template <int... Ints>
+Number<Ints...> Number<Ints...>::operator/(Number const& other) const{
+    return (*this)*other.inverse();
+}
 
 template <int... Ints>
 template <typename T>
