@@ -7,10 +7,10 @@
 
 int main(){
 
-
+    using T = long long;
     {
         std::cout << "Testing fractions subtraction: " << std::endl;
-        Fraction x{4,3}, y{2,5};
+        Fraction<T> x{4,3}, y{2,5};
         std::cout << x << std::endl;
         std::cout << x-y << std::endl;
     }
@@ -172,6 +172,16 @@ int main(){
         assert((x-y).is_zero());
     }
 
+
+    {
+        std::cout << "Testing conjugation" << std::endl;   
+        Number<2,5> z{1188};
+        std::cout << "z2: " << z.conjugate(2) << std::endl;
+        std::cout << "z5: " << z.conjugate(5) << std::endl;
+        
+    }
+
+
     {
         std::cout << "Testing conjugation" << std::endl;
         FracRoot<2,5> a{{3,1},1};
@@ -185,6 +195,15 @@ int main(){
         assert(z.conjugate(2) == z2);
         assert(z.conjugate(5) == z5);
     }
+
+
+    // Numerical precision problems
+    // {
+    //     std::cout << "Testing inverse" << std::endl;   
+    //     Number<2,5> z{1188};
+    //     std::cout << "z: " << z.inverse() << std::endl;
+    //     assert(z*z.inverse() == 1);
+    // }
 
     {
         std::cout << "Testing inverse" << std::endl;
@@ -204,5 +223,13 @@ int main(){
         Number<2,5> y{b,-c};
         Number<2,5> z{x/y};
         assert(y*z == x);
+    }
+
+
+    {
+        std::cout << "Testing operator /" << std::endl;  
+        Number<2,5> x{1890};
+        Number<2,5> y{-1188};
+        std::cout << x/y << std::endl;
     }
 }

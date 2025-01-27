@@ -143,40 +143,12 @@ Number<Ints...> Point<Ints...>::dot(Point<Ints...> const& other) const{
     return x*other.x + y*other.y;
 }
 
+
 template <int... Ints>
-bool edges_intersect(Point<Ints...> const& P1, Point<Ints... > const& P2, Point<Ints...> const& Q1, Point<Ints...> const& Q2){
-    using V = Point<Ints...>;
-    using Num = Number<Ints...>;
-    V q{Q2-Q1}, p{P2-P1}, v{P1-Q1};
-
-    // Check if the edges are parallel
-    if(q.get_x()*p.get_y() == q.get_y()*p.get_x()){
-        std::cout << "Parallel" << std::endl;
-        return false;
-    }
-    
-    // Find vectors perpendicular to each of the edges
-    V perp_q{q.get_y(), -q.get_x()};
-    V perp_p{p.get_y(), -p.get_x()};
-
-    std::cout << "perpendicular vector to " << q << " is " << perp_q << std::endl;
-    std::cout << "perpendicular vector to " << p << " is " << perp_p << std::endl;
-    Num pdv = perp_p.dot(v);
-    Num qdv = perp_q.dot(v);
-
-    // q t - p s = v , s and t between 0 and 1
-    // - perp_q . p s = perp_q . v
-    // perp_p . q t = perp_p . v
-
-    Num s = -perp_q.dot(v)/perp_q.dot(p);
-    Num t =  perp_p.dot(v)/perp_p.dot(q);
-
-    std::cout << "s,t: " << s << " " << t << std::endl;
-
-    return s > 0 and s < 1 and t > 0 and t < 1;
-
-
+Number<Ints...> Point<Ints...>::cross(Point<Ints...> const& other) const{
+    return x*other.y - y*other.x;
 }
+
 
 
 #endif // PVECTORS_C

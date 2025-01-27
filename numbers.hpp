@@ -5,55 +5,57 @@
 #include <ostream>
 #include <map>
 
+template <typename T>
 class Fraction{
 
 public:
-    Fraction(int n, int d);
+    Fraction(T n, T d);
 
-    int get_num() const;
-    int get_den() const;
+    T get_num() const;
+    T get_den() const;
 
-    friend std::ostream& operator<<(std::ostream& os, Fraction const & frac);
+    template <typename U>
+    friend std::ostream& operator<<(std::ostream& os, Fraction<U> const & frac);
 
     Fraction operator-() const;
     Fraction operator*(Fraction const& other) const;
     Fraction operator/(Fraction const& other) const;
-    friend bool operator<(int, Fraction const&);
-    friend bool operator<(Fraction const&, int);
-    friend bool operator<(Fraction const&, Fraction const&);
-    friend Fraction operator+(Fraction const& x, Fraction const& y);
-    friend Fraction operator-(Fraction const& x, Fraction const& y);
-    
+    template <typename W, typename U> friend bool operator<(U, Fraction<T> const&);
+    template <typename W, typename U> friend bool operator<(Fraction<W> const&, U);
+    template <typename U> friend bool operator<(Fraction<U> const&, Fraction<U> const&);
+    template <typename U> friend Fraction<U> operator+(Fraction<U> const& x, Fraction<U> const& y);
+    template <typename U> friend Fraction<U> operator-(Fraction<U> const& x, Fraction<U> const& y);
     
 private:
-    int num, den;
+    T num, den;
 };
 
 
 template<int... Ints>
 class FracRoot{
 public:
+    using T = int;
     FracRoot();
-    FracRoot(const Fraction fraction, int r);
+    FracRoot(Fraction<T> const& fraction, int r);
 
     template<int... Args>
     friend std::ostream& operator<<(std::ostream& os, FracRoot<Args...> const & x);
     FracRoot operator*(FracRoot const & other) const;
-    FracRoot operator*(Fraction const & x) const;
-    FracRoot operator*(int x) const;
+    FracRoot operator*(Fraction<T> const & x) const;
+    FracRoot operator*(T x) const;
     FracRoot operator-() const;
     FracRoot operator/(FracRoot const & other) const;
     FracRoot operator+(FracRoot const& b) const;
-    FracRoot operator+(int b) const;
+    FracRoot operator+(T b) const;
     FracRoot operator-(FracRoot const & other) const;
-    bool operator==(int x) const;
-    bool operator!=(int x) const;
-    int get_num() const;
-    int get_den() const;
+    bool operator==(T x) const;
+    bool operator!=(T x) const;
+    T get_num() const;
+    T get_den() const;
     int get_root() const;
 
 private:
-    Fraction frac;
+    Fraction<T> frac;
     int root;
     std::pair<int, int> remove_perfect_squares(int r) const;
 
@@ -61,15 +63,18 @@ private:
 
 template <int... Ints>
 class Number{
+    using T = int;
     
 public:
     Number(){};
-    template <typename... T> explicit Number(T... digit_list);
+    template <typename... U> explicit Number(U... digit_list);
     Number(Number const& x);
     template <int...Args>
     friend std::ostream& operator<<(std::ostream & os, Number<Args...> const& number);
-    Number  operator+(int x) const;
-    Number& operator+=(int x);
+    Number  operator+(T x) const;
+    Number& operator+=(T x);
+    Number  operator+(Fraction<T> const& x) const;
+    Number& operator+=(Fraction<T> const& x);
     Number  operator+(FracRoot<Ints...> const& x) const;
     Number& operator+=(FracRoot<Ints...> const& x);
     Number  operator+(Number const& a) const;    
@@ -79,14 +84,16 @@ public:
     Number& operator-=(Number const& x);
     Number  operator*(Number const& x) const;
     Number  operator/(Number const& x) const;
-    template <typename T> Number operator*(T const& x) const;
+    template <typename U> Number operator*(U const& x) const;
     bool operator==(Number const& x) const;
     bool operator==(int x) const;
     bool operator>(Number const& x) const;
+    template <typename U> bool operator>=(U const& x) const;
+    template <typename U> bool operator<=(U const& x) const;
     bool operator>(int x) const;
     bool operator<(Number const& x) const;
     bool operator<(int x) const;
-    template <typename T> explicit operator T() const;
+    template <typename U> explicit operator U() const;
     bool is_zero() const;
     Number conjugate(int) const;
     Number inverse() const;

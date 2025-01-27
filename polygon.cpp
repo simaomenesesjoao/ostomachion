@@ -3,74 +3,10 @@
 
 #include <list>
 #include "points_vectors.cpp"
+#include "intersection_algorithms.cpp"
 #include <iostream>
 #include <unordered_set>
-
-
-template <int... Ints>
-class Node{
-    using Ang = Angle<Ints...>;
-    using Num = Number<Ints...>;
-    using Poin = Point<Ints...>;
-
-public:
-    Node(Poin const& P): position{P}{};
-
-
-
-    void update_opening(){
-        if(end_init and start_init)
-            angle_opening = angle_end - angle_start;
-        
-    }
-
-    void update_end(Ang const& A){
-        angle_end = A;
-        end_init = true;
-        // update_opening();
-    }
-
-    void update_start(Ang const& A){
-        angle_start = A;
-        start_init = true;
-        // update_opening();
-    }
-
-    void print(){
-        Poin pos = position;
-        Num x = pos.get_x();
-        Num y = pos.get_y();
-        Ang ang_i = angle_start;
-        Ang ang_f = angle_end;
-        Ang ang = angle_opening;
-        std::cout << "(x,y)=(" << (float)x << "," << (float)y << ") " 
-                    << (float)ang_i << " " << (float)ang_f << " " << (float)ang << std::endl;
-
-    }
-
-    Poin position;
-
-    template <int...Args>
-    friend std::ostream& operator<<(std::ostream& os, Node<Args...> const& node);
-
-    Ang angle_start, angle_end, angle_opening;
-// private:
-    bool end_init, start_init;
-};
-
-
-template <typename T>
-struct LL_Node{
-    T data;
-    LL_Node *prev, *next;
-
-    LL_Node(T node): data(node){
-        prev = nullptr;
-        next = nullptr;
-    }
-    
-
-};
+#include <cassert>
 
 
 
@@ -89,14 +25,17 @@ public:
     unsigned size_ll;
     
 
-    Polygon(std::vector<std::vector<int>> points){
+    Polygon(std::vector<std::vector<int>> points):head{nullptr}, size_ll{0}{
         // Turn the list of points into nodes, set them as the vertices of 
         // the polygon and calculate the angles between them
 
+        if(points.size() == 0){
+            return;
+        }
 
         std::vector<int> last_point = points.back();
         int prev_x{last_point.at(0)}, prev_y{last_point.at(1)};
-        LL_Node<Nod> *current;
+        LL_Node<Nod> *current{}; // deal with Warning about it being uninitialized
 
         size_ll = 0;
 
@@ -124,6 +63,8 @@ public:
             prev_y = y;
         }
 
+        assert(current != nullptr);
+
         current->next = head;
         head->prev = current;
         head = head->next;
@@ -136,6 +77,7 @@ public:
             prev = current;
             current = current->next;
         }
+        
     }
 
     Polygon(Polygon const& other_poly){
@@ -380,10 +322,198 @@ public:
             
             current = temp;
         }
+    }
 
+
+    bool is_point_inside(Poin const& P, Poin const& Q = {100,101}) const{
+        // Checks whether point P is inside the polygon. 
+        // Returns false if it lies on the border or on a vertex
+        // std::cout << "inside is_point_inside" << std::endl;
+
+        // Poin Q(Num{} + Fraction{10000,101}, Num{} + Fraction{20000,199});
+        // Poin Q(100,101);
+        // std::cout << "Q: " << (double)Q.get_x() << " " << (double)Q.get_y() << std::endl;
+        // std::cout << "P: " << (double)P.get_x() << " " << (double)P.get_y() << std::endl;
+        
+        // Check if the point P is part of a vertex or edge
+        {           
+            LL_Node<Nod> *current = head;
+            for(unsigned i = 0; i < size_ll; i++){
+                if(P == current->data.position)
+                    return false;
+
+                if(point_on_edge(current->data.position, current->prev->data.position, P))
+                    return false;
+
+                current = current->next;
+            }
+        }        
+        
+        
+        LL_Node<Nod> *current = head;
+        int num_intersections{0};
+        for(unsigned i = 0; i < size_ll; i++){
+            // std::cout << "edge: " << current->data.position << " " << current->prev->data.position << std::endl;
+
+            if(edges_intersect(P, Q, current->data.position, current->prev->data.position)){
+                num_intersections++;
+                // std::cout << "There's intersection" << std::endl;
+            } 
+                
+            if(point_on_edge(P, Q, current->data.position)){
+
+                // std::cout << "point is on the edge" << std::endl;
+                if(edge_splits_vertex(P, Q, current)){
+                    num_intersections++;
+                    // std::cout << "vertex split" << std::endl;
+                }
+
+            }
+
+
+            if(edge1_includes_edge2(P, Q, current->data.position, current->prev->data.position)){
+                // std::cout << "edges coincide" << std::endl;
+                if(coincident_edges_diverge(P, Q, current, current->prev)){
+                    num_intersections++;
+                    // std::cout << "edges open to different sides" << std::endl;
+
+                }
+
+            }
+            
+
+            current = current->next;            
+        }
+
+        if(num_intersections%2 == 1)
+            return true;
+
+        return false;
 
     }
 
+
+
+    bool edge_edge_intersection(Polygon const& other) const{
+        LL_Node<Nod> *current{head};
+
+        // Check for edge-edge intersections
+        for(unsigned i=0; i<size_ll; i++){
+            Poin& A = current->data.position;
+            Poin& B = current->prev->data.position;
+            LL_Node<Nod> *other_current{other.head};
+
+            for(unsigned j=0; j<other.size_ll; j++){
+                Poin& C = other_current->data.position;
+                Poin& D = other_current->prev->data.position;
+
+                if(edges_intersect(A,B,C,D)){
+                    return true;
+                }
+
+                
+                other_current = other_current->next;
+            }
+
+            current = current->next;
+        }
+
+        return false;
+    }
+
+    bool edge_node_intersection(Polygon const& other) const{
+        // Check if an edge of 'this' polygon intersects a vertex of the 'other'
+
+
+        LL_Node<Nod> *current{head};
+        for(unsigned i=0; i<size_ll; i++){
+
+            Poin const& P = current->data.position;
+            Poin const& Q = current->prev->data.position;
+
+            LL_Node<Nod> *other_current{other.head};
+            for(unsigned j=0; j<other.size_ll; j++){
+
+                if(point_on_edge(P, Q, other_current->data.position)){
+                    if(is_inner_vertex(P, Q, other_current)){
+                        return true;
+                    }
+                }
+                other_current = other_current->next;
+            }
+            current = current->next;
+        }
+
+        return false;
+    }
+
+    bool node_node_intersection(Polygon const& other) const{
+        
+
+        LL_Node<Nod> *current{head};
+        for(unsigned i=0; i<size_ll; i++){
+            Nod& A = current->data;
+
+            LL_Node<Nod> *other_current{other.head};
+            for(unsigned j=0; j<other.size_ll; j++){
+                Nod const& B = other_current->data;
+
+                if(A.position == B.position){
+                    // std::cout << "positions " << A.position << " are identical" << std::endl; 
+                    if(not nodes_compatible(A,B)){
+                        // std::cout << "nodes are not compatible" << std::endl;
+                        return true;
+                    }
+                }
+                other_current = other_current->next;
+            }
+            current = current->next;
+        }
+
+        return false;
+    }
+
+    bool points_inside(Polygon const& other) const {
+        // Checks if any vertex from polygon 'other' is inside this polygon
+
+
+        LL_Node<Nod> *current{other.head};
+        for(unsigned i=0; i<size_ll; i++){
+            Point<Ints...>& A = current->data.position;
+            // std::cout << "point" << A << std::endl;
+            if(is_point_inside(A)){
+                // std::cout << "is inside" << std::endl;
+                return true;
+            }
+
+            current = current->next;
+        }
+
+        return false;
+    }
+
+    bool overlaps(Polygon const& other){
+
+        bool cond1 = edge_edge_intersection(other);
+        bool cond2 = node_node_intersection(other);
+        bool cond3 = edge_node_intersection(other);
+        bool cond4 = other.edge_node_intersection(*this);
+        bool cond5 = points_inside(other);
+        bool cond6 = other.points_inside(*this);
+
+        std::cout << "____\nedge edge: "  << cond1 << std::endl;
+        std::cout << "node node: "  << cond2 << std::endl;
+        std::cout << "edge node: "  << cond3 << std::endl;
+        std::cout << "node edge: "  << cond4 << std::endl;
+        std::cout << "points in1: " << cond5 << std::endl;
+        std::cout << "points in2: " << cond6 << std::endl;
+
+
+        return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
+        // return edge_edge_intersection(other) or nodes_node_intersection(other) 
+        // or edge_node_intersection(other) or other.edge_node_intersection(*this) 
+        //      or points_inside(other) or other.points_inside(*this);
+    }
 };
 
 template <int... Ints>

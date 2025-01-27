@@ -5,8 +5,9 @@
 #include <numeric>
 #include <vector>
 
-Fraction::Fraction(int n, int d):num{n}, den{d}{
-    int gcd = std::gcd(num, den);
+template<typename T>
+Fraction<T>::Fraction(T n, T d):num{n}, den{d}{
+    T gcd = std::gcd(num, den);
     num /= gcd;
     den /= gcd;
     if(den<0){
@@ -15,48 +16,59 @@ Fraction::Fraction(int n, int d):num{n}, den{d}{
     }
 }
 
-Fraction Fraction::operator-() const{
+template<typename T>
+Fraction<T> Fraction<T>::operator-() const{
     return Fraction(-num, den);
 }
 
-Fraction Fraction::operator*(Fraction const& other) const{
+template<typename T>
+Fraction<T> Fraction<T>::operator*(Fraction const& other) const{
     return Fraction(other.num*num, other.den*den);        
 }
 
-Fraction Fraction::operator/(Fraction const& other) const{
+template<typename T>
+Fraction<T> Fraction<T>::operator/(Fraction const& other) const{
     return Fraction(other.den*num, other.num*den);        
 }
 
-Fraction operator+(Fraction const& x, Fraction const& y){
+template<typename T>
+Fraction<T> operator+(Fraction<T> const& x, Fraction<T> const& y){
     return Fraction(x.num*y.den + x.den*y.num, x.den*y.den);        
 }
 
-Fraction operator-(Fraction const& x, Fraction const& y){
+template<typename T>
+Fraction<T>  operator-(Fraction<T> const& x, Fraction<T> const& y){
     return Fraction(y.den*x.num - y.num*x.den, y.den*x.den);
 }
 
-bool operator<(Fraction const& x, Fraction const& y){
+template<typename T>
+bool operator<(Fraction<T> const& x, Fraction<T> const& y){
     int num_negatives = (x.get_den() < 0) + (y.get_den() < 0);
     int sign = num_negatives % 2 == 0? 1: -1;
     return x.get_num()*y.get_den()*sign < y.get_num()*x.get_den()*sign;
 }
 
-bool operator<(Fraction const& x, int y){
-    return x < Fraction{y,1};
+template<typename T, typename U>
+bool operator<(Fraction<T> const& x, U y){
+    return x < Fraction{(T)y,(T)1};
 }
 
-bool operator<(int x, Fraction const& y){
-    return Fraction{x,1} < y;
+template<typename T, typename U>
+bool operator<(U x, Fraction<T> const& y){
+    return Fraction{(T)x,(T)1} < y;
 }
 
-int Fraction::get_num() const{
+template<typename T>
+T Fraction<T>::get_num() const{
     return num;
 }
-int Fraction::get_den() const{
+template<typename T>
+T Fraction<T>::get_den() const{
     return den;
 }
 
-std::ostream& operator<<(std::ostream& os, Fraction const & frac){
+template<typename T>
+std::ostream& operator<<(std::ostream& os, Fraction <T> const & frac){
     return os << frac.num << "/" << frac.den;
 }
 
@@ -99,14 +111,14 @@ template <int... Ints>
 FracRoot<Ints...>::FracRoot():frac{0,1},root{1}{}
 
 template <int... Ints>
-FracRoot<Ints...>::FracRoot(const Fraction fraction, int r):frac{fraction},root{1}{
+FracRoot<Ints...>::FracRoot(Fraction<T> const& fraction, int r):frac{fraction},root{1}{
 
     auto [square, root2] = remove_perfect_squares(r);
     root = root2;
     int num = fraction.get_num()*square;
     int den = fraction.get_den();
     
-    frac = Fraction(num, den);
+    frac = Fraction<T>(num, den);
 }
 
 
@@ -124,12 +136,12 @@ FracRoot<Ints...> FracRoot<Ints...>::operator*(FracRoot const & other) const{
 }
 
 template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator*(Fraction const & x) const{
+FracRoot<Ints...> FracRoot<Ints...>::operator*(Fraction<T> const & x) const{
     return FracRoot{{get_num()*x.get_num(), get_den()*x.get_den()}, root};
 }
 
 template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator*(int x) const{
+FracRoot<Ints...> FracRoot<Ints...>::operator*(T x) const{
     return FracRoot{{get_num()*x, get_den()}, root};
 }
 
@@ -158,11 +170,11 @@ FracRoot<Ints...> FracRoot<Ints...>::operator+(FracRoot const& b) const{
 
 
 template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator+(int b) const{
+FracRoot<Ints...> FracRoot<Ints...>::operator+(T b) const{
     if(this->get_root() != 1)
         throw std::invalid_argument("Square root argument must be identical when summing.");
     
-    return FracRoot{{this->frac + Fraction(b,1)}, this->get_root()};
+    return FracRoot{{this->frac + Fraction<T>(b,1)}, this->get_root()};
 }
 
 
@@ -176,7 +188,7 @@ FracRoot<Ints...> FracRoot<Ints...>::operator-(FracRoot const & other) const{
 
 
 template <int... Ints>
-bool FracRoot<Ints...>::operator==(int x) const{
+bool FracRoot<Ints...>::operator==(T x) const{
     if(x==0){
         return x == get_num();
     } else {
@@ -185,19 +197,19 @@ bool FracRoot<Ints...>::operator==(int x) const{
 }
 
 template <int... Ints>
-bool FracRoot<Ints...>::operator!=(int x) const{
+bool FracRoot<Ints...>::operator!=(T x) const{
     return !(*this==x);
 }
 
 
 
 template <int... Ints>
-int FracRoot<Ints...>::get_num() const{ 
+typename FracRoot<Ints...>::T FracRoot<Ints...>::get_num() const{ 
     return frac.get_num();
 }
 
 template <int... Ints>
-int FracRoot<Ints...>::get_den() const{ 
+typename FracRoot<Ints...>::T FracRoot<Ints...>::get_den() const{ 
     return frac.get_den(); 
 }
 
@@ -241,20 +253,23 @@ Number<Ints...> Number<Ints...>::conjugate(int prime) const {
 #include <iostream>
 template <int... Ints>
 Number<Ints...> Number<Ints...>::inverse() const{
+    // This has numerical precision problems
     Number<Ints...> num{1}, den{*this};
 
     ([&](auto prime){
         Number<Ints...> conj = den.conjugate(prime);
         num = num*conj;
         den = den*conj;
+        // std::cout << "num, den: " << num << " " << den << std::endl;
     }(Ints), ...);
 
-    return num*Fraction{den.digits[1].get_den(),den.digits[1].get_num()};
+    return num*Fraction<T>{den.digits[1].get_den(),den.digits[1].get_num()};
 
 }
 
 template <int A, int... Ints>
 bool is_pos(Number<A, Ints...> const& x){
+    using T = int;
 
     if(x == 0){
         return false;
@@ -267,9 +282,9 @@ bool is_pos(Number<A, Ints...> const& x){
         int num = digit.get_num();
         int den = digit.get_den();
         if(root % A == 0){
-            b += FracRoot<Ints...>{Fraction{num, den}, root/A};
+            b += FracRoot<Ints...>{Fraction<T>{num, den}, root/A};
         } else {
-            a += FracRoot<Ints...>{Fraction{num, den}, root};
+            a += FracRoot<Ints...>{Fraction<T>{num, den}, root};
         }
     }
 
@@ -303,8 +318,8 @@ bool is_pos(Number<Ints...> const& x){
 }
 
 template <int... Ints>
-template <typename... T>
-Number<Ints...>::Number(T... digit_list){
+template <typename... U>
+Number<Ints...>::Number(U... digit_list){
     // std::cout << "Entered constructor T... digit_list" << std::endl;
     Number x{};
     (x += ... += digit_list);
@@ -328,7 +343,7 @@ std::ostream& operator<<(std::ostream & os, Number<Ints...> const& number){
 }
 
 template <int... Ints>
-Number<Ints...> Number<Ints...>::operator+(int x) const{
+Number<Ints...> Number<Ints...>::operator+(T x) const{
     Number novo{*this};
 
     // If the fraction is zero, do nothing
@@ -346,7 +361,21 @@ Number<Ints...> Number<Ints...>::operator+(int x) const{
 
 
 template <int... Ints>
-Number<Ints...>& Number<Ints...>::operator+=(int x){
+Number<Ints...>& Number<Ints...>::operator+=(T x){
+    *this = *this + x;
+    return *this;
+}
+
+
+
+template <int... Ints>
+Number<Ints...> Number<Ints...>::operator+(Fraction<T> const& x) const{
+    return (*this) + FracRoot<Ints...>(x, 1);
+}
+
+
+template <int... Ints>
+Number<Ints...>& Number<Ints...>::operator+=(Fraction<T> const& x){
     *this = *this + x;
     return *this;
 }
@@ -484,11 +513,11 @@ Number<Ints...>& Number<Ints...>::operator-=(Number const& x){
 
 
 template <int... Ints>
-template <typename T>
-Number<Ints...>::operator T() const{
-    T decimal{};
+template <typename U>
+Number<Ints...>::operator U() const{
+    U decimal{};
     for(auto& [root, digit]: digits)
-        decimal += (T)digit.get_num()/digit.get_den()*std::sqrt((T)root);
+        decimal += (U)digit.get_num()/digit.get_den()*std::sqrt((T)root);
     return decimal;
 }
 
@@ -521,8 +550,8 @@ Number<Ints...> Number<Ints...>::operator/(Number const& other) const{
 }
 
 template <int... Ints>
-template <typename T>
-Number<Ints...> Number<Ints...>::operator*(T const& x) const{
+template <typename U>
+Number<Ints...> Number<Ints...>::operator*(U const& x) const{
     Number product{};
     for(auto& [root, digit]: digits)
         if(x<0){
@@ -564,6 +593,7 @@ bool Number<Ints...>::operator>(int x) const{
     return !is_pos(y) and !(y==0);
 }
 
+
 template <int... Ints>
 bool Number<Ints...>::operator<(Number const& x) const{
     return !(*this==x) and !(*this>x);
@@ -575,8 +605,24 @@ bool Number<Ints...>::operator<(int x) const{
 }
 
 
-template <typename T, typename U>
-bool equal(T x, U y){
+template <int... Ints>
+template <typename U>
+bool Number<Ints...>::operator>=(U const& x) const{
+    return !(*this < x);
+}
+
+
+
+template <int... Ints>
+template <typename U>
+bool Number<Ints...>::operator<=(U const& x) const{
+    return !(*this > x);
+}
+
+
+
+template <typename W, typename U>
+bool equal(W x, U y){
     double tolerance = 1e-8;
     return std::abs(x-y) < tolerance;
 }

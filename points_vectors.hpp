@@ -50,6 +50,7 @@ public:
     Num get_x() const;
     Num get_y() const;
     Num dot(Point const&) const;
+    Num cross(Point const&) const;
 
     template <int... Args>
     friend std::ostream& operator<<(std::ostream&, Point<Args...> const &);
