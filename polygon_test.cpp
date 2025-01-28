@@ -6,9 +6,6 @@ int main(){
 
     using Poly = Polygon<2,5,13,17>;
     using Nod = Node<2,5,13, 17>;
-    // using Poin = Point<2,5,13,17>;
-
-
 
     {
         std::cout << "Testing polygon constructor" << std::endl;
