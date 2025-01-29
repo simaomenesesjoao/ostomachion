@@ -33,12 +33,12 @@ Fraction<T> Fraction<T>::operator/(Fraction const& other) const{
 
 template<typename T>
 Fraction<T> operator+(Fraction<T> const& x, Fraction<T> const& y){
-    return Fraction(x.num*y.den + x.den*y.num, x.den*y.den);        
+    return Fraction<T>(x.num*y.den + x.den*y.num, x.den*y.den);        
 }
 
 template<typename T>
 Fraction<T>  operator-(Fraction<T> const& x, Fraction<T> const& y){
-    return Fraction(y.den*x.num - y.num*x.den, y.den*x.den);
+    return Fraction<T>(y.den*x.num - y.num*x.den, y.den*x.den);
 }
 
 template<typename T>

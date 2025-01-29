@@ -5,7 +5,7 @@
             "name": "Debug C++ ha",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/polygon_test.cpp",
+            "program": "${workspaceFolder}/polygon_test",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

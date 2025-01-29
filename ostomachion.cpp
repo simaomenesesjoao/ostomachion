@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <iostream>
 #include <set>
@@ -11,6 +13,7 @@ struct polygons{
                              poly8, poly9, poly10, poly11, poly12, poly13, poly14;
 
     static std::vector<Poly> const polyset;
+    static unsigned const num_polygons{14};
 };
 
 Poly const polygons::frame({{0,0},  {0,12}, {12,12}, {12,0}});

@@ -3,6 +3,7 @@
 
 #include "polygon.cpp"
 #include <set>
+#include "ostomachion.cpp"
 
 template <int... Ints>
 class State{
@@ -11,10 +12,15 @@ class State{
     using Num = Number<Ints...>;
     // Characterizes an ostomachion st  ate by the current polygon 
     // (through the positions of the Nodes) and unused polygons
-    std::set<Poly*> unused_polys;
+    std::vector<std::vector<Point>> used_polys;
     Poly current_polygon;
 
+    State(): current_polygon{polygons::frame}{
+    }
 
+    State(State const& other){
+
+    }
 
     long get_hash(){
         // Hashes the state. This cannot depend on the order of the 
@@ -44,6 +50,22 @@ class State{
     }
 
     
+    find_next_state(){
+        // Find the smallest internal angle
+
+        // 
+        for(int i = 0; i < polygons::num_polygons; i++){
+            auto& poly = current_polygon.at(i);
+            if(poly.size() != 0) continue;
+
+            LL_Node<*Nod> current = polygons::polyset.at(i).head;
+            for()
+
+            
+
+        }
+    }
+
 
 };
 
