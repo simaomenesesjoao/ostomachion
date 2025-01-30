@@ -68,9 +68,9 @@ int main(){
 
     {
         std::cout << "Testing shoelace area formula" << std::endl;
-        Point<2,3> A{0,0}, B{1,0}, C{1,1}, D{0,1}; // anticlockwise polygon
-        assert((shoelace_area<2,3>({A,B,C,D})) == 1);
-        assert((shoelace_area<2,3>({D,C,B,A})) == -1);
+        Point<2,3> A{0,0}, B{1,0}, C{1,1}, D{0,1}; 
+        assert((shoelace_area<2,3>({A,B,C,D})) == 1); // anticlockwise polygon > 0
+        assert((shoelace_area<2,3>({D,C,B,A})) == -1); // clockwise polygon < 0
 
     }
 

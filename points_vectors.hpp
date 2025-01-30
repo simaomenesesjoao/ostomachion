@@ -19,7 +19,9 @@ public:
     Angle operator-() const;
     bool operator==(Angle const& a) const;
     bool operator!=(Angle const& a) const;
+    bool operator<(Angle const& a) const;
     bool is_zero() const;
+    bool larger_than_180() const;
     Num get_cos() const;
     Num get_sin() const;
     template <typename T> explicit operator T() const;

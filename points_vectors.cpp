@@ -57,12 +57,46 @@ bool Angle<Ints...>::operator!=(Angle const& a) const{
     return !(a==*this);
 }
 
+template <int... Ints>
+bool Angle<Ints...>::operator<(Angle const& other) const{
+        // Is this lesser than other?
+        if(other.larger_than_180 and not larger_than_180)
+            return false;
+        else if(not other.larger_than_180 and larger_than_180)
+            return true;
+        else if(other.larger_than_180 and larger_than_180){
+            // Both angles are larger than 180
+            // Clockwise => this > other (shoelace area < 0)
+            // Anticlock => this < other (shoelace area > 0)
+            //    (0,0)
+            //    /   \ 
+            //   /     \ 
+            // this > other 
+            
+        } else {
+            // Both angles are smaller than 180. 
+            // Clockwise => this > other (shoelace area < 0)
+            // Anticlock => this < other (shoelace area > 0)
+            // this > other 
+            //    \  /   
+            //     \/
+            //    (0,0)
+            return shoelace_area({{0,0}, {cos, sin}, {other.get_cos(), other.get_sin()}}) > 0;
+        }
+    }
+}
+
+
+template <int... Ints>
+bool Angle<Ints...>::larger_than_180() const{
+    return shoelace_area({{0,0}, {2,0}, {cos, sin}}) > 0;
+}
+
 
 template <int... Ints>
 bool Angle<Ints...>::is_zero() const{
     return cos == 1 && sin == 0;
 }
-
 
 template <int... Ints>
 std::ostream& operator<<(std::ostream& stream, Angle<Ints...> const& angle){

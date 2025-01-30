@@ -17,8 +17,11 @@ public:
 
 
     void update_opening(){
-        if(end_init and start_init)
+        assert(end_init == true and start_init == true);
+        //if(end_init and start_init){
             angle_opening = angle_end - angle_start;
+            larger_than_180 = angle_opening.larger_than_180();
+        //}
         
     }
 
@@ -46,6 +49,7 @@ public:
 
     }
 
+    
     Poin position;
 
     template <int...Args>
@@ -257,6 +261,8 @@ bool coincident_edges_diverge(Point<Ints...> const& P, Point<Ints...> const& Q,
 
 template <int ...Ints>
 Number<Ints...> shoelace_area(std::vector<Point<Ints...>> const& points){
+    // If the polygon is clockwise, the area is negative
+
     using Num = Number<Ints...>;
     unsigned N = points.size();
     Number<Ints...> area{0};
@@ -268,11 +274,6 @@ Number<Ints...> shoelace_area(std::vector<Point<Ints...>> const& points){
         Num yip = points.at((i+1)%N).get_y();
         area = area + (xi - xip)*(yi + yip);
     }
-
-    // for(auto& point: points){
-    //     std::cout << point << std::endl;
-    // }
-    // std::cout << "area: " << area << std::endl;
 
     return area*Fraction<int>{1,2};
 }
