@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "bitset": "cpp",
+        "coroutine": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "memory": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp",
+        "system_error": "cpp",
+        "text_encoding": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
+    }
+}

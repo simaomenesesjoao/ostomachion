@@ -6,16 +6,25 @@
 #include "ostomachion.cpp"
 
 template <int... Ints>
+class Tracker{
+
+                        // auto hash = next_state.get_hash();
+};
+
+template <int... Ints>
 class State{
     using Poly = Polygon<Ints...>;
     using Nod = Node<Ints...>;
     using Num = Number<Ints...>;
+    using Ang = Angle<Ints...>;
+    using Poi = Point<Ints...>;
     // Characterizes an ostomachion st  ate by the current polygon 
     // (through the positions of the Nodes) and unused polygons
     std::vector<std::vector<Point>> used_polys;
     Poly current_polygon;
+    Tracker& tracker;
 
-    State(): current_polygon{polygons::frame}{
+    State(Tracker& tracker): current_polygon{polygons::frame}, tracker{tracker}{
     }
 
     State(State const& other){
@@ -51,15 +60,33 @@ class State{
 
     
     find_next_state(){
-        // Find the smallest internal angle
+        // Find the node with smallest internal angle
+        Nod& acutest_node = current_polygon.get_acutest_node();
 
-        // 
+        // Find which polygons haven't been used yet
         for(int i = 0; i < polygons::num_polygons; i++){
-            auto& poly = current_polygon.at(i);
-            if(poly.size() != 0) continue;
+            auto& point_set = used_polys.at(i);
+            if(point_set.size() != 0) continue;
 
-            LL_Node<*Nod> current = polygons::polyset.at(i).head;
-            for()
+            auto& poly = polygons::polyset.at(i);
+            LL_Node<*Nod> current = poly.head;
+            for(int j = 0; j < poly.size_ll; j++){
+                Nod& proposed_node = current->data.angle_opening;
+
+                if(angles_compatible(proposed_node.angle_opening, acutest_node.angle_opening)){
+                    poly.translate(acutest_node.position - proposed_node.position);
+                    poly.rotate(acutest_node.angle_start - proposed_node.angle_end, acutest_node.position)
+                    if(not current_polygon.overlaps(poly)){
+
+                        // Posso ter um merge que não canibalize o outro polígono - rvalue refs
+                        State next_state(current_polygon, poly, i);
+                        if tracker.add(next_state)
+                            next_state.find_next_state();
+                    }
+                }
+                
+                current = current->next;
+            }
 
             
 
