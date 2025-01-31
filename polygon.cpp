@@ -516,12 +516,12 @@ public:
         bool cond5 = points_inside(other);
         bool cond6 = other.points_inside(*this);
 
-        std::cout << "____\nedge edge: "  << cond1 << std::endl;
-        std::cout << "node node: "  << cond2 << std::endl;
-        std::cout << "edge node: "  << cond3 << std::endl;
-        std::cout << "node edge: "  << cond4 << std::endl;
-        std::cout << "points in1: " << cond5 << std::endl;
-        std::cout << "points in2: " << cond6 << std::endl;
+        // std::cout << "____\nedge edge: "  << cond1 << std::endl;
+        // std::cout << "node node: "  << cond2 << std::endl;
+        // std::cout << "edge node: "  << cond3 << std::endl;
+        // std::cout << "node edge: "  << cond4 << std::endl;
+        // std::cout << "points in1: " << cond5 << std::endl;
+        // std::cout << "points in2: " << cond6 << std::endl;
 
 
         return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;

@@ -20,6 +20,7 @@ class State{
     using Poi = Point<Ints...>;
     // Characterizes an ostomachion st  ate by the current polygon 
     // (through the positions of the Nodes) and unused polygons
+    public:
     std::vector<std::vector<Point>> used_polys;
     Poly current_polygon;
     Tracker& tracker;
@@ -29,6 +30,10 @@ class State{
 
     State(State const& other){
 
+    }
+
+    State(){
+        current_polygon = Polygons::frame;
     }
 
     long get_hash(){
@@ -59,14 +64,17 @@ class State{
     }
 
     
-    find_next_state(){
+    std::vector<State> find_next_states(){
         // Find the node with smallest internal angle
+        std::vector<State> next_states;
         Nod& obtusest_node = current_polygon.get_obtusest_node();
 
         // Find which polygons haven't been used yet
         for(int i = 0; i < polygons::num_polygons; i++){
             auto& point_set = used_polys.at(i);
-            if(point_set.size() != 0) continue;
+
+            if(point_set.size() != 0) 
+                continue;
 
             auto& poly = polygons::polyset.at(i);
             LL_Node<*Nod> current = poly.head;
@@ -79,9 +87,12 @@ class State{
                     if(not current_polygon.overlaps(poly)){
 
                         // Posso ter um merge que não canibalize o outro polígono - rvalue refs
-                        State next_state(current_polygon, poly, i);
+                        Poly new_frame{current_polygon}; // move this into the next state
+                        new_frame.merge(Poly(poly));
+                        new_frame.prune_LL();
+                        State next_state(new_frame, i);
                         if tracker.add(next_state)
-                            next_state.find_next_state();
+                            next_states.push_back(next_state);
                     }
                 }
                 
@@ -91,7 +102,10 @@ class State{
             
 
         }
+
+        return next_states;
     }
+
 
 
 };

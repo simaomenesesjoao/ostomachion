@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.cpp": "cpp",
         "bitset": "cpp",
         "coroutine": "cpp",
         "string": "cpp",
@@ -10,6 +11,7 @@
         "system_error": "cpp",
         "text_encoding": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "ostream": "cpp"
     }
 }
