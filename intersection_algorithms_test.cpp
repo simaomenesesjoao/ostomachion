@@ -69,8 +69,8 @@ int main(){
     {
         std::cout << "Testing shoelace area formula" << std::endl;
         Point<2,3> A{0,0}, B{1,0}, C{1,1}, D{0,1}; 
-        assert((shoelace_area<2,3>({A,B,C,D})) == 1); // anticlockwise polygon > 0
-        assert((shoelace_area<2,3>({D,C,B,A})) == -1); // clockwise polygon < 0
+        assert((shoelace_area<Number<2,3>>({A,B,C,D})) == 1); // anticlockwise polygon > 0
+        assert((shoelace_area<Number<2,3>>({D,C,B,A})) == -1); // clockwise polygon < 0
 
     }
 
@@ -112,4 +112,16 @@ int main(){
         assert(nodes_compatible(B,P) == false);
     }
 
+
+
+    {
+        std::cout << "Testing angles_compatible" << std::endl;
+        Angle<2,3> A{0,1};
+        Angle<2,3> B{-1,1};
+        Angle<2,3> C{-1,-1};
+        assert(angles_compatible(A,B) == true);
+        assert(angles_compatible(C,C) == false);
+        assert(angles_compatible(A,C) == true);
+        assert(angles_compatible(B,C) == true);
+    }
 }

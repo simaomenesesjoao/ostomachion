@@ -232,4 +232,10 @@ int main(){
         Number<2,5> y{-1188};
         std::cout << x/y << std::endl;
     }
+
+    {
+        std::cout << "Testing operator / int" << std::endl;  
+        Number<2,5> x{1891};
+        std::cout << x/2 << std::endl;
+    }
 }

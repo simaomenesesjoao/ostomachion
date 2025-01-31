@@ -4,6 +4,7 @@
 #include "numbers.hpp"
 #include <numeric>
 #include <vector>
+#include <cassert>
 
 template<typename T>
 Fraction<T>::Fraction(T n, T d):num{n}, den{d}{
@@ -548,6 +549,14 @@ template <int... Ints>
 Number<Ints...> Number<Ints...>::operator/(Number const& other) const{
     return (*this)*other.inverse();
 }
+
+
+template <int... Ints>
+Number<Ints...> Number<Ints...>::operator/(int x) const{
+    assert(x != 0);
+    return (*this)*Fraction<int>{1,x};
+}
+
 
 template <int... Ints>
 template <typename U>

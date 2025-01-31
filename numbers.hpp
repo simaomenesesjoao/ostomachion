@@ -84,6 +84,7 @@ public:
     Number& operator-=(Number const& x);
     Number  operator*(Number const& x) const;
     Number  operator/(Number const& x) const;
+    Number  operator/(int x) const;
     template <typename U> Number operator*(U const& x) const;
     bool operator==(Number const& x) const;
     bool operator==(int x) const;

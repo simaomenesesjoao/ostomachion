@@ -23,9 +23,10 @@ public:
     // std::list<Nod> nodes;
     LL_Node<Nod> *head;
     unsigned size_ll;
+    bool area_positive;
     
 
-    Polygon(std::vector<std::vector<int>> points):head{nullptr}, size_ll{0}{
+    Polygon(std::vector<std::vector<int>> points):head{nullptr}, size_ll{0}, area_positive{false}{
         // Turn the list of points into nodes, set them as the vertices of 
         // the polygon and calculate the angles between them
 
@@ -77,10 +78,12 @@ public:
             prev = current;
             current = current->next;
         }
+
+        area_positive = (get_area() > 0);
         
     }
 
-    Polygon(Polygon const& other_poly){
+    Polygon(Polygon const& other_poly):area_positive{other_poly.area_positive}{
 
         LL_Node<Nod> *node, *other_node;
         other_node = other_poly.head->next;
@@ -117,10 +120,23 @@ public:
         // std::cout << "deleted polygon" << std::endl;
     }
 
+    Num get_area(){
+        std::vector<std::pair<Num, Num>> points;
+        LL_Node<Nod> *current = head;
+        for(unsigned i=0; i<size_ll; i++){
+            Num const& x = current->data.position.get_x();
+            Num const& y = current->data.position.get_y();
+            points.push_back({x,y});
+            current = current->next;
+        }
+
+        return shoelace_area<Num>(points);
+    }
+
     void translate(Poin const& dr){
         LL_Node<Nod> *ll_node = head;
         for(unsigned i=0; i<size_ll; i++){
-            ll_node->data->position += dr;
+            ll_node->data.position = ll_node->data.position + dr;
             ll_node = ll_node->next;
         }
     }
@@ -136,6 +152,27 @@ public:
             node.position = rot_center + (node.position - rot_center).rotate(angle);
             ll_node = ll_node->next;
         }
+    }
+
+    void flip_x(){
+        // Flip the polygon along x, but preserve orientation. In practice, 
+        // this means changing the sign of every quantity which depends on x
+        LL_Node<Nod> *current{head}, *temp;
+
+        for(unsigned i=0; i<size_ll; i++){
+            temp = current->next;
+            current->next = current->prev;
+            current->prev = temp;
+            current->data.position = {-current->data.position.get_x(), current->data.position.get_y()};
+
+            auto start = current->data.angle_start;
+            auto end = current->data.angle_end;
+            current->data.angle_start = Ang{-end.get_cos(), end.get_sin()};
+            current->data.angle_end = Ang{-start.get_cos(), start.get_sin()};
+            
+            current = temp;
+        }
+        area_positive = !area_positive;
     }
 
     void merge(LL_Node<Nod> *this_node, Polygon & other_poly, LL_Node<Nod> *other_node){
@@ -163,7 +200,6 @@ public:
         this_node->data.update_opening();
         other_node->data.update_opening();
     }
-
 
     void prune_LL(std::unordered_set<LL_Node<Nod>*> update){
         // Remove points from the LL which are coincident or have
@@ -304,27 +340,6 @@ public:
         }
     }
 
-    void flip_x(){
-        // Flip the polygon along x, but preserve orientation. In practice, 
-        // this means changing the sign of every quantity which depends on x
-        LL_Node<Nod> *current{head}, *temp;
-
-        for(unsigned i=0; i<size_ll; i++){
-            temp = current->next;
-            current->next = current->prev;
-            current->prev = temp;
-            current->data.position = {-current->data.position.get_x(), current->data.position.get_y()};
-
-            auto start = current->data.angle_start;
-            auto end = current->data.angle_end;
-            current->data.angle_start = Ang{-end.get_cos(), end.get_sin()};
-            current->data.angle_end = Ang{-start.get_cos(), start.get_sin()};
-            
-            current = temp;
-        }
-    }
-
-
     bool is_point_inside(Poin const& P, Poin const& Q = {100,101}) const{
         // Checks whether point P is inside the polygon. 
         // Returns false if it lies on the border or on a vertex
@@ -385,14 +400,14 @@ public:
             current = current->next;            
         }
 
-        if(num_intersections%2 == 1)
+        // The number of intersections will be odd if it's clockwise
+        // clockwise = negative area
+        if(num_intersections%2 == area_positive)
             return true;
 
         return false;
 
     }
-
-
 
     bool edge_edge_intersection(Polygon const& other) const{
         LL_Node<Nod> *current{head};
@@ -513,6 +528,19 @@ public:
         // return edge_edge_intersection(other) or nodes_node_intersection(other) 
         // or edge_node_intersection(other) or other.edge_node_intersection(*this) 
         //      or points_inside(other) or other.points_inside(*this);
+    }
+
+    Nod const& get_obtusest_node() const {
+        // Get the node with the largest internal opening
+        LL_Node<Nod> *current = head;
+        LL_Node<Nod> *largest = head;
+        for(unsigned i = 0; i < size_ll; i++){
+            if(largest->data.angle_opening < current->data.angle_opening){
+                largest = current;
+            }
+            current = current->next;
+        }
+        return largest->data;
     }
 };
 

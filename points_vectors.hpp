@@ -20,14 +20,16 @@ public:
     bool operator==(Angle const& a) const;
     bool operator!=(Angle const& a) const;
     bool operator<(Angle const& a) const;
+    // bool operator>(Angle const& a) const;
     bool is_zero() const;
-    bool larger_than_180() const;
+    bool is_larger_than_180() const;
     Num get_cos() const;
     Num get_sin() const;
     template <typename T> explicit operator T() const;
 
     template <int... Args>
     friend std::ostream& operator<<(std::ostream&, Angle<Args...> const &);
+    // bool larger_than_180;
 private:
     Num sin, cos;
 
@@ -47,6 +49,8 @@ public:
     Point operator-() const;
     Point operator*(Num const& x) const;
     bool operator==(Point const& P) const;
+    operator std::pair<Number<Ints...>, Number<Ints...>>() const;
+
 
     // Num distance(Num const& x) const;
     Num get_x() const;

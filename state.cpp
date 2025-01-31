@@ -61,7 +61,7 @@ class State{
     
     find_next_state(){
         // Find the node with smallest internal angle
-        Nod& acutest_node = current_polygon.get_acutest_node();
+        Nod& obtusest_node = current_polygon.get_obtusest_node();
 
         // Find which polygons haven't been used yet
         for(int i = 0; i < polygons::num_polygons; i++){
@@ -73,9 +73,9 @@ class State{
             for(int j = 0; j < poly.size_ll; j++){
                 Nod& proposed_node = current->data.angle_opening;
 
-                if(angles_compatible(proposed_node.angle_opening, acutest_node.angle_opening)){
-                    poly.translate(acutest_node.position - proposed_node.position);
-                    poly.rotate(acutest_node.angle_start - proposed_node.angle_end, acutest_node.position)
+                if(angles_compatible(proposed_node.angle_opening, obtusest_node.angle_opening)){
+                    poly.translate(obtusest_node.position - proposed_node.position);
+                    poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, obtusest_node.position)
                     if(not current_polygon.overlaps(poly)){
 
                         // Posso ter um merge que não canibalize o outro polígono - rvalue refs

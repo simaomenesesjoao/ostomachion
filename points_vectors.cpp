@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "points_vectors.hpp"
+#include "shoelace.hpp"
 #include <iostream>
 
 template <int... Ints>
@@ -59,37 +60,57 @@ bool Angle<Ints...>::operator!=(Angle const& a) const{
 
 template <int... Ints>
 bool Angle<Ints...>::operator<(Angle const& other) const{
-        // Is this lesser than other?
-        if(other.larger_than_180 and not larger_than_180)
-            return false;
-        else if(not other.larger_than_180 and larger_than_180)
-            return true;
-        else if(other.larger_than_180 and larger_than_180){
-            // Both angles are larger than 180
-            // Clockwise => this > other (shoelace area < 0)
-            // Anticlock => this < other (shoelace area > 0)
-            //    (0,0)
-            //    /   \ 
-            //   /     \ 
-            // this > other 
-            
-        } else {
-            // Both angles are smaller than 180. 
-            // Clockwise => this > other (shoelace area < 0)
-            // Anticlock => this < other (shoelace area > 0)
-            // this > other 
-            //    \  /   
-            //     \/
-            //    (0,0)
-            return shoelace_area({{0,0}, {cos, sin}, {other.get_cos(), other.get_sin()}}) > 0;
-        }
+    // Is this lesser than other?
+    bool larger_than_180 = is_larger_than_180();
+    bool other_larger_than_180 = other.is_larger_than_180();
+    if(other_larger_than_180 and not larger_than_180)
+        return true;
+    else if(not other_larger_than_180 and larger_than_180)
+        return false;
+    else {
+        // Both angles are smaller than 180 or both are larger than 180. 
+        // Clockwise => this > other (shoelace area < 0)
+        // Anticlock => this < other (shoelace area > 0)
+        // this ->- other 
+        //    ^    /   
+        //     \  v
+        //     (0,0)
+        
+        return shoelace_area<Num>({{Num{0},Num{0}}, {cos, sin}, {other.get_cos(), other.get_sin()}}) > 0;
     }
+
 }
 
 
+// template <int... Ints>
+// bool Angle<Ints...>::operator>(Angle const& other) const{
+//     // Is this greater than other? Reasoning is similar to <
+//     bool larger_than_180 = is_larger_than_180();
+//     bool other_larger_than_180 = other.is_larger_than_180();
+//     if(other_larger_than_180 and not larger_than_180)
+//         return false;
+//     else if(not other_larger_than_180 and larger_than_180)
+//         return true;
+//     else {
+//         // Both angles are smaller than 180 or both are larger than 180. 
+//         // Clockwise => this > other (shoelace area < 0)
+//         // Anticlock => this < other (shoelace area > 0)
+//         // this ->- other 
+//         //    ^    /   
+//         //     \  v
+//         //     (0,0)
+        
+//         return shoelace_area<Num>({{Num{0},Num{0}}, {cos, sin}, {other.get_cos(), other.get_sin()}}) < 0;
+//     }
+
+// }
+
+
+
+
 template <int... Ints>
-bool Angle<Ints...>::larger_than_180() const{
-    return shoelace_area({{0,0}, {2,0}, {cos, sin}}) > 0;
+bool Angle<Ints...>::is_larger_than_180() const{
+    return shoelace_area<Num>({{Num{0},Num{0}}, {cos, sin}, {Num{2},Num{0}}}) > 0;
 }
 
 
@@ -115,11 +136,22 @@ Angle<Ints...>::operator T() const{
 };
 
 
+
+
+
+
+
+
 template <int... Ints>
 Point<Ints...>::Point(int x, int y):x{Num{x}}, y{Num{y}}{}
 
 template <int... Ints>
 Point<Ints...>::Point(Num const& x, Num const& y):x{x}, y{y}{}
+
+template <int... Ints>
+Point<Ints...>::operator std::pair<Number<Ints...>, Number<Ints...>>() const {
+    return {x, y};
+}
 
 template <int... Ints>
 Point<Ints...> Point<Ints...>::operator+(Point const& P) const{
@@ -182,6 +214,91 @@ template <int... Ints>
 Number<Ints...> Point<Ints...>::cross(Point<Ints...> const& other) const{
     return x*other.y - y*other.x;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+template <int... Ints>
+class Node{
+    using Ang = Angle<Ints...>;
+    using Num = Number<Ints...>;
+    using Poin = Point<Ints...>;
+
+public:
+    Node(Poin const& P): position{P}{};
+    // Node(): position{{0,0}}{};
+
+
+
+    void update_opening(){
+        assert(end_init == true and start_init == true);
+        //if(end_init and start_init){
+            angle_opening = angle_end - angle_start;
+            // larger_than_180 = angle_opening.larger_than_180();
+        //}
+        
+    }
+
+    void update_end(Ang const& A){
+        angle_end = A;
+        end_init = true;
+        // update_opening();
+    }
+
+    void update_start(Ang const& A){
+        angle_start = A;
+        start_init = true;
+        // update_opening();
+    }
+
+    void print(){
+        Poin pos = position;
+        Num x = pos.get_x();
+        Num y = pos.get_y();
+        Ang ang_i = angle_start;
+        Ang ang_f = angle_end;
+        Ang ang = angle_opening;
+        std::cout << "(x,y)=(" << (float)x << "," << (float)y << ") " 
+                    << (float)ang_i << " " << (float)ang_f << " " << (float)ang << std::endl;
+
+    }
+
+    
+    Poin position;
+    // bool larger_than_180;
+
+    template <int...Args>
+    friend std::ostream& operator<<(std::ostream& os, Node<Args...> const& node);
+
+    Ang angle_start, angle_end, angle_opening;
+// private:
+    bool end_init, start_init;
+};
+
+
+template <typename T>
+struct LL_Node{
+    T data;
+    LL_Node *prev, *next;
+
+    LL_Node(T node): data(node){
+        prev = nullptr;
+        next = nullptr;
+    }
+
+};
+
+
+
 
 
 

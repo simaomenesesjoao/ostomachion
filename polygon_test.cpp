@@ -6,6 +6,7 @@ int main(){
 
     using Poly = Polygon<2,5,13,17>;
     using Nod = Node<2,5,13, 17>;
+    // using Poin = Point<2,5,13, 17>;
 
     {
         std::cout << "Testing polygon constructor" << std::endl;
@@ -31,22 +32,48 @@ int main(){
     }
 
 
+    {
+        std::cout << "Testing polygon get_obtusest" << std::endl;
+        Poly poly1({{0,0}, {0,12}, {12,12}});
+        Poly poly2({{0,0}, {-12,12}, {0,12}});
+        Poly poly3({{0,0}, {0,12}, {3,0}});
 
-    // {
-    //     std::cout << "Testing is_point_inside" << std::endl;
-    //     // Anti-clockwise polygon
-    //     Poly poly({{0,0}, {12,0}, {12,12}, {6,6}, {0,12}});
+        std::cout << poly1 << std::endl;
+        std::cout << poly1 << std::endl;
+        std::cout << poly1 << std::endl;
 
-    //     assert(poly.is_point_inside({10,2 }) == true);  // inside
-    //     assert(poly.is_point_inside({12,10}) == false); // on the border
-    //     assert(poly.is_point_inside({13,10}) == false); // outside
+        Nod const& node1 = poly1.get_obtusest_node();
+        Nod const& node2 = poly2.get_obtusest_node();
+        Nod const& node3 = poly3.get_obtusest_node();
+        // Nod const& node1 = poly1.get_obtusest_node();
+        std::cout << node1.position << " " << (float)node1.angle_opening << std::endl;
+        std::cout << node2.position << " " << (float)node2.angle_opening << std::endl;
+        std::cout << node3.position << " " << (float)node3.angle_opening << std::endl;
+        
+    }
 
-    //     assert(poly.is_point_inside({1,1}, {-1,-1}) == true);  // inside, cross vertex
-    //     assert(poly.is_point_inside({5,5}, {13,13}) == true);  // inside, coincident edge
-    //     assert(poly.is_point_inside({-1,0}, {13,0}) == false); // outside, coincident edge
+
+// return 0;
+    {
+        std::cout << "Testing is_point_inside" << std::endl;
+        Poly poly({{0,0}, {12,0}, {12,12}, {6,6}, {0,12}}); // Anti-clockwise polygon
+        Poly poly2({{0,12}, {6,6}, {12,12}, {12,0}, {0,0}}); // Clockwise polygon
+
+        assert(poly.is_point_inside({10,2 }) == true);  // inside
+        assert(poly.is_point_inside({12,10}) == false); // on the border
+        assert(poly.is_point_inside({13,10}) == false); // outside
+
+
+        assert(poly2.is_point_inside({10,2 }) == false);  // inside
+        assert(poly2.is_point_inside({12,10}) == false); // on the border
+        assert(poly2.is_point_inside({13,10}) == true); // outside
+
+        assert(poly.is_point_inside({1,1}, {-1,-1}) == true);  // inside, cross vertex
+        assert(poly.is_point_inside({5,5}, {13,13}) == true);  // inside, coincident edge
+        assert(poly.is_point_inside({-1,0}, {13,0}) == false); // outside, coincident edge
         
 
-    // }
+    }
     
 
     {
@@ -98,9 +125,19 @@ int main(){
 
     }
 
+    // {
 
+    //     std::cout << "Testing polygon intersection, pt2" << std::endl;
+    //     Poly poly1({{0,0}, {0,12}, {12,12}, {12,0}});
+    //     Poly poly2({{0,12}, {0,8}, {3,8}});
+    //     std::cout << poly1.points_inside(poly2) << std::endl;
+    //     std::cout << poly2.points_inside(poly1) << std::endl;
 
+    //     // int variable = 3;
+    //     // std::cout << poly1.is_point_inside({3,8}) << std::endl;
+    // }
 
+    // return 0;
 
 
 
@@ -175,5 +212,26 @@ int main(){
         poly2.prune_LL({node1, node2});
         assert(poly2.head == nullptr);  
     }
+
+
+    {
+        std::cout << "Testing polygon translation and rotation" << std::endl;
+        Poly poly1({{0,0}, {0,12}, {12,12}, {12,0}});
+        Poly poly2({{8,0}, {12,0}, {12,3}});
+        // Poly poly3({{0,12}, {0,8}, {3,8}});
+        Nod const& R1 = poly1.head->next->data;
+        Nod const& R2 = poly2.head->data;
+        poly2.translate(R1.position-R2.position);
+        std::cout << poly2 << std::endl;
+        std::cout << "overlaps? " << poly1.overlaps(poly2) << std::endl;
+        poly2.rotate(R1.angle_end - R2.angle_start, R1.position);
+        std::cout << poly2 << std::endl;
+        // bool overlaps = poly1.overlaps(poly3);
+        std::cout << "overlaps? " << poly1.overlaps(poly2) << std::endl;
+
+        
+    }
+
+
 
 }

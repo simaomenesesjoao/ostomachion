@@ -2,79 +2,9 @@
 
 // #include "points_vectors.hpp"
 #include "points_vectors.cpp"
+#include "shoelace.hpp"
+#include <utility>
 #include <cassert>
-
-template <int... Ints>
-class Node{
-    using Ang = Angle<Ints...>;
-    using Num = Number<Ints...>;
-    using Poin = Point<Ints...>;
-
-public:
-    Node(Poin const& P): position{P}{};
-    // Node(): position{{0,0}}{};
-
-
-
-    void update_opening(){
-        assert(end_init == true and start_init == true);
-        //if(end_init and start_init){
-            angle_opening = angle_end - angle_start;
-            larger_than_180 = angle_opening.larger_than_180();
-        //}
-        
-    }
-
-    void update_end(Ang const& A){
-        angle_end = A;
-        end_init = true;
-        // update_opening();
-    }
-
-    void update_start(Ang const& A){
-        angle_start = A;
-        start_init = true;
-        // update_opening();
-    }
-
-    void print(){
-        Poin pos = position;
-        Num x = pos.get_x();
-        Num y = pos.get_y();
-        Ang ang_i = angle_start;
-        Ang ang_f = angle_end;
-        Ang ang = angle_opening;
-        std::cout << "(x,y)=(" << (float)x << "," << (float)y << ") " 
-                    << (float)ang_i << " " << (float)ang_f << " " << (float)ang << std::endl;
-
-    }
-
-    
-    Poin position;
-
-    template <int...Args>
-    friend std::ostream& operator<<(std::ostream& os, Node<Args...> const& node);
-
-    Ang angle_start, angle_end, angle_opening;
-// private:
-    bool end_init, start_init;
-};
-
-
-template <typename T>
-struct LL_Node{
-    T data;
-    LL_Node *prev, *next;
-
-    LL_Node(T node): data(node){
-        prev = nullptr;
-        next = nullptr;
-    }
-    
-    
-
-};
-
 
 template <int... Ints>
 bool edges_intersect(Point<Ints...> const& P1, Point<Ints...> const& P2, 
@@ -259,24 +189,6 @@ bool coincident_edges_diverge(Point<Ints...> const& P, Point<Ints...> const& Q,
 // }
 
 
-template <int ...Ints>
-Number<Ints...> shoelace_area(std::vector<Point<Ints...>> const& points){
-    // If the polygon is clockwise, the area is negative
-
-    using Num = Number<Ints...>;
-    unsigned N = points.size();
-    Number<Ints...> area{0};
-
-    for(unsigned i=0; i<N; i++){
-        Num xi  = points.at(i).get_x();
-        Num yi  = points.at(i).get_y();
-        Num xip = points.at((i+1)%N).get_x();
-        Num yip = points.at((i+1)%N).get_y();
-        area = area + (xi - xip)*(yi + yip);
-    }
-
-    return area*Fraction<int>{1,2};
-}
 
 template <int... Ints>
 bool nodes_compatible(Node<Ints...> const& node1, Node<Ints...> const& node2){
@@ -304,7 +216,7 @@ bool nodes_compatible(Node<Ints...> const& node1, Node<Ints...> const& node2){
 
     if(S1 == S2 or S1 == E2 or E1 == S2 or E1 == E2){
         // std::cout << "3 coincident" << std::endl;
-        return shoelace_area<Ints...>({S1,E1,S2,E2}) > 0; // > 0 means polygon is anticlockwise
+        return shoelace_area<Number<Ints...>>({S1,E1,S2,E2}) > 0; // > 0 means polygon is anticlockwise
     }
 
 
@@ -317,5 +229,23 @@ bool nodes_compatible(Node<Ints...> const& node1, Node<Ints...> const& node2){
         
     // std::cout << "all edges are different" << std::endl;
 
-    return shoelace_area<Ints...>({S1,E1,S2,E2}) > 0;
+    return shoelace_area<Number<Ints...>>({S1,E1,S2,E2}) > 0;
+}
+
+
+template <int... Ints>
+bool angles_compatible(Angle<Ints...> const& a, Angle<Ints...> const& b){
+    bool a_larger_180 = a.is_larger_than_180();
+    bool b_larger_180 = b.is_larger_than_180();
+    if(a_larger_180 and b_larger_180)
+        return false;
+
+    if(not a_larger_180 and not b_larger_180)
+        return true;
+
+    Angle<Ints...> c{a+b};
+
+    return c.is_larger_than_180() or c.is_zero();
+
+
 }
