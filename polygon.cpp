@@ -83,14 +83,16 @@ public:
         
     }
 
-    Polygon(Polygon const& other_poly):area_positive{other_poly.area_positive}{
 
-        LL_Node<Nod> *node, *other_node;
-        other_node = other_poly.head->next;
+    void build_this(Polygon const& other_poly){
+
+        area_positive = other_poly.area_positive;
 
         head = new LL_Node<Nod>(other_poly.head->data);
-        node = head;
+        LL_Node<Nod> *node = head;
         
+        LL_Node<Nod> *other_node = other_poly.head->next;
+
 
         for(unsigned i=1; i<other_poly.size_ll; i++){
             node->next = new LL_Node<Nod>(other_node->data);
@@ -101,10 +103,11 @@ public:
 
         }
         size_ll = other_poly.size_ll;
-
+        node->next = head;
+        head->prev = node;
     }
 
-    ~Polygon(){
+    void delete_this(){
         LL_Node<Nod> *current, *next;
         current = head;
         // std::cout << "started deleting polygon" << std::endl;
@@ -117,8 +120,28 @@ public:
             delete current;
             current = next;
         }
-        // std::cout << "deleted polygon" << std::endl;
     }
+
+    Polygon(Polygon const& other_poly){
+        build_this(other_poly);
+    }
+
+
+    ~Polygon(){
+        delete_this();
+    }
+
+
+
+    Polygon& operator=(Polygon const& other){
+        if(&other == this)
+            return *this;
+
+        delete_this();
+        build_this(other);
+        return *this;
+    }
+
 
     Num get_area(){
         std::vector<std::pair<Num, Num>> points;
@@ -516,12 +539,12 @@ public:
         bool cond5 = points_inside(other);
         bool cond6 = other.points_inside(*this);
 
-        // std::cout << "____\nedge edge: "  << cond1 << std::endl;
-        // std::cout << "node node: "  << cond2 << std::endl;
-        // std::cout << "edge node: "  << cond3 << std::endl;
-        // std::cout << "node edge: "  << cond4 << std::endl;
-        // std::cout << "points in1: " << cond5 << std::endl;
-        // std::cout << "points in2: " << cond6 << std::endl;
+        std::cout << "____\nedge edge: "  << cond1 << std::endl;
+        std::cout << "node node: "  << cond2 << std::endl;
+        std::cout << "edge node: "  << cond3 << std::endl;
+        std::cout << "node edge: "  << cond4 << std::endl;
+        std::cout << "points in1: " << cond5 << std::endl;
+        std::cout << "points in2: " << cond6 << std::endl;
 
 
         return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
@@ -530,17 +553,27 @@ public:
         //      or points_inside(other) or other.points_inside(*this);
     }
 
-    Nod const& get_obtusest_node() const {
+    LL_Node<Nod>* ll_node_from_index(unsigned index){
+        LL_Node<Nod> *current = head;
+        for(unsigned i=0; i<index; i++){
+            current = current->next;
+        }
+        return current;
+    }
+
+    unsigned get_obtusest_index() const {
         // Get the node with the largest internal opening
         LL_Node<Nod> *current = head;
         LL_Node<Nod> *largest = head;
+        unsigned index_largest = 0;
         for(unsigned i = 0; i < size_ll; i++){
             if(largest->data.angle_opening < current->data.angle_opening){
                 largest = current;
+                index_largest = i;
             }
             current = current->next;
         }
-        return largest->data;
+        return index_largest;
     }
 };
 

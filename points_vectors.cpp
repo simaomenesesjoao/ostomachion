@@ -11,11 +11,14 @@ Angle<Ints...>::Angle(int x, int y){
     int norm2 = x*x + y*y;
     cos = Num{FracRoot<Ints...>{{x,norm2},norm2}};
     sin = Num{FracRoot<Ints...>{{y,norm2},norm2}};
+    angle_double = (double)(*this);
 }
 
 template <int... Ints>
 Angle<Ints...>::Angle(Num const& cos, Num const& sin):
-    sin(sin), cos(cos){}
+    sin(sin), cos(cos){
+        angle_double = (double)(*this);
+    }
 
 template <int... Ints>
 Angle<Ints...>::Angle(){};

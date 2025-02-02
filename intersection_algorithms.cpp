@@ -57,6 +57,9 @@ bool edges_intersect(Point<Ints...> const& P1, Point<Ints...> const& P2,
         t_num = -t_num;
         t_den = -t_den;
     }
+    
+    std::cout << (float)s_num << " " << (float)s_den << " ";
+    std::cout << (float)t_num << " " << (float)t_den << std::endl;
 
     // std::cout << "s,t: " << s_num << " " << s_den << " " << t_num << " " << t_den << std::endl;
 

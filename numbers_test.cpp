@@ -3,97 +3,15 @@
 #include <cassert>
 #include <iostream>
 
-// TO DO - is_pos não precisa de argumento
-
 int main(){
 
     using T = long long;
-    {
-        std::cout << "Testing fractions subtraction: " << std::endl;
-        Fraction<T> x{4,3}, y{2,5};
-        std::cout << x << std::endl;
-        std::cout << x-y << std::endl;
-    }
-
-
-    {
-        std::cout << "Testing negative fractions: " << std::endl;
-        Fraction x{-4,3}, y{2,-5}, z{-1,-1};
-        std::cout << x << " " << y << " " << z << std::endl;
-    }
-
-    {
-        std::cout << "Testing fractions comparison <: " << std::endl;
-        Fraction x{4,3}, y{2,5};
-        
-        std::cout << (x<y) << std::endl;
-    }
-
     
-    
-    {
-        int x = 2;
-        int norm2 = x*x;
-        std::cout << "ex1\n";
-        FracRoot<5> f{{x,norm2},norm2};
-    }
-    
-    
-    {
-        std::cout << "ex2\n";
-        FracRoot<1,2,5> x{{6,3},40};
-        assert(x.get_num() == 4 and x.get_den() == 1 and x.get_root() == 10);
-    }
-
-    {
-        std::cout << "ex3\n";
-        FracRoot<1,2,5> x{{-1,7},100};
-        assert(x.get_num() == -10 and x.get_den() == 7 and x.get_root() == 1);
-    }
-
-    {
-        FracRoot<2,5> x{{-1,7},100};
-        assert(x.get_num() == -10 and x.get_den() == 7 and x.get_root() == 1);
-    }
-
-    {
-        FracRoot<3,7> x{{-1,7},21};
-        assert(x.get_num() == -1 and x.get_den() == 7 and x.get_root() == 21);
-    }
-
-
-    {
-        std::cout << "Testing FracRoot product and subtraction: " << std::endl;
-        FracRoot<1,2,5> x{{6,3},40};
-        FracRoot<1,2,5> y{{3,6},5};
-        FracRoot<1,2,5> z{{4,6},5};
-        std::cout << x*y << std::endl;
-        std::cout << y-z << std::endl;
-    }
-
-
-    {
-        std::cout << "Testing FracRoot product and addition: " << std::endl;
-        FracRoot<> x{{6,3},1};
-        FracRoot<> y{{3,6},1};
-        std::cout << x*y << std::endl;
-        std::cout << x+y << std::endl;
-    }
-
-
-    {
-        std::cout << "Testing FracRoot comparison" << std::endl;
-        FracRoot<2,5> x{{1,2},1};
-        FracRoot<2,5> y{{3,2},1};
-
-        assert((y-x)==1);
-        assert((x-x)==0);
-    }
 
     {
         std::cout << "Testing Number constructors: " << std::endl;
-        Number<2> x{2};
-        Number<1> y{2};
+        Number<T, 2> x{2};
+        Number<T, 1> y{2};
         assert(equal(2.0, (double)x));
         assert(equal(2.0, (double)y));
     }
@@ -101,29 +19,29 @@ int main(){
 
     {
         std::cout << "Testing Number operations +*: " << std::endl;
-        FracRoot<2,5> a{{1,2},5};
-        FracRoot<2,5> b{{-3,2},2};
-        FracRoot<2,5> c{{4,2},10};
-        FracRoot<2,5> d{{1,6},1};
-        Number<2,5> x{a}, y{c}, z{x*y};
+        FracRoot<T,2,5> a{{1,2},5};
+        FracRoot<T,2,5> b{{-3,2},2};
+        FracRoot<T,2,5> c{{4,2},10};
+        FracRoot<T,2,5> d{{1,6},1};
+        Number<T,2,5> x{a}, y{c}, z{x*y};
         
         std::cout << "x: " << x << std::endl;
         std::cout << "y: " << y << std::endl;
         std::cout << "z: " << z << std::endl;
 
         using T = double;
-        std::cout << "x+y: " << (T)x + (T)y << " " <<  (T)(x+y) << std::endl; 
-        std::cout << "x*y: " << (T)x * (T)y << " " <<  (T)(x*y) << std::endl; 
-
+        assert(equal((T)x + (T)y ,(T)(x+y)));
+        assert(equal((T)x * (T)y ,(T)(x*y)));
+        
 
     }
 
 
     {
         std::cout << "Testing unary Number operations -: " << std::endl;
-        FracRoot<2,5> a{{1,2},5};
-        FracRoot<2,5> b{{-3,2},2};
-        Number<2,5> x{a}, y{b}, z;
+        FracRoot<T,2,5> a{{1,2},5};
+        FracRoot<T,2,5> b{{-3,2},2};
+        Number<T,2,5> x{a}, y{b}, z;
         z = x + y;
         
         std::cout << "z: " << z << std::endl;
@@ -149,10 +67,10 @@ int main(){
     {
         std::cout << "Testing is_pos for <2>." << std::endl;
 
-        FracRoot<2> a{{1,2},2};
-        FracRoot<2> b{{-3,4},1};
-        FracRoot<2> c{{0,4},2};
-        Number<2> x{a}, y{a,b}, z{c};
+        FracRoot<T,2> a{{1,2},2};
+        FracRoot<T,2> b{{-3,4},1};
+        FracRoot<T,2> c{{0,4},2};
+        Number<T,2> x{a}, y{a,b}, z{c};
 
         assert((x>0) == ((double)x>0));
         assert((y>0) == ((double)y>0));
@@ -163,11 +81,34 @@ int main(){
         assert(equal((double)z, 0.0));
     }
 
+
+    {
+        std::cout << "Testing is_pos for <2,5,13,17>." << std::endl;
+
+        
+        FracRoot<int,2,5,13,17>       ai({306,5},5), bi{{18,17},17}, ci{{-4254,85},85};
+        FracRoot<long long,2,5,13,17> al({306,5},5), bl{{18,17},17}, cl{{-4254,85},85};
+        FracRoot<mpz_class,2,5,13,17> am({306,5},5), bm{{18,17},17}, cm{{-4254,85},85};
+
+        Number<int,2,5,13,17>       xi{ai,ci};
+        Number<long long,2,5,13,17> xl{al,cl};
+        Number<mpz_class,2,5,13,17> xm{am,cm};
+
+        std::cout << xi << " " << (double)xi << std::endl;
+        std::cout << xl << " " << (double)xl << std::endl;
+        std::cout << xm << " " << (double)xm << std::endl;
+        assert((xi > 0) == true);
+        assert((xl > 0) == false);
+        assert((xm > 0) == false);
+        
+    }
+    
+
     {
         std::cout << "Testing is_zero for <2,3>." << std::endl;
 
-        FracRoot<2,3> a{{1,2},2};
-        Number<2,3> x{a}, y{a};
+        FracRoot<T,2,3> a{{1,2},2};
+        Number<T,2,3> x{a}, y{a};
 
         assert((x-y).is_zero());
     }
@@ -175,7 +116,7 @@ int main(){
 
     {
         std::cout << "Testing conjugation" << std::endl;   
-        Number<2,5> z{1188};
+        Number<T,2,5> z{1188};
         std::cout << "z2: " << z.conjugate(2) << std::endl;
         std::cout << "z5: " << z.conjugate(5) << std::endl;
         
@@ -184,58 +125,64 @@ int main(){
 
     {
         std::cout << "Testing conjugation" << std::endl;
-        FracRoot<2,5> a{{3,1},1};
-        FracRoot<2,5> b{{-3,2},2};
-        FracRoot<2,5> c{{1,2},5};
+        FracRoot<T,2,5> a{{3,1},1};
+        FracRoot<T,2,5> b{{-3,2},2};
+        FracRoot<T,2,5> c{{1,2},5};
         
-        Number<2,5> z{a,b,c};
-        Number<2,5> z2{a,-b,c};
-        Number<2,5> z5{a,b,-c};
+        Number<T,2,5> z{a,b,c};
+        Number<T,2,5> z2{a,-b,c};
+        Number<T,2,5> z5{a,b,-c};
 
         assert(z.conjugate(2) == z2);
         assert(z.conjugate(5) == z5);
     }
 
 
-    // Numerical precision problems
-    // {
-    //     std::cout << "Testing inverse" << std::endl;   
-    //     Number<2,5> z{1188};
-    //     std::cout << "z: " << z.inverse() << std::endl;
-    //     assert(z*z.inverse() == 1);
-    // }
+    
+    {
+        std::cout << "Testing inverse" << std::endl;   
+        Number<int,2,5> zi{1188};
+        Number<long long,2,5> zl{1188};
+        std::cout << "z: " << zi.inverse() << std::endl;
+        std::cout << "z: " << zl.inverse() << std::endl;
+        assert((zi*zi.inverse() != 1));
+        assert(zl*zl.inverse() == 1);
+    }
 
     {
         std::cout << "Testing inverse" << std::endl;
-        FracRoot<2,5> a{{3,1},1};
-        FracRoot<2,5> b{{-3,2},2};  
-        FracRoot<2,5> c{{1,2},5};      
-        Number<2,5> z{a,b,c};
+        using T = int;
+        FracRoot<T,2,5> a{{3,1},1};
+        FracRoot<T,2,5> b{{-3,2},2};  
+        FracRoot<T,2,5> c{{1,2},5};      
+        Number<T,2,5> z{a,b,c};
         assert(z*z.inverse() == 1);
     }
 
     {
         std::cout << "Testing operator /" << std::endl;
-        FracRoot<2,5> a{{3,1},1};
-        FracRoot<2,5> b{{-3,2},2};   
-        FracRoot<2,5> c{{1,2},5};     
-        Number<2,5> x{a,b,c};
-        Number<2,5> y{b,-c};
-        Number<2,5> z{x/y};
+        using T = int;
+        FracRoot<T,2,5> a{{3,1},1};
+        FracRoot<T,2,5> b{{-3,2},2};   
+        FracRoot<T,2,5> c{{1,2},5};     
+        Number<T,2,5> x{a,b,c};
+        Number<T,2,5> y{b,-c};
+        Number<T,2,5> z{x/y};
         assert(y*z == x);
     }
 
 
     {
         std::cout << "Testing operator /" << std::endl;  
-        Number<2,5> x{1890};
-        Number<2,5> y{-1188};
+        using T = int;
+        Number<T,2,5> x{1890};
+        Number<T,2,5> y{-1188};
         std::cout << x/y << std::endl;
     }
 
     {
         std::cout << "Testing operator / int" << std::endl;  
-        Number<2,5> x{1891};
+        Number<T,2,5> x{1891};
         std::cout << x/2 << std::endl;
     }
 }

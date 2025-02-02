@@ -29,7 +29,8 @@ public:
 
     template <int... Args>
     friend std::ostream& operator<<(std::ostream&, Angle<Args...> const &);
-    // bool larger_than_180;
+    
+    double angle_double;
 private:
     Num sin, cos;
 

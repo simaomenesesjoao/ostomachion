@@ -1,243 +1,46 @@
-#ifndef NUMBERS_C
-#define NUMBERS_C 
+#pragma once
 
 #include "numbers.hpp"
-#include <numeric>
 #include <vector>
 #include <cassert>
+#include <gmpxx.h>
 
-template<typename T>
-Fraction<T>::Fraction(T n, T d):num{n}, den{d}{
-    T gcd = std::gcd(num, den);
-    num /= gcd;
-    den /= gcd;
-    if(den<0){
-        den = -den;
-        num = -num;
-    }
+template <typename T, int... Ints>
+template <typename... U>
+Number<T, Ints...>::Number(U... digit_list){
+    // std::cout << "Entered constructor T... digit_list" << std::endl;
+    Number x{};
+    (x += ... += digit_list);
+    digits = std::move(x.digits);
+    number_double = (double)(*this);
 }
 
-template<typename T>
-Fraction<T> Fraction<T>::operator-() const{
-    return Fraction(-num, den);
+template <typename T, int... Ints>
+Number<T, Ints...>::Number(Number const& x){
+    digits = x.digits;
+    number_double = (double)(*this);
 }
 
-template<typename T>
-Fraction<T> Fraction<T>::operator*(Fraction const& other) const{
-    return Fraction(other.num*num, other.den*den);        
-}
 
-template<typename T>
-Fraction<T> Fraction<T>::operator/(Fraction const& other) const{
-    return Fraction(other.den*num, other.num*den);        
-}
-
-template<typename T>
-Fraction<T> operator+(Fraction<T> const& x, Fraction<T> const& y){
-    return Fraction<T>(x.num*y.den + x.den*y.num, x.den*y.den);        
-}
-
-template<typename T>
-Fraction<T>  operator-(Fraction<T> const& x, Fraction<T> const& y){
-    return Fraction<T>(y.den*x.num - y.num*x.den, y.den*x.den);
-}
-
-template<typename T>
-bool operator<(Fraction<T> const& x, Fraction<T> const& y){
-    int num_negatives = (x.get_den() < 0) + (y.get_den() < 0);
-    int sign = num_negatives % 2 == 0? 1: -1;
-    return x.get_num()*y.get_den()*sign < y.get_num()*x.get_den()*sign;
-}
-
-template<typename T, typename U>
-bool operator<(Fraction<T> const& x, U y){
-    return x < Fraction{(T)y,(T)1};
-}
-
-template<typename T, typename U>
-bool operator<(U x, Fraction<T> const& y){
-    return Fraction{(T)x,(T)1} < y;
-}
-
-template<typename T>
-T Fraction<T>::get_num() const{
-    return num;
-}
-template<typename T>
-T Fraction<T>::get_den() const{
-    return den;
-}
-
-template<typename T>
-std::ostream& operator<<(std::ostream& os, Fraction <T> const & frac){
-    return os << frac.num << "/" << frac.den;
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator=(Number const& x){
+    digits = x.digits;
+    number_double = (double)(*this);
+    return *this;
 }
 
 
 
-template <int... Ints>
-std::pair<int, int> FracRoot<Ints...>::remove_perfect_squares(int r) const{
-    // Check if there's any perfect square inside r
-    std::vector<int> primes{2,3,5,7,11,13,17,19,23,29};
-
-    int num{1}, root{1};
-
-    for(auto& prime: primes){
-        // std::cout << prime << " " << r << " " << num << " " << root <<  std::endl;
-
-        if(prime > r) break;
-
-        while(r % (prime*prime) == 0){
-            r /= prime*prime;
-            num *= prime;
-        } 
-        if(r % prime == 0){
-
-            if(not ((prime == Ints) or ...)){
-                throw std::invalid_argument("Square root argument cannot be represented with the factors provided.");                
-            }
-
-            root *= prime;
-            r /= prime;
-        }
-    }
-
-    if( r != 1){
-        throw std::invalid_argument("Square root argument cannot be represented with the factors provided.");
-    }
-    return std::pair<int, int>(num, root);
-}
-
-template <int... Ints>
-FracRoot<Ints...>::FracRoot():frac{0,1},root{1}{}
-
-template <int... Ints>
-FracRoot<Ints...>::FracRoot(Fraction<T> const& fraction, int r):frac{fraction},root{1}{
-
-    auto [square, root2] = remove_perfect_squares(r);
-    root = root2;
-    int num = fraction.get_num()*square;
-    int den = fraction.get_den();
-    
-    frac = Fraction<T>(num, den);
-}
-
-
-template <int... Ints>
-std::ostream& operator<<(std::ostream& os, FracRoot<Ints...> const & x){
-    return os << x.frac.get_num() << "/" << x.frac.get_den() << "√" << x.root;
-}
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator*(FracRoot const & other) const{
-    auto [square, root2] = remove_perfect_squares(root*other.root);
-    int new_num = get_num()*other.get_num()*square;
-    int new_den = get_den()*other.get_den();
-    return FracRoot{{new_num, new_den}, root2};
-}
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator*(Fraction<T> const & x) const{
-    return FracRoot{{get_num()*x.get_num(), get_den()*x.get_den()}, root};
-}
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator*(T x) const{
-    return FracRoot{{get_num()*x, get_den()}, root};
-}
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator-() const{
-    return FracRoot{-frac, root};
-}
-
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator/(FracRoot const & other) const{
-    auto [square, root2] = remove_perfect_squares(root*other.root);
-    int new_num = get_num()*other.get_den()*square;
-    int new_den = get_den()*other.get_num()*other.get_root();
-    return FracRoot{{new_num, new_den}, root2};
-}
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator+(FracRoot const& b) const{
-    if(this->get_root() != b.get_root())
-        throw std::invalid_argument("Square root argument must be identical when summing.");
-    
-    return FracRoot{{this->frac + b.frac}, this->get_root()};
-}
-
-
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator+(T b) const{
-    if(this->get_root() != 1)
-        throw std::invalid_argument("Square root argument must be identical when summing.");
-    
-    return FracRoot{{this->frac + Fraction<T>(b,1)}, this->get_root()};
-}
-
-
-template <int... Ints>
-FracRoot<Ints...> FracRoot<Ints...>::operator-(FracRoot const & other) const{
-    if(other.get_root() != get_root())
-        throw std::invalid_argument("Square root argument must be identical when subtracting.");
-    
-    return FracRoot{{frac - other.frac}, get_root()};
-}
-
-
-template <int... Ints>
-bool FracRoot<Ints...>::operator==(T x) const{
-    if(x==0){
-        return x == get_num();
-    } else {
-        return x == get_num() and get_den()==1 and get_root()==1;
-    }
-}
-
-template <int... Ints>
-bool FracRoot<Ints...>::operator!=(T x) const{
-    return !(*this==x);
-}
-
-
-
-template <int... Ints>
-typename FracRoot<Ints...>::T FracRoot<Ints...>::get_num() const{ 
-    return frac.get_num();
-}
-
-template <int... Ints>
-typename FracRoot<Ints...>::T FracRoot<Ints...>::get_den() const{ 
-    return frac.get_den(); 
-}
-
-template <int... Ints>
-int FracRoot<Ints...>::get_root() const{
-    return root;
-}
-
-
-
-
-
-
-
-
-
-
-template <int... Ints>
-bool Number<Ints...>::is_zero() const{
+template <typename T, int... Ints>
+bool Number<T, Ints...>::is_zero() const{
     return digits.empty();
 }
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::conjugate(int prime) const {
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::conjugate(int prime) const {
 
 
-    Number<Ints...> conj{}; 
+    Number<T, Ints...> conj{}; 
     
     for(auto& digit: digits){
         auto& root = digit.first;
@@ -252,13 +55,13 @@ Number<Ints...> Number<Ints...>::conjugate(int prime) const {
 }
 
 #include <iostream>
-template <int... Ints>
-Number<Ints...> Number<Ints...>::inverse() const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::inverse() const{
     // This has numerical precision problems
-    Number<Ints...> num{1}, den{*this};
+    Number<T, Ints...> num{1}, den{*this};
 
     ([&](auto prime){
-        Number<Ints...> conj = den.conjugate(prime);
+        Number<T, Ints...> conj = den.conjugate(prime);
         num = num*conj;
         den = den*conj;
         // std::cout << "num, den: " << num << " " << den << std::endl;
@@ -268,24 +71,23 @@ Number<Ints...> Number<Ints...>::inverse() const{
 
 }
 
-template <int A, int... Ints>
-bool is_pos(Number<A, Ints...> const& x){
-    using T = int;
+template <typename T, int A, int... Ints>
+bool is_pos(Number<T, A, Ints...> const& x){
 
     if(x == 0){
         return false;
     }
         
 
-    Number<Ints...> a{}, b{}; 
+    Number<T, Ints...> a{}, b{}; 
     
     for(auto& [root, digit]: x.digits){
-        int num = digit.get_num();
-        int den = digit.get_den();
+        T num = digit.get_num();
+        T den = digit.get_den();
         if(root % A == 0){
-            b += FracRoot<Ints...>{Fraction<T>{num, den}, root/A};
+            b += FracRoot<T, Ints...>{Fraction<T>{num, den}, root/A};
         } else {
-            a += FracRoot<Ints...>{Fraction<T>{num, den}, root};
+            a += FracRoot<T, Ints...>{Fraction<T>{num, den}, root};
         }
     }
 
@@ -301,14 +103,14 @@ bool is_pos(Number<A, Ints...> const& x){
     if(a_pos and b_pos) return true;
     if(!a_pos and !b_pos) return false;
 
-    Number<Ints...> c = a*a - b*b*A;
+    Number<T, Ints...> c = a*a - b*b*A; // numeric precision problem!
     bool c_pos = is_pos(c);
     return (a_pos and c_pos) or (!a_pos and !c_pos);
 }
 
 // This will only match when there's an empty parameter stack
-template <int... Ints>
-bool is_pos(Number<Ints...> const& x){
+template <typename T, int... Ints>
+bool is_pos(Number<T, Ints...> const& x){
     if(x == 0) {
         return false;
     } else {
@@ -318,22 +120,8 @@ bool is_pos(Number<Ints...> const& x){
     }   
 }
 
-template <int... Ints>
-template <typename... U>
-Number<Ints...>::Number(U... digit_list){
-    // std::cout << "Entered constructor T... digit_list" << std::endl;
-    Number x{};
-    (x += ... += digit_list);
-    digits = std::move(x.digits);
-}
-
-template <int... Ints>
-Number<Ints...>::Number(Number const& x){
-    digits = x.digits;
-}
-
-template <int... Ints>
-std::ostream& operator<<(std::ostream & os, Number<Ints...> const& number){
+template <typename T, int... Ints>
+std::ostream& operator<<(std::ostream & os, Number<T, Ints...> const& number){
     if(number.digits.empty()){
         os << "Empty";
     }
@@ -343,8 +131,8 @@ std::ostream& operator<<(std::ostream & os, Number<Ints...> const& number){
     return os;
 }
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator+(T x) const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator+(T x) const{
     Number novo{*this};
 
     // If the fraction is zero, do nothing
@@ -352,40 +140,42 @@ Number<Ints...> Number<Ints...>::operator+(T x) const{
         return novo;
 
     if(novo.digits.count(1) == 0){
-        novo.digits[1] = FracRoot<Ints...>({x,1},1);
+        novo.digits[1] = FracRoot<T, Ints...>({x,1},1);
     } else {
-        FracRoot<Ints...>& digit = novo.digits[1];
+        FracRoot<T, Ints...>& digit = novo.digits[1];
         digit = digit + x;
     }
     return novo;
 }
 
 
-template <int... Ints>
-Number<Ints...>& Number<Ints...>::operator+=(T x){
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator+=(T x){
     *this = *this + x;
+    number_double = (double)(*this);
     return *this;
 }
 
 
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator+(Fraction<T> const& x) const{
-    return (*this) + FracRoot<Ints...>(x, 1);
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator+(Fraction<T> const& x) const{
+    return (*this) + FracRoot<T, Ints...>(x, 1);
 }
 
 
-template <int... Ints>
-Number<Ints...>& Number<Ints...>::operator+=(Fraction<T> const& x){
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator+=(Fraction<T> const& x){
     *this = *this + x;
+    number_double = (double)(*this);
     return *this;
 }
 
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator+(FracRoot<Ints...> const& x) const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator+(FracRoot<T, Ints...> const& x) const{
     Number novo{*this};
-    const int& r = x.get_root();
+    int r = x.get_root();
 
     // If the fraction is zero, do nothing
     if(x.get_num() == 0) 
@@ -394,32 +184,33 @@ Number<Ints...> Number<Ints...>::operator+(FracRoot<Ints...> const& x) const{
     if(novo.digits.count(r) == 0){
         novo.digits[r] = x;
     } else {
-        FracRoot<Ints...>& digit = novo.digits[r];
+        FracRoot<T, Ints...>& digit = novo.digits[r];
         digit = digit + x;
     }
     return novo;
 }
 
 
-template <int... Ints>
-Number<Ints...>& Number<Ints...>::operator+=(FracRoot<Ints...> const& x){
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator+=(FracRoot<T, Ints...> const& x){
     *this = *this + x;
+    number_double = (double)(*this);
     return *this;
 }
 
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator+(Number const& a) const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator+(Number const& a) const{
     auto it1 = digits.begin();
     auto it2 = a.digits.begin();
 
     Number sum;
     while(it1!=digits.end() and it2!=a.digits.end()){
-        const int& root1 = it1->first;
-        const int& root2 = it2->first;
+        int root1 = it1->first;
+        int root2 = it2->first;
 
         if(root1 == root2){
-            FracRoot<Ints...> plus = it1->second + it2->second;
+            FracRoot<T, Ints...> plus = it1->second + it2->second;
             if(plus != 0)
                 sum.digits[root1] = plus;
 
@@ -447,16 +238,17 @@ Number<Ints...> Number<Ints...>::operator+(Number const& a) const{
 }
 
 
-template <int... Ints>
-Number<Ints...>& Number<Ints...>::operator+=(Number const& x) const{
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator+=(Number const& x){
     *this = *this+x;
+    number_double = (double)(*this);
     return *this; 
 }
 
 
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator-() const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator-() const{
 
     Number result;
     for(auto &[root, frac]: digits){
@@ -467,18 +259,18 @@ Number<Ints...> Number<Ints...>::operator-() const{
 }
 
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator-(Number const& a) const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator-(Number const& a) const{
     auto it1 = digits.begin();
     auto it2 = a.digits.begin();
 
     Number result;
     while(it1!=digits.end() and it2!=a.digits.end()){
-        const int& root1 = it1->first;
-        const int& root2 = it2->first;
+        int root1 = it1->first;
+        int root2 = it2->first;
 
         if(root1 == root2){
-            FracRoot<Ints...> dif = it1->second - it2->second;
+            FracRoot<T, Ints...> dif = it1->second - it2->second;
             if(dif != 0)
                 result.digits[root1] = dif;
 
@@ -506,25 +298,40 @@ Number<Ints...> Number<Ints...>::operator-(Number const& a) const{
 }
 
 
-template <int... Ints>
-Number<Ints...>& Number<Ints...>::operator-=(Number const& x){
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator-=(Number const& x){
     *this = *this-x;
+    number_double = (double)(*this);
     return *this; 
 }
 
 
-template <int... Ints>
+template <typename T, int... Ints>
 template <typename U>
-Number<Ints...>::operator U() const{
-    U decimal{};
-    for(auto& [root, digit]: digits)
-        decimal += (U)digit.get_num()/digit.get_den()*std::sqrt((T)root);
-    return decimal;
+Number<T, Ints...>::operator U() const{
+    if constexpr (std::is_same<T, mpz_class>::value){
+        U decimal{};
+        for(auto& [root, digit]: digits){
+            U a = digit.get_num().get_d();
+            U b = digit.get_den().get_d();
+            decimal += a/b*std::sqrt((U)root);
+        }
+        return decimal;
+    } else {
+
+        U decimal{};
+        for(auto& [root, digit]: digits)
+            decimal += (U)digit.get_num()/(U)digit.get_den()*std::sqrt((U)root);
+        return decimal;
+        
+
+    }
 }
 
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator*(Number const& x) const{
+
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator*(Number const& x) const{
     Number product{};
     for(auto& [root1, digit1]: digits)
         for(auto& [root2, digit2]: x.digits)
@@ -545,22 +352,22 @@ Number<Ints...> Number<Ints...>::operator*(Number const& x) const{
     return product;
 }
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator/(Number const& other) const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator/(Number const& other) const{
     return (*this)*other.inverse();
 }
 
 
-template <int... Ints>
-Number<Ints...> Number<Ints...>::operator/(int x) const{
+template <typename T, int... Ints>
+Number<T, Ints...> Number<T, Ints...>::operator/(int x) const{
     assert(x != 0);
-    return (*this)*Fraction<int>{1,x};
+    return (*this)*Fraction<T>{1,x};
 }
 
 
-template <int... Ints>
+template <typename T, int... Ints>
 template <typename U>
-Number<Ints...> Number<Ints...>::operator*(U const& x) const{
+Number<T, Ints...> Number<T, Ints...>::operator*(U const& x) const{
     Number product{};
     for(auto& [root, digit]: digits)
         if(x<0){
@@ -577,54 +384,60 @@ Number<Ints...> Number<Ints...>::operator*(U const& x) const{
 }
 
     
-template <int... Ints>
-bool Number<Ints...>::operator==(Number const& x) const{
+template <typename T, int... Ints>
+bool Number<T, Ints...>::operator==(Number const& x) const{
     // std::cout << "Entering == number" << std::endl;
     Number y{*this-x};
     return y.is_zero();
 }
 
-template <int... Ints>
-bool Number<Ints...>::operator==(int x) const{
+template <typename T, int... Ints>
+bool Number<T, Ints...>::operator==(int x) const{
     Number y{x};
     return *this==y;
 }
 
-template <int... Ints>
-bool Number<Ints...>::operator>(Number const& x) const{
+template <typename T, int... Ints>
+template <typename U>
+bool Number<T, Ints...>::operator!=(U const& x) const{
+    return !(*this==x);
+}
+
+template <typename T, int... Ints>
+bool Number<T, Ints...>::operator>(Number const& x) const{
     return is_pos(*this-x);
 }
 
-template <int... Ints>
-bool Number<Ints...>::operator>(int x) const{
+template <typename T, int... Ints>
+bool Number<T, Ints...>::operator>(int x) const{
     Number y{x};
     y -= *this;
     return !is_pos(y) and !(y==0);
 }
 
 
-template <int... Ints>
-bool Number<Ints...>::operator<(Number const& x) const{
+template <typename T, int... Ints>
+bool Number<T, Ints...>::operator<(Number const& x) const{
     return !(*this==x) and !(*this>x);
 }
 
-template <int... Ints>
-bool Number<Ints...>::operator<(int x) const{
+template <typename T, int... Ints>
+bool Number<T, Ints...>::operator<(int x) const{
     return !(*this==x) and !(*this>x);
 }
 
 
-template <int... Ints>
+template <typename T, int... Ints>
 template <typename U>
-bool Number<Ints...>::operator>=(U const& x) const{
+bool Number<T, Ints...>::operator>=(U const& x) const{
     return !(*this < x);
 }
 
 
 
-template <int... Ints>
+template <typename T, int... Ints>
 template <typename U>
-bool Number<Ints...>::operator<=(U const& x) const{
+bool Number<T, Ints...>::operator<=(U const& x) const{
     return !(*this > x);
 }
 
@@ -635,5 +448,3 @@ bool equal(W x, U y){
     double tolerance = 1e-8;
     return std::abs(x-y) < tolerance;
 }
-
-#endif // NUMBERS_C

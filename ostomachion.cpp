@@ -12,7 +12,7 @@ struct polygons{
     static Poly frame, poly1, poly2, poly3,  poly4,  poly5,  poly6,  poly7,
                              poly8, poly9, poly10, poly11, poly12, poly13, poly14;
 
-    static std::vector<Poly> const polyset;
+    static std::vector<Poly> polyset;
     static unsigned const num_polygons{14};
 };
 
@@ -22,7 +22,7 @@ Poly polygons::poly2({{3,0},  {3,6},  {2,4}});
 Poly polygons::poly3({{3,0},  {6,0},  {6,6},    {4,8}, {3,6}});
 Poly polygons::poly4({{0,0},  {4,8},  {2,10}});
 Poly polygons::poly5({{0,0},  {2,10}, {0,12}});
-Poly polygons::poly6({{0,12}, {4,8},  {6,6}});
+Poly polygons::poly6({{0,12}, {4,8},  {6,12}});
 Poly polygons::poly7({{4,8},  {6,6},  {6,12}});
 Poly polygons::poly8({{6,0},  {8,4},  {6,6}});
 Poly polygons::poly9({{6,0},  {12,0}, {8,4}});
@@ -32,20 +32,20 @@ Poly polygons::poly12({{9,6},  {12,6}, {12,8}});
 Poly polygons::poly13({{6,6},  {8,4},  {10,6},   {6,12}});
 Poly polygons::poly14({{9,6},  {12,8}, {12,12},  {6,12}});
 
-std::vector<Poly> const polygons::polyset{polygons::poly1,  polygons::poly2,   polygons::poly3,
-                        polygons::poly4,  polygons::poly5,  polygons::poly6,   polygons::poly7, 
-                        polygons::poly8,  polygons::poly9,  polygons::poly10,  polygons::poly11, 
-                        polygons::poly12, polygons::poly13, polygons::poly14};
+std::vector<Poly> polygons::polyset{polygons::poly1,  polygons::poly2,   polygons::poly3,
+                  polygons::poly4,  polygons::poly5,  polygons::poly6,   polygons::poly7, 
+                  polygons::poly8,  polygons::poly9,  polygons::poly10,  polygons::poly11, 
+                  polygons::poly12, polygons::poly13, polygons::poly14};
 
-int main(){
+// int main(){
     
-    std::cout << "Frame:" << std::endl;
-    polygons::frame.print();
+//     std::cout << "Frame:" << std::endl;
+//     polygons::frame.print();
 
-    int i = 0;
-    for(auto& polygon: polygons::polyset){
-        std::cout << "polygon " << i << std::endl;
-        polygon.print();
-        i++;
-    }
-}
+//     int i = 0;
+//     for(auto& polygon: polygons::polyset){
+//         std::cout << "polygon " << i << std::endl;
+//         polygon.print();
+//         i++;
+//     }
+// }

@@ -1,4 +1,5 @@
 #include "polygon.cpp"
+#include "ostomachion.cpp"
 #include <cassert>
 
 
@@ -38,13 +39,18 @@ int main(){
         Poly poly2({{0,0}, {-12,12}, {0,12}});
         Poly poly3({{0,0}, {0,12}, {3,0}});
 
-        std::cout << poly1 << std::endl;
-        std::cout << poly1 << std::endl;
-        std::cout << poly1 << std::endl;
+        // std::cout << poly1 << std::endl;
+        // std::cout << poly1 << std::endl;
+        // std::cout << poly1 << std::endl;
 
-        Nod const& node1 = poly1.get_obtusest_node();
-        Nod const& node2 = poly2.get_obtusest_node();
-        Nod const& node3 = poly3.get_obtusest_node();
+
+        unsigned index1 = poly1.get_obtusest_index();
+        unsigned index2 = poly2.get_obtusest_index();
+        unsigned index3 = poly3.get_obtusest_index();
+
+        Nod const& node1 = poly1.ll_node_from_index(index1)->data;
+        Nod const& node2 = poly2.ll_node_from_index(index2)->data;
+        Nod const& node3 = poly3.ll_node_from_index(index3)->data;
         // Nod const& node1 = poly1.get_obtusest_node();
         std::cout << node1.position << " " << (float)node1.angle_opening << std::endl;
         std::cout << node2.position << " " << (float)node2.angle_opening << std::endl;
@@ -229,7 +235,7 @@ int main(){
         // bool overlaps = poly1.overlaps(poly3);
         std::cout << "overlaps? " << poly1.overlaps(poly2) << std::endl;
 
-        
+
     }
 
 
