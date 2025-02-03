@@ -2,38 +2,33 @@
 
 #include "state.cpp"
 #include <fstream>
+#include <gmpxx.h>
 
 int main(){
     // Tracker<2,3> tracker;
-    State<2,5,13,17> state;
+    using T = mpz_class;
+    // using T = int;
+    using Num = Number<T, 2, 5, 13, 17>;
+    State<Num> state;
 
-    std::cout << state << std::endl;
-    auto next_states = state.find_next_states();
+    std::vector<unsigned> indices{2, 0, 6, 1};
+    std::vector<State<Num>> next_states;
 
-    if(next_states.size() == 0){
-        std::cout << "empty1" << std::endl;
-        return 1;
+    for(auto& index: indices){
+        next_states = state.find_next_states();
+        
+        if(next_states.size() == 0){
+            std::cout << "empty" << std::endl;
+            break;
+        }
+
+        state = next_states.at(index);
     }
-    auto next_state = next_states.at(0);
-    std::cout << next_state << std::endl;
-    next_states = next_state.find_next_states();
-
-
-    if(next_states.size() == 0){
-        std::cout << "empty1" << std::endl;
-        return 1;
-    }
-
-    next_state = next_states.at(0);
-    std::cout << next_state << std::endl;
-    next_states = next_state.find_next_states();
-
-    
-
 
     std::ofstream out("polys.dat");
     for(auto& state: next_states)
         out << state;
     out.close();
+    
     return 0;
 }

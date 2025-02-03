@@ -1,12 +1,15 @@
 #include "polygon.cpp"
 #include "ostomachion.cpp"
 #include <cassert>
+#include <gmpxx.h>
 
 
 int main(){
 
-    using Poly = Polygon<2,5,13,17>;
-    using Nod = Node<2,5,13, 17>;
+    using Num = Number<int, 2, 5, 13, 17>;
+
+    using Poly = Polygon<Num>;
+    using Nod = Node<Num>;
     // using Poin = Point<2,5,13, 17>;
 
     {
@@ -224,18 +227,27 @@ int main(){
         std::cout << "Testing polygon translation and rotation" << std::endl;
         Poly poly1({{0,0}, {0,12}, {12,12}, {12,0}});
         Poly poly2({{8,0}, {12,0}, {12,3}});
-        // Poly poly3({{0,12}, {0,8}, {3,8}});
         Nod const& R1 = poly1.head->next->data;
         Nod const& R2 = poly2.head->data;
         poly2.translate(R1.position-R2.position);
-        std::cout << poly2 << std::endl;
-        std::cout << "overlaps? " << poly1.overlaps(poly2) << std::endl;
+        assert(poly1.overlaps(poly2) == true);        
         poly2.rotate(R1.angle_end - R2.angle_start, R1.position);
-        std::cout << poly2 << std::endl;
-        // bool overlaps = poly1.overlaps(poly3);
-        std::cout << "overlaps? " << poly1.overlaps(poly2) << std::endl;
+        assert(poly1.overlaps(poly2) == false);
 
 
+    }
+
+    {
+        std::cout << "Testing polygon translation and rotation gmp" << std::endl;
+        using Num = Number<mpz_class, 2, 5, 13, 17>;
+        Polygon<Num> poly1({{0,0}, {0,12}, {12,12}, {12,0}});
+        Polygon<Num> poly2({{8,0}, {12,0}, {12,3}});
+        Node<Num> const& R1 = poly1.head->next->data;
+        Node<Num> const& R2 = poly2.head->data;
+        poly2.translate(R1.position-R2.position);
+        assert(poly1.overlaps(poly2) == true);        
+        poly2.rotate(R1.angle_end - R2.angle_start, R1.position);
+        assert(poly1.overlaps(poly2) == false);
     }
 
 

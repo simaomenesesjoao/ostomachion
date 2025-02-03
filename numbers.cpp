@@ -29,6 +29,11 @@ Number<T, Ints...>& Number<T, Ints...>::operator=(Number const& x){
     return *this;
 }
 
+// Constructor delegation
+template <typename T, int... Ints>
+Number<T, Ints...>::Number(int num, int den, int root):
+    Number(FracRoot<T, Ints...>{{num, den}, root}){}
+
 
 
 template <typename T, int... Ints>

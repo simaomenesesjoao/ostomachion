@@ -9,17 +9,17 @@
 
 template <typename T = int, int... Ints>
 class Number{
-    // using T = int-;
     
 public:
+    using Type = T;
+    // Constructors and assignment
     Number(){};
     template <typename... U> explicit Number(U... digit_list);
+    Number(int, int, int);
     Number(Number const& x);
     Number& operator=(Number const&);
 
-
-    template <typename U, int...Args>
-    friend std::ostream& operator<<(std::ostream & os, Number<U, Args...> const& number);
+    // Binary and unary operators
     Number  operator+(T x) const;
     Number& operator+=(T x);
     Number  operator+(Fraction<T> const& x) const;
@@ -35,6 +35,10 @@ public:
     Number  operator/(Number const& x) const;
     Number  operator/(int x) const;
     template <typename U> Number operator*(U const& x) const;
+
+    // Comparison operators
+    template <typename U, int...Args>
+    friend std::ostream& operator<<(std::ostream & os, Number<U, Args...> const& number);
     bool operator==(Number const& x) const;
     bool operator==(int x) const;
     template <typename U> bool operator!=(U const& x) const;

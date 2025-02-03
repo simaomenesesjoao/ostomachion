@@ -1,68 +1,65 @@
-#ifndef PVECTORS_C
-#define PVECTORS_C
+#pragma once
 
-#include <cmath>
 #include "points_vectors.hpp"
 #include "shoelace.hpp"
-#include <iostream>
 
-template <int... Ints>
-Angle<Ints...>::Angle(int x, int y){
+template <typename Num>
+Angle<Num>::Angle(int x, int y){
     int norm2 = x*x + y*y;
-    cos = Num{FracRoot<Ints...>{{x,norm2},norm2}};
-    sin = Num{FracRoot<Ints...>{{y,norm2},norm2}};
+    cos = Num{x, norm2, norm2};
+    sin = Num{y, norm2, norm2};
     angle_double = (double)(*this);
 }
 
-template <int... Ints>
-Angle<Ints...>::Angle(Num const& cos, Num const& sin):
+template <typename Num>
+Angle<Num>::Angle(Num const& cos, Num const& sin):
     sin(sin), cos(cos){
         angle_double = (double)(*this);
     }
 
-template <int... Ints>
-Angle<Ints...>::Angle(){};
+template <typename Num>
+Angle<Num>::Angle(){};
 
 
-template <int... Ints>
-Number<Ints...> Angle<Ints...>::get_cos() const{ return cos;}
+template <typename Num>
+Num Angle<Num>::get_cos() const{ return cos;}
 
-template <int... Ints>
-Number<Ints...> Angle<Ints...>::get_sin() const{ return sin;}
+template <typename Num>
+Num Angle<Num>::get_sin() const{ return sin;}
 
 
-template <int... Ints>
-Angle<Ints...> Angle<Ints...>::operator+(Angle const& a) const{
+template <typename Num>
+Angle<Num> Angle<Num>::operator+(Angle const& a) const{
     Num new_cos = cos*a.cos - sin*a.sin;
     Num new_sin = sin*a.cos + cos*a.sin;
     return Angle(new_cos, new_sin);
 }
 
-template <int... Ints>
-Angle<Ints...> Angle<Ints...>::operator-(Angle const& a) const{
+template <typename Num>
+Angle<Num> Angle<Num>::operator-(Angle const& a) const{
     Num new_cos = cos*a.cos + sin*a.sin;
     Num new_sin = sin*a.cos - cos*a.sin;
     return Angle(new_cos, new_sin);
 }
 
-template <int... Ints>
-Angle<Ints...> Angle<Ints...>::operator-() const{
+template <typename Num>
+Angle<Num> Angle<Num>::operator-() const{
     return Angle(-cos, -sin);
 }
 
-template <int... Ints>
-bool Angle<Ints...>::operator==(Angle const& a) const{
+template <typename Num>
+bool Angle<Num>::operator==(Angle const& a) const{
     return sin == a.sin && cos == a.cos;
 }
 
 
-template <int... Ints>
-bool Angle<Ints...>::operator!=(Angle const& a) const{
+template <typename Num>
+bool Angle<Num>::operator!=(Angle const& a) const{
     return !(a==*this);
 }
 
-template <int... Ints>
-bool Angle<Ints...>::operator<(Angle const& other) const{
+template <typename Num>
+bool Angle<Num>::operator<(Angle const& other) const{
     // Is this lesser than other?
     bool larger_than_180 = is_larger_than_180();
     bool other_larger_than_180 = other.is_larger_than_180();
@@ -85,8 +82,8 @@ bool Angle<Ints...>::operator<(Angle const& other) const{
 }
 
 
-// template <int... Ints>
-// bool Angle<Ints...>::operator>(Angle const& other) const{
+// template <typename Num>
+// bool Angle<Num>::operator>(Angle const& other) const{
 //     // Is this greater than other? Reasoning is similar to <
 //     bool larger_than_180 = is_larger_than_180();
 //     bool other_larger_than_180 = other.is_larger_than_180();
@@ -111,26 +108,26 @@ bool Angle<Ints...>::operator<(Angle const& other) const{
 
 
 
-template <int... Ints>
-bool Angle<Ints...>::is_larger_than_180() const{
+template <typename Num>
+bool Angle<Num>::is_larger_than_180() const{
     return shoelace_area<Num>({{Num{0},Num{0}}, {cos, sin}, {Num{2},Num{0}}}) > 0;
 }
 
 
-template <int... Ints>
-bool Angle<Ints...>::is_zero() const{
+template <typename Num>
+bool Angle<Num>::is_zero() const{
     return cos == 1 && sin == 0;
 }
 
-template <int... Ints>
-std::ostream& operator<<(std::ostream& stream, Angle<Ints...> const& angle){
+template <typename Num>
+std::ostream& operator<<(std::ostream& stream, Angle<Num> const& angle){
     stream << "ang=(" << angle.get_sin() << " " << angle.get_cos() << ")";
     return stream;    
 }
 
-template <int... Ints>
+template <typename Num>
 template <typename T>
-Angle<Ints...>::operator T() const{
+Angle<Num>::operator T() const{
     T pi = 2*std::acos(0.0);
     T angle = std::atan2((T)sin, (T)cos)/pi*180;
     if(angle<0)
@@ -145,76 +142,76 @@ Angle<Ints...>::operator T() const{
 
 
 
-template <int... Ints>
-Point<Ints...>::Point(int x, int y):x{Num{x}}, y{Num{y}}{}
+template <typename Num>
+Point<Num>::Point(int x, int y):x{Num{x}}, y{Num{y}}{}
 
-template <int... Ints>
-Point<Ints...>::Point(Num const& x, Num const& y):x{x}, y{y}{}
+template <typename Num>
+Point<Num>::Point(Num const& x, Num const& y):x{x}, y{y}{}
 
-template <int... Ints>
-Point<Ints...>::operator std::pair<Number<Ints...>, Number<Ints...>>() const {
+template <typename Num>
+Point<Num>::operator std::pair<Num, Num>() const {
     return {x, y};
 }
 
-template <int... Ints>
-Point<Ints...> Point<Ints...>::operator+(Point const& P) const{
+template <typename Num>
+Point<Num> Point<Num>::operator+(Point const& P) const{
     return Point{x + P.x, y + P.y};
 }
 
-template <int... Ints>
-Point<Ints...> Point<Ints...>::operator-(Point const& P) const{
+template <typename Num>
+Point<Num> Point<Num>::operator-(Point const& P) const{
     return Point{x - P.x, y - P.y};
 }
 
-template <int... Ints>
-Point<Ints...> Point<Ints...>::operator-() const{
+template <typename Num>
+Point<Num> Point<Num>::operator-() const{
     return Point{-x, -y};
 }
 
-template <int... Ints>
-Point<Ints...> Point<Ints...>::operator*(Number<Ints...> const& n) const{
+template <typename Num>
+Point<Num> Point<Num>::operator*(Num const& n) const{
     return Point{x*n, y*n};    
 }
 
-template <int... Ints>
-bool Point<Ints...>::operator==(Point const& P) const{
+template <typename Num>
+bool Point<Num>::operator==(Point const& P) const{
     return x == P.x && y == P.y;
 }
 
-template <int... Ints>
-Point<Ints...> Point<Ints...>::rotate(Ang const& a) const{
+template <typename Num>
+Point<Num> Point<Num>::rotate(Angle<Num> const& a) const{
     return Point{x*a.get_cos() - y*a.get_sin(), x*a.get_sin() + y*a.get_cos()};  
 }
 
-template <int... Ints>
-void Point<Ints...>::print(){
+template <typename Num>
+void Point<Num>::print(){
     std::cout << "(" << (double)x << "," << (double)y << ")" << std::endl;
 }
 
-template <int... Ints>
-Number<Ints...> Point<Ints...>::get_x() const{
+template <typename Num>
+Num Point<Num>::get_x() const{
     return x;  
 }
 
-template <int... Ints>
-Number<Ints...> Point<Ints...>::get_y() const{
+template <typename Num>
+Num Point<Num>::get_y() const{
     return y;  
 }
 
-template <int... Ints>
-std::ostream& operator<<(std::ostream& stream, Point<Ints...> const& point){
+template <typename Num>
+std::ostream& operator<<(std::ostream& stream, Point<Num> const& point){
     stream << "(x,y)=(" << point.get_x() << " " << point.get_y() << ")";
     return stream;    
 }
 
-template <int... Ints>
-Number<Ints...> Point<Ints...>::dot(Point<Ints...> const& other) const{
+template <typename Num>
+Num Point<Num>::dot(Point<Num> const& other) const{
     return x*other.x + y*other.y;
 }
 
 
-template <int... Ints>
-Number<Ints...> Point<Ints...>::cross(Point<Ints...> const& other) const{
+template <typename Num>
+Num Point<Num>::cross(Point<Num> const& other) const{
     return x*other.y - y*other.x;
 }
 
@@ -230,16 +227,13 @@ Number<Ints...> Point<Ints...>::cross(Point<Ints...> const& other) const{
 
 
 
-template <int... Ints>
+template <typename Num>
 class Node{
-    using Ang = Angle<Ints...>;
-    using Num = Number<Ints...>;
-    using Poin = Point<Ints...>;
+    using Ang = Angle<Num>;
+    using Poin = Point<Num>;
 
 public:
     Node(Poin const& P): position{P}{};
-    // Node(): position{{0,0}}{};
-
 
 
     void update_opening(){
@@ -279,8 +273,8 @@ public:
     Poin position;
     // bool larger_than_180;
 
-    template <int...Args>
-    friend std::ostream& operator<<(std::ostream& os, Node<Args...> const& node);
+    template <typename N>
+    friend std::ostream& operator<<(std::ostream& os, Node<N> const& node);
 
     Ang angle_start, angle_end, angle_opening;
 // private:
@@ -299,10 +293,3 @@ struct LL_Node{
     }
 
 };
-
-
-
-
-
-
-#endif // PVECTORS_C

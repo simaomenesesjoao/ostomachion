@@ -5,7 +5,8 @@
 int main(){
     {
         std::cout << "Testing_edges_intersect" << std::endl;
-        using P = Point<2,3>;
+
+        using P = Point<Number<int, 2, 3>>;
         P A{0,0}, B{1,2}, C{0,1}, D{1,0}, E{1,-1};
 
         //   | B
@@ -24,7 +25,7 @@ int main(){
 
       {
         std::cout << "Testing point_on_edge" << std::endl;
-        using P = Point<2,3>;
+        using P = Point<Number<int, 2, 3>>;
         P A{0,0}, B{1,1}, C{2,2}, D{1,0}, E{1,-1};
 
         //   | C
@@ -43,7 +44,7 @@ int main(){
     {
         std::cout << "Testing edge_intersects_vertex" << std::endl;
 
-        Polygon<2,3> poly({{0,0}, {5,0}, {5,5}, {0,5}});
+        Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
 
         assert(is_inner_vertex({-1,-1}, {1,1}, poly.head) == false);
         assert(is_inner_vertex({-1,1}, {1,-1}, poly.head) == false);
@@ -56,7 +57,7 @@ int main(){
     {
         std::cout << "Testing edge_splits_vertex" << std::endl;
 
-        Polygon<2,3> poly({{0,0}, {5,0}, {5,5}, {0,5}});
+        Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
 
         assert(edge_splits_vertex({-1,-1}, {1,1}, poly.head) == true);
         assert(edge_splits_vertex({-1,1}, {1,-1}, poly.head) == false);
@@ -68,9 +69,10 @@ int main(){
 
     {
         std::cout << "Testing shoelace area formula" << std::endl;
-        Point<2,3> A{0,0}, B{1,0}, C{1,1}, D{0,1}; 
-        assert((shoelace_area<Number<2,3>>({A,B,C,D})) == 1); // anticlockwise polygon > 0
-        assert((shoelace_area<Number<2,3>>({D,C,B,A})) == -1); // clockwise polygon < 0
+        using Num = Number<int, 2, 3>;
+        Point<Num> A{0,0}, B{1,0}, C{1,1}, D{0,1}; 
+        assert((shoelace_area<Num>({A,B,C,D})) == 1); // anticlockwise polygon > 0
+        assert((shoelace_area<Num>({D,C,B,A})) == -1); // clockwise polygon < 0
 
     }
 
@@ -79,7 +81,7 @@ int main(){
     {
         std::cout << "Testing nodes_compatible" << std::endl;
 
-        Node<2,3,5> M({0,0}), N({0,0}), P({0,0}), A({0,0}), B({0,0});
+        Node<Number<int, 2, 3, 5>> M({0,0}), N({0,0}), P({0,0}), A({0,0}), B({0,0});
 
 
         // /_
@@ -116,9 +118,8 @@ int main(){
 
     {
         std::cout << "Testing angles_compatible" << std::endl;
-        Angle<2,3> A{0,1};
-        Angle<2,3> B{-1,1};
-        Angle<2,3> C{-1,-1};
+        
+        Angle<Number<int, 2, 3>> A{0,1}, B{-1,1}, C{-1,-1};
         assert(angles_compatible(A,B) == true);
         assert(angles_compatible(C,C) == false);
         assert(angles_compatible(A,C) == true);

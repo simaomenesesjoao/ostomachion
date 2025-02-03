@@ -12,13 +12,13 @@ class Tracker{
                         // auto hash = next_state.get_hash();
 };
 
-template <int... Ints>
+template <typename Num>
 class State{
-    using Poly = Polygon<Ints...>;
-    using Nod = Node<Ints...>;
-    using Num = Number<Ints...>;
-    using Ang = Angle<Ints...>;
-    using Poi = Point<Ints...>;
+    using Type = Num::Type;
+    using Poly = Polygon<Num>;
+    using Nod = Node<Num>;
+    using Ang = Angle<Num>;
+    using Poi = Point<Num>;
     // Characterizes an ostomachion state by the current polygon 
     // (through the positions of the Nodes) and unused polygons
 public:
@@ -38,8 +38,8 @@ public:
     State(Poly const& _poly, std::vector<std::vector<Poi>> const& _used_polys):
         current_polygon{_poly}, used_polys{_used_polys}{}
 
-    State():current_polygon(polygons::frame){
-        for(unsigned i=0; i<polygons::num_polygons; i++){
+    State():current_polygon(polygons<Type>::frame){
+        for(unsigned i=0; i<polygons<Type>::num_polygons; i++){
             used_polys.push_back(std::vector<Poi>());
         }
     }
@@ -85,13 +85,13 @@ public:
         Nod& obtusest_node = current_polygon.ll_node_from_index(obtusest_node_index)->data;
 
         // Find which polygons haven't been used yet
-        for(unsigned i = 0; i < polygons::num_polygons; i++){
+        for(unsigned i = 0; i < polygons<Type>::num_polygons; i++){
             
 
             if(used_polys.at(i).size() != 0) 
                 continue;
 
-            Poly poly = Poly(polygons::polyset.at(i));
+            Poly poly = Poly(polygons<Type>::polyset.at(i));
             LL_Node<Nod> *current = poly.head;
             for(unsigned j = 0; j < poly.size_ll; j++){
                 Nod& proposed_node = current->data;
@@ -131,13 +131,13 @@ public:
 
 };
 
-template <int... Ints>
-std::ostream& operator<<(std::ostream& stream, State<Ints...> const& state){
+template <typename Num>
+std::ostream& operator<<(std::ostream& stream, State<Num> const& state){
     
 
     // Print frame
     stream << "Frame: {"; 
-    LL_Node<Node<Ints...>> *current = state.current_polygon.head;
+    LL_Node<Node<Num>> *current = state.current_polygon.head;
     for(unsigned i=0; i< state.current_polygon.size_ll; i++){
         double x = (double)current->data.position.get_x();
         double y = (double)current->data.position.get_y();

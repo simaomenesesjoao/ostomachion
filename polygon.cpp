@@ -10,14 +10,13 @@
 
 
 
-template <int... Ints>
+template <typename Num>
 class Polygon{
 
 private:
-    using Num  = Number<Ints...>;
-    using Nod  = Node<Ints...>;
-    using Poin = Point<Ints... >;
-    using Ang  = Angle<Ints... >;
+    using Nod  = Node<Num>;
+    using Poin = Point<Num>;
+    using Ang  = Angle<Num>;
 
 public:
     // std::list<Nod> nodes;
@@ -517,7 +516,7 @@ public:
 
         LL_Node<Nod> *current{other.head};
         for(unsigned i=0; i<size_ll; i++){
-            Point<Ints...>& A = current->data.position;
+            Point<Num>& A = current->data.position;
             // std::cout << "point" << A << std::endl;
             if(is_point_inside(A)){
                 // std::cout << "is inside" << std::endl;
@@ -539,12 +538,12 @@ public:
         bool cond5 = points_inside(other);
         bool cond6 = other.points_inside(*this);
 
-        std::cout << "____\nedge edge: "  << cond1 << std::endl;
-        std::cout << "node node: "  << cond2 << std::endl;
-        std::cout << "edge node: "  << cond3 << std::endl;
-        std::cout << "node edge: "  << cond4 << std::endl;
-        std::cout << "points in1: " << cond5 << std::endl;
-        std::cout << "points in2: " << cond6 << std::endl;
+        // std::cout << "____\nedge edge: "  << cond1 << std::endl;
+        // std::cout << "node node: "  << cond2 << std::endl;
+        // std::cout << "edge node: "  << cond3 << std::endl;
+        // std::cout << "node edge: "  << cond4 << std::endl;
+        // std::cout << "points in1: " << cond5 << std::endl;
+        // std::cout << "points in2: " << cond6 << std::endl;
 
 
         return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
@@ -577,9 +576,9 @@ public:
     }
 };
 
-template <int... Ints>
-std::ostream& operator<<(std::ostream& stream, Polygon<Ints...> const& poly){
-    LL_Node<Node<Ints...>> *ll_node = poly.head;
+template <typename Num>
+std::ostream& operator<<(std::ostream& stream, Polygon<Num> const& poly){
+    LL_Node<Node<Num>> *ll_node = poly.head;
     
     for(unsigned i = 0; i < poly.size_ll; i++){
         stream << ll_node->data << "\n";
@@ -589,8 +588,8 @@ std::ostream& operator<<(std::ostream& stream, Polygon<Ints...> const& poly){
     return stream;
 }
 
-template <int... Ints>
-std::ostream & operator<<(std::ostream& stream, Node<Ints...> const& node){
+template <typename Num>
+std::ostream & operator<<(std::ostream& stream, Node<Num> const& node){
     stream <<    "( " << node.position << ", " 
                       << node.angle_start << ", "
                       << node.angle_end << ")";

@@ -6,11 +6,11 @@
 #include <utility>
 #include <cassert>
 
-template <int... Ints>
-bool edges_intersect(Point<Ints...> const& P1, Point<Ints...> const& P2, 
-                     Point<Ints...> const& Q1, Point<Ints...> const& Q2){
-    using V = Point<Ints...>;
-    using Num = Number<Ints...>;
+template <typename Num>
+bool edges_intersect(Point<Num> const& P1, Point<Num> const& P2, 
+                     Point<Num> const& Q1, Point<Num> const& Q2){
+    using V = Point<Num>;
+    
     V q{Q2-Q1}, p{P2-P1}, v{P1-Q1};
     // std::cout << "arguments for edges_intersect: " << std::endl;
     // std::cout << P1 << std::endl;
@@ -57,9 +57,9 @@ bool edges_intersect(Point<Ints...> const& P1, Point<Ints...> const& P2,
         t_num = -t_num;
         t_den = -t_den;
     }
-    
-    std::cout << (float)s_num << " " << (float)s_den << " ";
-    std::cout << (float)t_num << " " << (float)t_den << std::endl;
+
+    // std::cout << (float)s_num << " " << (float)s_den << " ";
+    // std::cout << (float)t_num << " " << (float)t_den << std::endl;
 
     // std::cout << "s,t: " << s_num << " " << s_den << " " << t_num << " " << t_den << std::endl;
 
@@ -69,47 +69,43 @@ bool edges_intersect(Point<Ints...> const& P1, Point<Ints...> const& P2,
 
 
 
-template <int... Ints>
-bool point_on_edge(Point<Ints...> const& P, Point<Ints...> const& Q, 
-                    Point<Ints...> const& V){
+template <typename Num>
+bool point_on_edge(Point<Num> const& P, Point<Num> const& Q, 
+                    Point<Num> const& V){
     // Check if the point V lies exactly on the line segment connecting P->Q
 
-    Point<Ints...> q{Q-P};
-    Number<Ints...> dq = q.dot(V-P);
-    // Number<Ints...> qq = D;
+    Point<Num> q{Q-P};
+    Num dq = q.dot(V-P);
     
-    // std::cout << "dq: " <<  dq << "q.q: " << q.dot(q) << std::endl;
 
     if(dq <= 0 or dq >= q.dot(q))
         return false;
 
-    // std::cout << "second" << std::endl;
-    
     return q.cross(V-P)==0;
 }
 
 
 
-template <int... Ints>
-bool edge1_includes_edge2(Point<Ints...> const& A, Point<Ints...> const& B, 
-                    Point<Ints...> const& C, Point<Ints...> const& D){
+template <typename Num>
+bool edge1_includes_edge2(Point<Num> const& A, Point<Num> const& B, 
+                    Point<Num> const& C, Point<Num> const& D){
     return point_on_edge(A, B, C) and point_on_edge(A, B, D);
 }
 
 
-template <int... Ints>
-bool is_inner_vertex(Point<Ints...> const& P, Point<Ints...> const& Q, 
-                            LL_Node<Node<Ints...>> *pointer_V){
+template <typename Num>
+bool is_inner_vertex(Point<Num> const& P, Point<Num> const& Q, 
+                            LL_Node<Node<Num>> *pointer_V){
     // Check whether the edges connecting V open to the outside
     // of the polygon which contains P and Q
 
     assert(pointer_V != nullptr);
     assert(pointer_V->next != nullptr and pointer_V->prev != nullptr);
 
-    Point<Ints...> const& V = pointer_V->data.position;
-    Point<Ints...> const& Vn = pointer_V->next->data.position;
-    Point<Ints...> const& Vp = pointer_V->prev->data.position;
-    Point<Ints...> q{Q-P};
+    Point<Num> const& V = pointer_V->data.position;
+    Point<Num> const& Vn = pointer_V->next->data.position;
+    Point<Num> const& Vp = pointer_V->prev->data.position;
+    Point<Num> q{Q-P};
 
     // If V isn't between P and Q, this algorithm doesn't make sense
     assert(point_on_edge(P, Q, V));
@@ -128,9 +124,9 @@ bool is_inner_vertex(Point<Ints...> const& P, Point<Ints...> const& Q,
 }
 
 
-template <int... Ints>
-bool edge_splits_vertex(Point<Ints...> const& P, Point<Ints...> const& Q, 
-                            LL_Node<Node<Ints...>> *pointer_V){
+template <typename Num>
+bool edge_splits_vertex(Point<Num> const& P, Point<Num> const& Q, 
+                            LL_Node<Node<Num>> *pointer_V){
     // Checks whether an edge goes right through a vertex in such a way 
     // that the two edges coming out of that vertex are in opposite 
     // sides of this edge
@@ -140,10 +136,10 @@ bool edge_splits_vertex(Point<Ints...> const& P, Point<Ints...> const& Q,
     assert(pointer_V != nullptr);
     assert(pointer_V->next != nullptr and pointer_V->prev != nullptr);
 
-    Point<Ints...> const& V = pointer_V->data.position;
-    Point<Ints...> const& Vn = pointer_V->next->data.position;
-    Point<Ints...> const& Vp = pointer_V->prev->data.position;
-    Point<Ints...> q{Q-P};
+    Point<Num> const& V = pointer_V->data.position;
+    Point<Num> const& Vn = pointer_V->next->data.position;
+    Point<Num> const& Vp = pointer_V->prev->data.position;
+    Point<Num> q{Q-P};
 
     // If V isn't between P and Q, this algorithm doesn't make sense
     assert(point_on_edge(P, Q, V));
@@ -156,8 +152,8 @@ bool edge_splits_vertex(Point<Ints...> const& P, Point<Ints...> const& Q,
 
     // std::cout << "cross next: " << q.cross(Vn-V) << std::endl;
     // std::cout << "cross prev: " << q.cross(Vp-V) << std::endl << std::endl;
-    Number<Ints...> x1 = q.cross(Vn-V);
-    Number<Ints...> x2 = q.cross(Vp-V);
+    Num x1 = q.cross(Vn-V);
+    Num x2 = q.cross(Vp-V);
 
     if(x1 == 0 or x2 == 0)
         return false;
@@ -166,9 +162,9 @@ bool edge_splits_vertex(Point<Ints...> const& P, Point<Ints...> const& Q,
 }
 
 
-template <int... Ints>
-bool coincident_edges_diverge(Point<Ints...> const& P, Point<Ints...> const& Q, 
-                    LL_Node<Node<Ints...>> *A, LL_Node<Node<Ints...>> *B){
+template <typename Num>
+bool coincident_edges_diverge(Point<Num> const& P, Point<Num> const& Q, 
+                    LL_Node<Node<Num>> *A, LL_Node<Node<Num>> *B){
     // Check if A and B open to different sides. If they do, then the line P-Q
     // is traversing the polygon from in to out
     //     |                \       /     
@@ -187,19 +183,14 @@ bool coincident_edges_diverge(Point<Ints...> const& P, Point<Ints...> const& Q,
     // return false;
 }
 
-// template <typename ...T, int ...Ints>
-// Number<Ints...> shoelace_area(T... args){
-// }
 
-
-
-template <int... Ints>
-bool nodes_compatible(Node<Ints...> const& node1, Node<Ints...> const& node2){
+template <typename Num>
+bool nodes_compatible(Node<Num> const& node1, Node<Num> const& node2){
     
-    Point<Ints...> S1{node1.angle_start.get_cos(), node1.angle_start.get_sin()};
-    Point<Ints...> E1{node1.angle_end.get_cos(),   node1.angle_end.get_sin()};
-    Point<Ints...> S2{node2.angle_start.get_cos(), node2.angle_start.get_sin()};
-    Point<Ints...> E2{node2.angle_end.get_cos(),   node2.angle_end.get_sin()};
+    Point<Num> S1{node1.angle_start.get_cos(), node1.angle_start.get_sin()};
+    Point<Num> E1{node1.angle_end.get_cos(),   node1.angle_end.get_sin()};
+    Point<Num> S2{node2.angle_start.get_cos(), node2.angle_start.get_sin()};
+    Point<Num> E2{node2.angle_end.get_cos(),   node2.angle_end.get_sin()};
 
     // std::cout << "S1" << S1 << std::endl;
     // std::cout << "E1" << E1 << std::endl;
@@ -219,7 +210,7 @@ bool nodes_compatible(Node<Ints...> const& node1, Node<Ints...> const& node2){
 
     if(S1 == S2 or S1 == E2 or E1 == S2 or E1 == E2){
         // std::cout << "3 coincident" << std::endl;
-        return shoelace_area<Number<Ints...>>({S1,E1,S2,E2}) > 0; // > 0 means polygon is anticlockwise
+        return shoelace_area<Num>({S1,E1,S2,E2}) > 0; // > 0 means polygon is anticlockwise
     }
 
 
@@ -232,12 +223,12 @@ bool nodes_compatible(Node<Ints...> const& node1, Node<Ints...> const& node2){
         
     // std::cout << "all edges are different" << std::endl;
 
-    return shoelace_area<Number<Ints...>>({S1,E1,S2,E2}) > 0;
+    return shoelace_area<Num>({S1,E1,S2,E2}) > 0;
 }
 
 
-template <int... Ints>
-bool angles_compatible(Angle<Ints...> const& a, Angle<Ints...> const& b){
+template <typename Num>
+bool angles_compatible(Angle<Num> const& a, Angle<Num> const& b){
     bool a_larger_180 = a.is_larger_than_180();
     bool b_larger_180 = b.is_larger_than_180();
     if(a_larger_180 and b_larger_180)
@@ -246,7 +237,7 @@ bool angles_compatible(Angle<Ints...> const& a, Angle<Ints...> const& b){
     if(not a_larger_180 and not b_larger_180)
         return true;
 
-    Angle<Ints...> c{a+b};
+    Angle<Num> c{a+b};
 
     return c.is_larger_than_180() or c.is_zero();
 
