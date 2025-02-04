@@ -77,7 +77,7 @@ public:
     
 
     
-    std::vector<State> find_next_states(){
+    std::vector<State> find_next_states() const{
         // Find the node with smallest internal angle
         std::vector<State> next_states;
         
@@ -101,7 +101,7 @@ public:
                     poly.translate(obtusest_node.position - proposed_node.position);
                     poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, 
                                 obtusest_node.position);
-                    if(true or not current_polygon.overlaps(poly)){
+                    if(not current_polygon.overlaps(poly)){
 
                         // Posso ter um merge que não canibalize o outro polígono - rvalue refs
                         Poly new_frame{current_polygon}; // move this into the next state

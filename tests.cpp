@@ -1,6 +1,6 @@
 #include "ostomachion.cpp"
 #include "polygon.cpp"
-#include <format>
+//#include <format>
 #include <cstdlib>
 #include <gmpxx.h>
 #include <string>
@@ -19,7 +19,6 @@ std::string get_name<mpz_class>(){
 template <>
 std::string get_name<int>(){
     return "int";
-
 }
 // using T = int;
 // using T = mpz_class;
@@ -79,8 +78,11 @@ void test(bool target1, bool target2){
 int main(){
 
     // Testing numerical precision
-    // test<int>(true, true);
-    // test<mpz_class>(false, false);
+    test<int>(true, true);
+    test<mpz_class>(false, false);
+
+    // [10, 4, 4, 0, 22, 11, 2, 9, 0, 0, 1, 0, 0] solves it
+    // Porque está tão lento?
 
     {
         using T = int;

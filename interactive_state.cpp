@@ -7,14 +7,13 @@
 
 int main(int argc, char** argv){
 
-
     std::vector<int> indices;
-    // for(int i=1; i<argc; i++){
-    //     int index = atoi(argv[i]);
-    //     indices.push_back(index);
-    // }
+    for(int i=1; i<argc; i++){
+        int index = atoi(argv[i]);
+        indices.push_back(index);
+    }
 
-    indices = {6,3};
+    //indices = {6,3};
 
     using T = mpz_class;
     using Num = Number<T, 2, 5, 13, 17>;

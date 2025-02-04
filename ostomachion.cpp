@@ -29,14 +29,15 @@ template <typename T> polygons<T>::Poly polygons<T>::poly9({{6,0},  {12,0}, {8,4
 template <typename T> polygons<T>::Poly polygons<T>::poly10({{8,4},  {12,0}, {9,6}});
 template <typename T> polygons<T>::Poly polygons<T>::poly11({{9,6},  {12,0}, {12,6}});
 template <typename T> polygons<T>::Poly polygons<T>::poly12({{9,6},  {12,6}, {12,8}});
-template <typename T> polygons<T>::Poly polygons<T>::poly13({{6,6},  {8,4},  {10,6},   {6,12}});
+template <typename T> polygons<T>::Poly polygons<T>::poly13({{6,6},  {8,4},  {9,6},   {6,12}});
 template <typename T> polygons<T>::Poly polygons<T>::poly14({{9,6},  {12,8}, {12,12},  {6,12}});
 
 template <typename T>
-std::vector<typename polygons<T>::Poly> polygons<T>::polyset{polygons::poly1,  polygons::poly2,   polygons::poly3,
-                  polygons::poly4,  polygons::poly5,  polygons::poly6,   polygons::poly7, 
-                  polygons::poly8,  polygons::poly9,  polygons::poly10,  polygons::poly11, 
-                  polygons::poly12, polygons::poly13, polygons::poly14};
+std::vector<typename polygons<T>::Poly> polygons<T>::polyset{
+        polygons::poly1,  polygons::poly2,  polygons::poly3,
+        polygons::poly4,  polygons::poly5,  polygons::poly6,   polygons::poly7, 
+        polygons::poly8,  polygons::poly9,  polygons::poly10,  polygons::poly11, 
+        polygons::poly12, polygons::poly13, polygons::poly14};
 
 // int main(){
     

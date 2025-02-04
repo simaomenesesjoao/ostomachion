@@ -529,7 +529,7 @@ public:
         return false;
     }
 
-    bool overlaps(Polygon const& other){
+    bool overlaps(Polygon const& other) const{
 
         bool cond1 = edge_edge_intersection(other);
         bool cond2 = node_node_intersection(other);
@@ -552,7 +552,7 @@ public:
         //      or points_inside(other) or other.points_inside(*this);
     }
 
-    LL_Node<Nod>* ll_node_from_index(unsigned index){
+    LL_Node<Nod>* ll_node_from_index(unsigned index) const{
         LL_Node<Nod> *current = head;
         for(unsigned i=0; i<index; i++){
             current = current->next;
