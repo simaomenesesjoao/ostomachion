@@ -1,34 +1,26 @@
 // #pragma once
 
 #include "state.cpp"
-#include <fstream>
+#include <sstream>
 #include <gmpxx.h>
 
-int main(){
-    // Tracker<2,3> tracker;
-    using T = mpz_class;
-    // using T = int;
-    using Num = Number<T, 2, 5, 13, 17>;
-    State<Num> state;
+using T = mpz_class;
+using Num = Number<T, 2, 5, 13, 17>;
 
-    std::vector<unsigned> indices{2, 0, 6, 1};
+int main(){
+    State<Num> state;
+    // Tracker<2,3> tracker;
     std::vector<State<Num>> next_states;
 
-    for(auto& index: indices){
-        next_states = state.find_next_states();
-        
-        if(next_states.size() == 0){
-            std::cout << "empty" << std::endl;
-            break;
-        }
+    next_states = state.find_next_states();
+    state = next_states.at(6);
 
-        state = next_states.at(index);
-    }
+    // state.current_polygon.print();
+    // std::cout <<  << std::endl;
+    next_states = state.find_next_states();
+    state = next_states.at(3);
 
-    std::ofstream out("polys.dat");
-    for(auto& state: next_states)
-        out << state;
-    out.close();
+    std::cout << state;
     
     return 0;
 }

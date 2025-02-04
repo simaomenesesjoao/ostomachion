@@ -9,12 +9,12 @@ int main(int argc, char** argv){
 
 
     std::vector<int> indices;
-    for(int i=1; i<argc; i++){
-        int index = atoi(argv[i]);
-        indices.push_back(index);
-        // std::cout << index << "i ";
-    }
+    // for(int i=1; i<argc; i++){
+    //     int index = atoi(argv[i]);
+    //     indices.push_back(index);
+    // }
 
+    indices = {6,3};
 
     using T = mpz_class;
     using Num = Number<T, 2, 5, 13, 17>;
@@ -33,15 +33,8 @@ int main(int argc, char** argv){
         next_states = state.find_next_states();
     }
 
-
     for(auto& state: next_states)
         std::cout << state;
-
-
-    // std::ofstream out("polys.dat");
-    // for(auto& state: next_states)
-    //     out << state;
-    // out.close();
     
     return 0;
 }

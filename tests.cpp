@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <gmpxx.h>
 #include <string>
+#include "state.cpp"
 
 template <typename T>
 std::string get_name(){
@@ -78,60 +79,53 @@ void test(bool target1, bool target2){
 int main(){
 
     // Testing numerical precision
-    test<int>(true, true);
-    test<mpz_class>(false, false);
-    return 0;
+    // test<int>(true, true);
+    // test<mpz_class>(false, false);
 
+    {
+        using T = int;
+        using Num = Number<T,2,5,13,17>;
+        using Poly = Polygon<Num>;
+        using Nod = Node<Num>;
 
-    // {
-    //     std::cout << "Test 2" << std::endl;
-    //     Polygon<2,5,13,17> frame(polygons::frame);
-    //     // Polygon<2,5,13,17> poly1(polygons::poly1);
-    //     // Polygon<2,5,13,17> poly2(polygons::poly2);
-    //     // Polygon<2,5,13,17> poly3(polygons::poly3);
+        State<Num> state;
+        // Tracker<2,3> tracker;
+        std::vector<State<Num>> next_states;
 
-    //     std::vector<unsigned> indices{0,1,2};
-    //     for(auto& index: indices){
-    //         Poly poly(polygons::polyset.at(index));
+        next_states = state.find_next_states();
+        state = next_states.at(6);
+        auto frame = state.current_polygon;
+        unsigned obtusest_node_index = frame.get_obtusest_index();
+        Nod& obtusest_node = frame.ll_node_from_index(obtusest_node_index)->data;
 
-    //         // Find the node that will be attached to in the frame
-    //         unsigned obtusest_node_index = frame.get_obtusest_index();
-    //         Nod& obtusest_node = frame.ll_node_from_index(obtusest_node_index)->data;
+        // Nod& obtusest_node = frame.head->data;
+        std::cout << "obtusest:" << std::endl;
+        obtusest_node.print();
+        std::cout << "." << std::endl;
 
-    //         // Find the node from the polygon that will attach to that node
-    //         LL_Node<Nod> *current = poly.head;
-    //         Nod& proposed_node = current->data;
+        // Find the node from the polygon that will attach to that node
+        Poly poly1(polygons<T>::polyset.at(3));
+        poly1.print();
+        Nod& proposed_node1 = poly1.head->data;
+        poly1.translate(obtusest_node.position - proposed_node1.position);
+        poly1.rotate(obtusest_node.angle_start - proposed_node1.angle_end, obtusest_node.position);
 
-    //         // Move the polygon to the correct place
-    //         assert(angles_compatible(proposed_node.angle_opening, obtusest_node.angle_opening));
-    //         poly.translate(obtusest_node.position - proposed_node.position);
-    //         poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, obtusest_node.position);
+        poly1.print();
+        
+        // Poly poly2(polygons<T>::polyset.at(1));
+        // Nod& proposed_node2 = poly2.head->data;
+        // poly2.translate(proposed_node1.position - proposed_node2.position);
+        // poly2.rotate(proposed_node1.angle_start - proposed_node2.angle_end, obtusest_node.position);
+        
+        // bool intersects = edges_intersect(  frame.head->next->data.position, 
+        //                                     {100,101}, 
+        //                                     poly1.head->next->data.position, 
+        //                                     poly1.head->data.position);
 
-    //         PlotPython(poly);
-    //         std::cout << "polygon print:" << std::endl;
-    //         poly.print();
-
-    //         PlotPython(frame);
-    //         std::cout << "frame print:" << std::endl;
-    //         frame.print();
-    //         assert(not frame.overlaps(poly));
-
-
-    //         LL_Node<Nod> *node_frame = frame.ll_node_from_index(obtusest_node_index);
-    //         LL_Node<Nod> *node_poly = poly.ll_node_from_index(0);
-    //         frame.merge(node_frame, poly, node_poly);
-    //         frame.prune_LL({node_frame, node_poly});
-
-
-    //         PlotPython(frame);
-    //         std::cout << "frame print:" << std::endl;
-    //         frame.print();
-
-    //     }
-
-
-    // }
-
+        // std::cout << "intersects? " << intersects << std::endl;
+        std::cout << "overlaps? " << frame.overlaps(poly1) << std::endl;
+        std::cout << "overlaps? " << poly1.overlaps(frame) << std::endl;
+        }
     return 0;
 
 }
