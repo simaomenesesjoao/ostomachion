@@ -86,6 +86,11 @@ public:
     void build_this(Polygon const& other_poly){
 
         area_positive = other_poly.area_positive;
+        if(other_poly.size_ll == 0){
+            size_ll = 0;
+            head = nullptr;
+            return;
+        }
 
         head = new LL_Node<Nod>(other_poly.head->data);
         LL_Node<Nod> *node = head;
@@ -109,13 +114,8 @@ public:
     void delete_this(){
         LL_Node<Nod> *current, *next;
         current = head;
-        // std::cout << "started deleting polygon" << std::endl;
-        
         for(unsigned i = 0; i < size_ll; i++){
-            // std::cout << "attempting to delete " << std::endl;
-            // current->data.print();
             next = current->next;
-            
             delete current;
             current = next;
         }
@@ -531,12 +531,12 @@ public:
 
     bool overlaps(Polygon const& other) const{
 
-        bool cond1 = edge_edge_intersection(other);
-        bool cond2 = node_node_intersection(other);
-        bool cond3 = edge_node_intersection(other);
-        bool cond4 = other.edge_node_intersection(*this);
-        bool cond5 = points_inside(other);
-        bool cond6 = other.points_inside(*this);
+        // bool cond1 = edge_edge_intersection(other);
+        // bool cond2 = node_node_intersection(other);
+        // bool cond3 = edge_node_intersection(other);
+        // bool cond4 = other.edge_node_intersection(*this);
+        // bool cond5 = points_inside(other);
+        // bool cond6 = other.points_inside(*this);
 
         // std::cout << "____\nedge edge: "  << cond1 << std::endl;
         // std::cout << "node node: "  << cond2 << std::endl;
@@ -544,12 +544,11 @@ public:
         // std::cout << "node edge: "  << cond4 << std::endl;
         // std::cout << "points in1: " << cond5 << std::endl;
         // std::cout << "points in2: " << cond6 << std::endl;
+        // return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
 
-
-        return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
-        // return edge_edge_intersection(other) or nodes_node_intersection(other) 
-        // or edge_node_intersection(other) or other.edge_node_intersection(*this) 
-        //      or points_inside(other) or other.points_inside(*this);
+        return edge_edge_intersection(other) or node_node_intersection(other) 
+        or edge_node_intersection(other) or other.edge_node_intersection(*this) 
+             or points_inside(other) or other.points_inside(*this);
     }
 
     LL_Node<Nod>* ll_node_from_index(unsigned index) const{

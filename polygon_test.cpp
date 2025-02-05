@@ -42,11 +42,6 @@ int main(){
         Poly poly2({{0,0}, {-12,12}, {0,12}});
         Poly poly3({{0,0}, {0,12}, {3,0}});
 
-        // std::cout << poly1 << std::endl;
-        // std::cout << poly1 << std::endl;
-        // std::cout << poly1 << std::endl;
-
-
         unsigned index1 = poly1.get_obtusest_index();
         unsigned index2 = poly2.get_obtusest_index();
         unsigned index3 = poly3.get_obtusest_index();
@@ -54,7 +49,7 @@ int main(){
         Nod const& node1 = poly1.ll_node_from_index(index1)->data;
         Nod const& node2 = poly2.ll_node_from_index(index2)->data;
         Nod const& node3 = poly3.ll_node_from_index(index3)->data;
-        // Nod const& node1 = poly1.get_obtusest_node();
+        
         std::cout << node1.position << " " << (float)node1.angle_opening << std::endl;
         std::cout << node2.position << " " << (float)node2.angle_opening << std::endl;
         std::cout << node3.position << " " << (float)node3.angle_opening << std::endl;
@@ -62,7 +57,6 @@ int main(){
     }
 
 
-// return 0;
     {
         std::cout << "Testing is_point_inside" << std::endl;
         Poly poly({{0,0}, {12,0}, {12,12}, {6,6}, {0,12}}); // Anti-clockwise polygon
@@ -133,23 +127,6 @@ int main(){
 
 
     }
-
-    // {
-
-    //     std::cout << "Testing polygon intersection, pt2" << std::endl;
-    //     Poly poly1({{0,0}, {0,12}, {12,12}, {12,0}});
-    //     Poly poly2({{0,12}, {0,8}, {3,8}});
-    //     std::cout << poly1.points_inside(poly2) << std::endl;
-    //     std::cout << poly2.points_inside(poly1) << std::endl;
-
-    //     // int variable = 3;
-    //     // std::cout << poly1.is_point_inside({3,8}) << std::endl;
-    // }
-
-    // return 0;
-
-
-
 
 
 

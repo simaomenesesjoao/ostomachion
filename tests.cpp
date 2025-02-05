@@ -84,50 +84,56 @@ int main(){
     // [10, 4, 4, 0, 22, 11, 2, 9, 0, 0, 1, 0, 0] solves it
     // Porque está tão lento?
 
+
     {
-        using T = int;
-        using Num = Number<T,2,5,13,17>;
-        using Poly = Polygon<Num>;
-        using Nod = Node<Num>;
-
+        using T = mpz_class;
+        using Num = Number<T, 2, 5, 13, 17>;
         State<Num> state;
-        // Tracker<2,3> tracker;
-        std::vector<State<Num>> next_states;
+        auto indices = std::vector<unsigned>{10, 4, 4, 0, 22, 11, 2, 9, 0, 0, 1, 0, 0,0};
 
-        next_states = state.find_next_states();
-        state = next_states.at(6);
-        auto frame = state.current_polygon;
-        unsigned obtusest_node_index = frame.get_obtusest_index();
-        Nod& obtusest_node = frame.ll_node_from_index(obtusest_node_index)->data;
-
-        // Nod& obtusest_node = frame.head->data;
-        std::cout << "obtusest:" << std::endl;
-        obtusest_node.print();
-        std::cout << "." << std::endl;
-
-        // Find the node from the polygon that will attach to that node
-        Poly poly1(polygons<T>::polyset.at(3));
-        poly1.print();
-        Nod& proposed_node1 = poly1.head->data;
-        poly1.translate(obtusest_node.position - proposed_node1.position);
-        poly1.rotate(obtusest_node.angle_start - proposed_node1.angle_end, obtusest_node.position);
-
-        poly1.print();
-        
-        // Poly poly2(polygons<T>::polyset.at(1));
-        // Nod& proposed_node2 = poly2.head->data;
-        // poly2.translate(proposed_node1.position - proposed_node2.position);
-        // poly2.rotate(proposed_node1.angle_start - proposed_node2.angle_end, obtusest_node.position);
-        
-        // bool intersects = edges_intersect(  frame.head->next->data.position, 
-        //                                     {100,101}, 
-        //                                     poly1.head->next->data.position, 
-        //                                     poly1.head->data.position);
-
-        // std::cout << "intersects? " << intersects << std::endl;
-        std::cout << "overlaps? " << frame.overlaps(poly1) << std::endl;
-        std::cout << "overlaps? " << poly1.overlaps(frame) << std::endl;
+        int n=0;
+        for(auto& index: indices){
+            auto next_states = state.find_next_states();
+            state = next_states.at(index);
+            n++;
         }
+
+        std::cout << state << std::endl;
+    }
+    // {
+    //     using T = int;
+    //     using Num = Number<T,2,5,13,17>;
+    //     using Poly = Polygon<Num>;
+    //     using Nod = Node<Num>;
+
+    //     State<Num> state;
+    //     // Tracker<2,3> tracker;
+    //     std::vector<State<Num>> next_states;
+
+    //     next_states = state.find_next_states();
+    //     state = next_states.at(6);
+    //     auto frame = state.current_polygon;
+    //     unsigned obtusest_node_index = frame.get_obtusest_index();
+    //     Nod& obtusest_node = frame.ll_node_from_index(obtusest_node_index)->data;
+
+    //     // Nod& obtusest_node = frame.head->data;
+    //     std::cout << "obtusest:" << std::endl;
+    //     obtusest_node.print();
+    //     std::cout << "." << std::endl;
+
+    //     // Find the node from the polygon that will attach to that node
+    //     Poly poly1(polygons<T>::polyset.at(3));
+    //     poly1.print();
+    //     Nod& proposed_node1 = poly1.head->data;
+    //     poly1.translate(obtusest_node.position - proposed_node1.position);
+    //     poly1.rotate(obtusest_node.angle_start - proposed_node1.angle_end, obtusest_node.position);
+
+    //     poly1.print();
+        
+    //     // std::cout << "intersects? " << intersects << std::endl;
+    //     std::cout << "overlaps? " << frame.overlaps(poly1) << std::endl;
+    //     std::cout << "overlaps? " << poly1.overlaps(frame) << std::endl;
+    //     }
     return 0;
 
 }

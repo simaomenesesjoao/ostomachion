@@ -80,6 +80,8 @@ public:
     std::vector<State> find_next_states() const{
         // Find the node with smallest internal angle
         std::vector<State> next_states;
+        if(current_polygon.head == nullptr)
+            return next_states;
         
         unsigned obtusest_node_index = current_polygon.get_obtusest_index();
         Nod& obtusest_node = current_polygon.ll_node_from_index(obtusest_node_index)->data;
@@ -119,8 +121,7 @@ public:
                             new_used_polys.at(i).push_back(poly_node->data.position);
                             poly_node = poly_node->next;
                         }
-                                               
-                        // State next_state(new_frame, new_used_polys);
+                        
                         next_states.push_back({new_frame, new_used_polys});
                     }
                 }   
