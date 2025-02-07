@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include <gmpxx.h>
+#include "approx_sqrt.cpp"
 
 template <typename T, int... Ints>
 template <typename... U>
@@ -78,12 +79,21 @@ Number<T, Ints...> Number<T, Ints...>::inverse() const{
 
 
 template <typename T, int... Ints>
-bool is_pos(Number<T, Ints...> const& x){
+int is_pos_fractional(Number<T, Ints...> const& x){
+    // Returns 1 if it's positive, -1 if negative, and 0 if it cannot be determined
+    //constexpr auto frac_approx = populate_array<T, Ints...>();
+    // Fraction<T> f{0,1};
+    //for(auto& [root, digit]: x.digits){
+        //T num = digit.get_num();
+        //T den = digit.get_den();
+        //Limits<T> lims = frac_approx[root];
+        //std::cout << lims.lower_den << std::endl;
 
-    return is_pos_general(x);
+    //}
+
+
+    return 1;
 }
-
-template <typename T, int... Ints>
 
 template <typename T, int A, int... Ints>
 bool is_pos_general(Number<T, A, Ints...> const& x){
@@ -106,25 +116,25 @@ bool is_pos_general(Number<T, A, Ints...> const& x){
     }
 
     if(a == 0){
-        return is_pos(b);
+        return is_pos_general(b);
     } else if(b == 0){
-        return is_pos(a);
+        return is_pos_general(a);
     }
 
-    bool a_pos = is_pos(a);
-    bool b_pos = is_pos(b);
+    bool a_pos = is_pos_general(a);
+    bool b_pos = is_pos_general(b);
 
     if(a_pos and b_pos) return true;
     if(!a_pos and !b_pos) return false;
 
     Number<T, Ints...> c = a*a - b*b*A; // numeric precision problem!
-    bool c_pos = is_pos(c);
+    bool c_pos = is_pos_general(c);
     return (a_pos and c_pos) or (!a_pos and !c_pos);
 }
 
 // This will only match when there's an empty parameter stack
 template <typename T, int... Ints>
-bool is_pos(Number<T, Ints...> const& x){
+bool is_pos_general(Number<T, Ints...> const& x){
     if(x == 0) {
         return false;
     } else {
@@ -133,6 +143,12 @@ bool is_pos(Number<T, Ints...> const& x){
 
     }   
 }
+
+template <typename T, int... Ints>
+bool is_pos(Number<T, Ints...> const& x){
+    return is_pos_general(x);
+}
+
 
 template <typename T, int... Ints>
 std::ostream& operator<<(std::ostream & os, Number<T, Ints...> const& number){

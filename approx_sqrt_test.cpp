@@ -36,7 +36,7 @@ int main(){
     
     std::cout << "here" << std::endl;
     using T = long;
-    constexpr auto array = precompute_array<T, 3, 2, 3, 5>();
+    constexpr auto array = precompute_array<T, 2, 3, 5>();
     for(auto& bounds: array){
         T a = bounds;
         std::cout << a << std::endl;
@@ -53,5 +53,18 @@ int main(){
         std::cout << comb << " " << lower*lower - comb << " " <<  upper*upper - comb << std::endl;
 
     }
-    // std::cout << pow2<4>();
+
+    std::cout << " \n";
+    constexpr auto arr2 = precompute_array<T, 2, 5, 13,17>();
+    constexpr auto arr3 = populate_array<T, 2, 5, 13, 17>();
+
+    for(auto& comb: arr2){
+        auto& limits = arr3[comb-1];
+
+        double lower = (double)limits.lower_num/limits.lower_den;
+        double upper = (double)limits.upper_num/limits.upper_den;
+        std::cout << comb << " " << lower*lower - comb << " " <<  upper*upper - comb << std::endl;
+
+    }
+    
 }

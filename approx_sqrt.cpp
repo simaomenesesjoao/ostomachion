@@ -1,7 +1,7 @@
 #include <utility>
 #include <numeric>
-#include <gmpxx.h>
 #include <array>
+#include <cmath>
 
 constexpr int search(int start, int end, int target){
     int mid = (start+end)/2;
@@ -157,45 +157,51 @@ constexpr int pow2<0>(){
 //     return fractions;
 // }
 
+// template <typename T>
+// constexpr T init_with_ones(){
+//     T array{};
+//     for(unsigned i=0; i<array.size(); i++)
+//         array[i] = 1
+//     return array;
+// }
 
-template <typename T, T MAX>
-constexpr std::array<T, pow2<MAX>()> precompute_array(){
-    constexpr int size = pow2<MAX>();
-    std::array<T, size> fractions{};
 
-    for(int i=0; i<size; i++){
+template <typename T, typename U>
+constexpr U precompute_array_N(){
+    U fractions{};
+
+    for(unsigned i=0; i<fractions.size(); i++)
         fractions[i] = 1;
-    }
 
     return fractions;
 }
 
 
-
-template <typename T, T MAX, T A, T... Ints>
-constexpr std::array<T, pow2<MAX>()> precompute_array(){
-    constexpr int size = pow2<MAX>();
+template <typename T, typename U, T A, T... Ints>
+constexpr U precompute_array_N(){
+    
     constexpr int pow = pow2v<A, Ints...>()/2;
-    std::array<T, size> fractions{};
+    U fractions{};
 
-    for(int i=0; i<size; i++){
-        ((i/pow) % 2 == 0)? fractions[i] = 1: fractions[i] = A;
-    }
-
-    auto new_fractions = precompute_array<T, MAX, Ints...>();
-    for(int i=0; i<size; i++){
-        fractions[i] = fractions[i]*new_fractions[i];
+    auto new_fractions = precompute_array_N<T, U, Ints...>();
+    for(unsigned i=0; i<fractions.size(); i++){
+        fractions[i] = new_fractions[i]*(((i/pow) % 2 == 0)? fractions[i] = 1: fractions[i] = A);
     }
             
     
     return fractions;
 }
 
+template <typename T, T... Ints>
+constexpr std::array<T, pow2<sizeof...(Ints)>()> precompute_array(){
+    return precompute_array_N<T, std::array<T, pow2<sizeof...(Ints)>()>, Ints...>();
+}
+
 
 template <typename T, int...Ints>
 constexpr std::array<Limits<T>, (Ints * ...)> populate_array(){
     constexpr int size = pow2v<Ints...>();
-    std::array<T, size> fractions = precompute_array<T, sizeof...(Ints), Ints...>();
+    std::array<T, size> fractions = precompute_array<T, Ints...>();
 
     std::array<Limits<T>, (Ints * ...)> hash{};
     for(int i=1; i<size; i++){

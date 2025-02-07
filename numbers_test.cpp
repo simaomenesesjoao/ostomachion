@@ -5,6 +5,26 @@
 
 int main(){
 
+    {
+
+        using T = int;
+        FracRoot<T,2,5> a{{1,2},5};
+        // FracRoot<T,2,5> b{{-3,2},2};
+        // FracRoot<T,2,5> c{{4,2},10};
+        // FracRoot<T,2,5> d{{1,6},1};
+        Number<T,2,5> x{a};//, y{c}, z{x*y};
+        
+        int is_pos = is_pos_fractional<T, 2, 5>(x);
+
+        std::cout << "is pos?" <<  is_pos << std::endl;
+
+    }
+    
+
+    return 0;
+
+
+
     using T = long long;
     
 
