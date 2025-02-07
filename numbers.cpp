@@ -76,8 +76,17 @@ Number<T, Ints...> Number<T, Ints...>::inverse() const{
 
 }
 
+
+template <typename T, int... Ints>
+bool is_pos(Number<T, Ints...> const& x){
+
+    return is_pos_general(x);
+}
+
+template <typename T, int... Ints>
+
 template <typename T, int A, int... Ints>
-bool is_pos(Number<T, A, Ints...> const& x){
+bool is_pos_general(Number<T, A, Ints...> const& x){
 
     if(x == 0){
         return false;
