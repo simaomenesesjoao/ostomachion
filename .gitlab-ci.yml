@@ -8,7 +8,7 @@ create_file:
   script:
     - echo "Building ..."
     - mkdir build
-    - touch build/somefile1.txt
+    - touch build/somefile12.txt
   artifacts:
     paths:
       - build/
@@ -17,4 +17,4 @@ test_file:
   image: alpine
   stage: test
   script:
-    - test -f build/somefile1.txt
+    - test -f build/somefile12.txt
