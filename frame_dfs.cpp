@@ -1,7 +1,10 @@
 #include "state.cpp"
 
-using T = mpz_class;
-using Num = Number<T, 2, 5, 13, 17>;
+// g++ -std=c++20 -Wall -O3 frame_dfs.cpp -lgmp -lgmpxx -o test && ./test
+// valgrind --tool=callgrind ./test
+
+
+using Num = Number<mpz_class, 2, 5, 13, 17>;
 
 std::vector<State<Num>> dfs(State<Num> const& state){
     std::cout << "Calling dfs " << state.current_polygon.size_ll << std::endl;
@@ -26,14 +29,14 @@ int main(){
     // using T = mpz_class;
     // using Num = Number<T, 2, 5, 13, 17>;
     State<Num> state;
-    // auto indices = std::vector<unsigned>{10, 4, 4, 0};
+    auto indices = std::vector<unsigned>{10, 4, 4, 0, 22};
 
-    // int n=0;
-    // for(auto& index: indices){
-    //     auto next_states = state.find_next_states();
-    //     state = next_states.at(index);
-    //     n++;
-    // }
+    int n=0;
+    for(auto& index: indices){
+        auto next_states = state.find_next_states();
+        state = next_states.at(index);
+        n++;
+    }
 
     // State<Num> state;
     auto final_states = dfs(state);

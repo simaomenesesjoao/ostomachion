@@ -138,35 +138,7 @@ constexpr int pow2<0>(){
     return 1;
 }
 
-// template <typename T, T... Ints>
-// constexpr std::array<T, get_size<Ints...>()> precompute_array(){
-//     constexpr int size = get_size<Ints...>();
-//     using U = std::array<T, size>;
-//     constexpr U fractions{};
-//     constexpr int power{};
-//     // T[get_size<Ints...>)=] array;
-//     constexpr auto lambda = [&fractions, power](int N, int i){
-//         return 2;
-
-//     };
-
-//     for(int i=0; i<size; i++){
-//         fractions[i] = 2;        
-//     }
-//     // get_<0, T, U, Ints...>((T)1, fractions);
-//     return fractions;
-// }
-
-// template <typename T>
-// constexpr T init_with_ones(){
-//     T array{};
-//     for(unsigned i=0; i<array.size(); i++)
-//         array[i] = 1
-//     return array;
-// }
-
-
-template <typename T, typename U>
+template <typename U>
 constexpr U precompute_array_N(){
     U fractions{};
 
@@ -177,13 +149,13 @@ constexpr U precompute_array_N(){
 }
 
 
-template <typename T, typename U, T A, T... Ints>
+template <typename U, int A, int... Ints>
 constexpr U precompute_array_N(){
     
     constexpr int pow = pow2v<A, Ints...>()/2;
     U fractions{};
 
-    auto new_fractions = precompute_array_N<T, U, Ints...>();
+    auto new_fractions = precompute_array_N<U, Ints...>();
     for(unsigned i=0; i<fractions.size(); i++){
         fractions[i] = new_fractions[i]*(((i/pow) % 2 == 0)? fractions[i] = 1: fractions[i] = A);
     }
@@ -192,22 +164,30 @@ constexpr U precompute_array_N(){
     return fractions;
 }
 
-template <typename T, T... Ints>
-constexpr std::array<T, pow2<sizeof...(Ints)>()> precompute_array(){
-    return precompute_array_N<T, std::array<T, pow2<sizeof...(Ints)>()>, Ints...>();
+template <int... Ints>
+constexpr std::array<int, pow2<sizeof...(Ints)>()> precompute_array(){
+    return precompute_array_N<std::array<int, pow2<sizeof...(Ints)>()>, Ints...>();
 }
 
 
 template <typename T, int...Ints>
 constexpr std::array<Limits<T>, (Ints * ...)> populate_array(){
     constexpr int size = pow2v<Ints...>();
-    std::array<T, size> fractions = precompute_array<T, Ints...>();
+    std::array<int, size> fractions = precompute_array<Ints...>();
 
     std::array<Limits<T>, (Ints * ...)> hash{};
     for(int i=1; i<size; i++){
         int j = fractions[i];
         hash[j-1] = find_bounds<T>(j, 1e-6);
     }
+    hash[0] = Limits<T>{1,1,1,1};
+    return hash;
+}
+
+
+template <typename T>
+constexpr std::array<Limits<T>, 1> populate_array(){
+    std::array<Limits<T>, 1> hash{};
     hash[0] = Limits<T>{1,1,1,1};
     return hash;
 }

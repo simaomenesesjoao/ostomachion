@@ -13,6 +13,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, Fraction<U> const & frac);
 
     Fraction operator-() const;
+    // Fraction& operator=(Fraction const&);
     Fraction operator*(Fraction const& other) const;
     Fraction operator/(Fraction const& other) const;
     bool operator==(Fraction const& other) const;

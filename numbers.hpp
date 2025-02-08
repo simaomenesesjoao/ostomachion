@@ -58,7 +58,7 @@ private:
     std::map<int, FracRoot<T,Ints...>> digits;
     template <typename U, int A, int... Ints2> friend bool is_pos_general(Number<U,A, Ints2...> const& x);
     template <typename U, int... Ints2> friend bool is_pos_general(Number<U,Ints2...> const& x);
-    template <typename U, U... Ints2> friend bool is_pos_fractional(Number<U,Ints2...> const& x);
+    template <typename U, int... Ints2> friend int is_pos_fractional(Number<U,Ints2...> const& x);
 };
 
 template <typename T, typename U> bool equal(T x, U y);

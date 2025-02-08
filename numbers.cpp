@@ -81,18 +81,36 @@ Number<T, Ints...> Number<T, Ints...>::inverse() const{
 template <typename T, int... Ints>
 int is_pos_fractional(Number<T, Ints...> const& x){
     // Returns 1 if it's positive, -1 if negative, and 0 if it cannot be determined
-    //constexpr auto frac_approx = populate_array<T, Ints...>();
-    // Fraction<T> f{0,1};
-    //for(auto& [root, digit]: x.digits){
-        //T num = digit.get_num();
-        //T den = digit.get_den();
-        //Limits<T> lims = frac_approx[root];
-        //std::cout << lims.lower_den << std::endl;
+    constexpr auto frac_approx = populate_array<long, Ints...>();
 
-    //}
+    Fraction<T> f_lower{0,1}, f_upper{0,1};
+    for(auto& [root, digit]: x.digits){
+        Fraction<T> a{digit.get_num(), digit.get_den()};
+        Limits<long> lims = frac_approx[root-1];
 
+        // std::cout << root << std::endl;
+        Fraction<T> lower{(T)lims.lower_num, (T)lims.lower_den};
+        Fraction<T> upper{(T)lims.upper_num, (T)lims.upper_den};
 
-    return 1;
+        if(a.get_num() > 0){
+            f_lower = f_lower + lower*a;
+            f_upper = f_upper + upper*a;
+        } else {
+            f_lower = f_lower + upper*a;
+            f_upper = f_upper + lower*a;
+        }
+        
+        // std::cout << f_lower << ":" << lower << " " << root << " " << upper << std::endl;
+        
+
+    }
+
+    if(f_lower.get_num() > 0)
+        return 1;
+    if(f_upper.get_num() < 0)
+        return -1;
+    else
+        return 0;
 }
 
 template <typename T, int A, int... Ints>
@@ -146,7 +164,11 @@ bool is_pos_general(Number<T, Ints...> const& x){
 
 template <typename T, int... Ints>
 bool is_pos(Number<T, Ints...> const& x){
-    return is_pos_general(x);
+    int fractional_compare = is_pos_fractional<T, Ints...>(x);
+    if(fractional_compare == 0)
+        return is_pos_general(x);
+    else 
+        return fractional_compare > 0;
 }
 
 
@@ -471,10 +493,16 @@ bool Number<T, Ints...>::operator<=(U const& x) const{
     return !(*this > x);
 }
 
+// template <typename T>
+// T custom_abs(T const& x){
+//     if(x<0)
+//         return -x;
+//     return x;
+// }
 
 
 template <typename W, typename U>
 bool equal(W x, U y){
-    double tolerance = 1e-8;
+    double tolerance = 1e-6;
     return std::abs(x-y) < tolerance;
 }

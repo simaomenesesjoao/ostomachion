@@ -32,6 +32,22 @@ bool Fraction<T>::operator==(Fraction const& other) const{
     return (num == other.get_num()) and (den == other.get_den());
 }
 
+// template<typename T>
+// Fraction<T>& Fraction<T>::operator=(Fraction const& other){
+//     num = other.num;
+//     den = other.den;
+//     T gcd = gcd_custom(num, den);
+//     num /= gcd;
+//     den /= gcd;
+//     if(den<0){
+//         den = -den;
+//         num = -num;
+//     }
+
+//     return *this;
+
+// }
+
 template<typename T>
 Fraction<T> Fraction<T>::operator-() const{
     return Fraction(-num, den);
