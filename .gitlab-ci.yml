@@ -4,6 +4,7 @@ stages:
 
 build_numeric:
   stage: build
+  image: gcc:latest
   script:
     - echo "Building Numeric library"
     - cd numeric
@@ -16,6 +17,7 @@ build_numeric:
 
 test_numeric:
   stage: test
+  image: gcc:latest
   script:
     - cd numeric/tests
     - cmake -S . -B build
