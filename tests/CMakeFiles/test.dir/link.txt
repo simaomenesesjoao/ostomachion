@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/test.dir/link.d CMakeFiles/test.dir/numbers_test.cpp.o -o test  /usr/lib/libCatch2Main.a -lgmp -lgmpxx /usr/lib/libCatch2.a

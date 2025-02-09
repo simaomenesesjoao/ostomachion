@@ -1,0 +1,6 @@
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/NumTest.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/edit_cache.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/rebuild_cache.dir
+/home/simao/projectos_pessoais/ostomachion/build/numeric/CMakeFiles/Numeric.dir
+/home/simao/projectos_pessoais/ostomachion/build/numeric/CMakeFiles/edit_cache.dir
+/home/simao/projectos_pessoais/ostomachion/build/numeric/CMakeFiles/rebuild_cache.dir

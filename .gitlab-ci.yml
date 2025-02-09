@@ -1,20 +1,26 @@
+image: alpine
+
 stages:
   - build
   - test
 
-create_file:
-  image: alpine
+build_numeric:
   stage: build
   script:
-    - echo "Building ..."
-    - mkdir build
-    - touch build/somefile12.txt
+    - echo "Building Numeric library"
+    - cd numeric
+    - cmake -S . -B build
+    - cmake --build build
+    - cmake --install build
   artifacts:
     paths:
-      - build/
+      - lib/
 
-test_file:
-  image: alpine
+test_numeric:
   stage: test
   script:
-    - test -f build/somefile12.txt
+    - cd numeric/tests
+    - cmake -S . -B build
+    - cmake --build build
+    - build/numbers_test
+    
