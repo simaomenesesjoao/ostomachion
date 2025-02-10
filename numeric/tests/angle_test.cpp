@@ -1,4 +1,3 @@
-#include "points_vectors.hpp"
 #include "points_vectors.cpp"
 
 #include <catch2/catch_test_macros.hpp>

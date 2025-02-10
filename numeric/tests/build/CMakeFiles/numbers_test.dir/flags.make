@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/simao/projectos_pessoais/ostomachion/numeric/tests/../include
+CXX_INCLUDES = -I/home/simao/osto/ostomachion/numeric/tests/../include
 
-CXX_FLAGS = -std=gnu++20
+CXX_FLAGS = -std=gnu++2a
 

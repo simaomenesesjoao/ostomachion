@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/simao/projectos_pessoais/ostomachion/numeric/tests
+CMAKE_SOURCE_DIR = /home/simao/osto/ostomachion/numeric/tests
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/simao/projectos_pessoais/ostomachion/numeric/tests/build
+CMAKE_BINARY_DIR = /home/simao/osto/ostomachion/numeric/tests/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/numbers_test.dir/depend.make
@@ -72,34 +72,113 @@ include CMakeFiles/numbers_test.dir/flags.make
 CMakeFiles/numbers_test.dir/codegen:
 .PHONY : CMakeFiles/numbers_test.dir/codegen
 
+CMakeFiles/numbers_test.dir/angle_test.cpp.o: CMakeFiles/numbers_test.dir/flags.make
+CMakeFiles/numbers_test.dir/angle_test.cpp.o: /home/simao/osto/ostomachion/numeric/tests/angle_test.cpp
+CMakeFiles/numbers_test.dir/angle_test.cpp.o: CMakeFiles/numbers_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/numbers_test.dir/angle_test.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/numbers_test.dir/angle_test.cpp.o -MF CMakeFiles/numbers_test.dir/angle_test.cpp.o.d -o CMakeFiles/numbers_test.dir/angle_test.cpp.o -c /home/simao/osto/ostomachion/numeric/tests/angle_test.cpp
+
+CMakeFiles/numbers_test.dir/angle_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/numbers_test.dir/angle_test.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/simao/osto/ostomachion/numeric/tests/angle_test.cpp > CMakeFiles/numbers_test.dir/angle_test.cpp.i
+
+CMakeFiles/numbers_test.dir/angle_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/numbers_test.dir/angle_test.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/simao/osto/ostomachion/numeric/tests/angle_test.cpp -o CMakeFiles/numbers_test.dir/angle_test.cpp.s
+
+CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o: CMakeFiles/numbers_test.dir/flags.make
+CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o: /home/simao/osto/ostomachion/numeric/tests/approx_sqrt_test.cpp
+CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o: CMakeFiles/numbers_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o -MF CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o.d -o CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o -c /home/simao/osto/ostomachion/numeric/tests/approx_sqrt_test.cpp
+
+CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/simao/osto/ostomachion/numeric/tests/approx_sqrt_test.cpp > CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.i
+
+CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/simao/osto/ostomachion/numeric/tests/approx_sqrt_test.cpp -o CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.s
+
+CMakeFiles/numbers_test.dir/frac_test.cpp.o: CMakeFiles/numbers_test.dir/flags.make
+CMakeFiles/numbers_test.dir/frac_test.cpp.o: /home/simao/osto/ostomachion/numeric/tests/frac_test.cpp
+CMakeFiles/numbers_test.dir/frac_test.cpp.o: CMakeFiles/numbers_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/numbers_test.dir/frac_test.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/numbers_test.dir/frac_test.cpp.o -MF CMakeFiles/numbers_test.dir/frac_test.cpp.o.d -o CMakeFiles/numbers_test.dir/frac_test.cpp.o -c /home/simao/osto/ostomachion/numeric/tests/frac_test.cpp
+
+CMakeFiles/numbers_test.dir/frac_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/numbers_test.dir/frac_test.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/simao/osto/ostomachion/numeric/tests/frac_test.cpp > CMakeFiles/numbers_test.dir/frac_test.cpp.i
+
+CMakeFiles/numbers_test.dir/frac_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/numbers_test.dir/frac_test.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/simao/osto/ostomachion/numeric/tests/frac_test.cpp -o CMakeFiles/numbers_test.dir/frac_test.cpp.s
+
+CMakeFiles/numbers_test.dir/fracroot_test.cpp.o: CMakeFiles/numbers_test.dir/flags.make
+CMakeFiles/numbers_test.dir/fracroot_test.cpp.o: /home/simao/osto/ostomachion/numeric/tests/fracroot_test.cpp
+CMakeFiles/numbers_test.dir/fracroot_test.cpp.o: CMakeFiles/numbers_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/numbers_test.dir/fracroot_test.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/numbers_test.dir/fracroot_test.cpp.o -MF CMakeFiles/numbers_test.dir/fracroot_test.cpp.o.d -o CMakeFiles/numbers_test.dir/fracroot_test.cpp.o -c /home/simao/osto/ostomachion/numeric/tests/fracroot_test.cpp
+
+CMakeFiles/numbers_test.dir/fracroot_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/numbers_test.dir/fracroot_test.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/simao/osto/ostomachion/numeric/tests/fracroot_test.cpp > CMakeFiles/numbers_test.dir/fracroot_test.cpp.i
+
+CMakeFiles/numbers_test.dir/fracroot_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/numbers_test.dir/fracroot_test.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/simao/osto/ostomachion/numeric/tests/fracroot_test.cpp -o CMakeFiles/numbers_test.dir/fracroot_test.cpp.s
+
 CMakeFiles/numbers_test.dir/numbers_test.cpp.o: CMakeFiles/numbers_test.dir/flags.make
-CMakeFiles/numbers_test.dir/numbers_test.cpp.o: /home/simao/projectos_pessoais/ostomachion/numeric/tests/numbers_test.cpp
+CMakeFiles/numbers_test.dir/numbers_test.cpp.o: /home/simao/osto/ostomachion/numeric/tests/numbers_test.cpp
 CMakeFiles/numbers_test.dir/numbers_test.cpp.o: CMakeFiles/numbers_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/simao/projectos_pessoais/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/numbers_test.dir/numbers_test.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/numbers_test.dir/numbers_test.cpp.o -MF CMakeFiles/numbers_test.dir/numbers_test.cpp.o.d -o CMakeFiles/numbers_test.dir/numbers_test.cpp.o -c /home/simao/projectos_pessoais/ostomachion/numeric/tests/numbers_test.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/numbers_test.dir/numbers_test.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/numbers_test.dir/numbers_test.cpp.o -MF CMakeFiles/numbers_test.dir/numbers_test.cpp.o.d -o CMakeFiles/numbers_test.dir/numbers_test.cpp.o -c /home/simao/osto/ostomachion/numeric/tests/numbers_test.cpp
 
 CMakeFiles/numbers_test.dir/numbers_test.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/numbers_test.dir/numbers_test.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/simao/projectos_pessoais/ostomachion/numeric/tests/numbers_test.cpp > CMakeFiles/numbers_test.dir/numbers_test.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/simao/osto/ostomachion/numeric/tests/numbers_test.cpp > CMakeFiles/numbers_test.dir/numbers_test.cpp.i
 
 CMakeFiles/numbers_test.dir/numbers_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/numbers_test.dir/numbers_test.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/simao/projectos_pessoais/ostomachion/numeric/tests/numbers_test.cpp -o CMakeFiles/numbers_test.dir/numbers_test.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/simao/osto/ostomachion/numeric/tests/numbers_test.cpp -o CMakeFiles/numbers_test.dir/numbers_test.cpp.s
+
+CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o: CMakeFiles/numbers_test.dir/flags.make
+CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o: /home/simao/osto/ostomachion/numeric/tests/points_vectors_test.cpp
+CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o: CMakeFiles/numbers_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o -MF CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o.d -o CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o -c /home/simao/osto/ostomachion/numeric/tests/points_vectors_test.cpp
+
+CMakeFiles/numbers_test.dir/points_vectors_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/numbers_test.dir/points_vectors_test.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/simao/osto/ostomachion/numeric/tests/points_vectors_test.cpp > CMakeFiles/numbers_test.dir/points_vectors_test.cpp.i
+
+CMakeFiles/numbers_test.dir/points_vectors_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/numbers_test.dir/points_vectors_test.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/simao/osto/ostomachion/numeric/tests/points_vectors_test.cpp -o CMakeFiles/numbers_test.dir/points_vectors_test.cpp.s
 
 # Object files for target numbers_test
 numbers_test_OBJECTS = \
-"CMakeFiles/numbers_test.dir/numbers_test.cpp.o"
+"CMakeFiles/numbers_test.dir/angle_test.cpp.o" \
+"CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o" \
+"CMakeFiles/numbers_test.dir/frac_test.cpp.o" \
+"CMakeFiles/numbers_test.dir/fracroot_test.cpp.o" \
+"CMakeFiles/numbers_test.dir/numbers_test.cpp.o" \
+"CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o"
 
 # External object files for target numbers_test
 numbers_test_EXTERNAL_OBJECTS =
 
+numbers_test: CMakeFiles/numbers_test.dir/angle_test.cpp.o
+numbers_test: CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o
+numbers_test: CMakeFiles/numbers_test.dir/frac_test.cpp.o
+numbers_test: CMakeFiles/numbers_test.dir/fracroot_test.cpp.o
 numbers_test: CMakeFiles/numbers_test.dir/numbers_test.cpp.o
+numbers_test: CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o
 numbers_test: CMakeFiles/numbers_test.dir/build.make
-numbers_test: CMakeFiles/numbers_test.dir/compiler_depend.ts
-numbers_test: /usr/lib/libCatch2Main.a
-numbers_test: /usr/lib/libCatch2.a
+numbers_test: /usr/local/lib/libCatch2Main.a
+numbers_test: /usr/local/lib/libCatch2.a
 numbers_test: CMakeFiles/numbers_test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/simao/projectos_pessoais/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable numbers_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable numbers_test"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/numbers_test.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -111,6 +190,6 @@ CMakeFiles/numbers_test.dir/clean:
 .PHONY : CMakeFiles/numbers_test.dir/clean
 
 CMakeFiles/numbers_test.dir/depend:
-	cd /home/simao/projectos_pessoais/ostomachion/numeric/tests/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/simao/projectos_pessoais/ostomachion/numeric/tests /home/simao/projectos_pessoais/ostomachion/numeric/tests /home/simao/projectos_pessoais/ostomachion/numeric/tests/build /home/simao/projectos_pessoais/ostomachion/numeric/tests/build /home/simao/projectos_pessoais/ostomachion/numeric/tests/build/CMakeFiles/numbers_test.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/simao/osto/ostomachion/numeric/tests/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/simao/osto/ostomachion/numeric/tests /home/simao/osto/ostomachion/numeric/tests /home/simao/osto/ostomachion/numeric/tests/build /home/simao/osto/ostomachion/numeric/tests/build /home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles/numbers_test.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/numbers_test.dir/depend
 

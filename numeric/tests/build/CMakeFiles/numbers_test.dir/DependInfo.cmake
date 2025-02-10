@@ -8,8 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/simao/projectos_pessoais/ostomachion/numeric/tests/numbers_test.cpp" "CMakeFiles/numbers_test.dir/numbers_test.cpp.o" "gcc" "CMakeFiles/numbers_test.dir/numbers_test.cpp.o.d"
-  "" "numbers_test" "gcc" "CMakeFiles/numbers_test.dir/link.d"
+  "/home/simao/osto/ostomachion/numeric/tests/angle_test.cpp" "CMakeFiles/numbers_test.dir/angle_test.cpp.o" "gcc" "CMakeFiles/numbers_test.dir/angle_test.cpp.o.d"
+  "/home/simao/osto/ostomachion/numeric/tests/approx_sqrt_test.cpp" "CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o" "gcc" "CMakeFiles/numbers_test.dir/approx_sqrt_test.cpp.o.d"
+  "/home/simao/osto/ostomachion/numeric/tests/frac_test.cpp" "CMakeFiles/numbers_test.dir/frac_test.cpp.o" "gcc" "CMakeFiles/numbers_test.dir/frac_test.cpp.o.d"
+  "/home/simao/osto/ostomachion/numeric/tests/fracroot_test.cpp" "CMakeFiles/numbers_test.dir/fracroot_test.cpp.o" "gcc" "CMakeFiles/numbers_test.dir/fracroot_test.cpp.o.d"
+  "/home/simao/osto/ostomachion/numeric/tests/numbers_test.cpp" "CMakeFiles/numbers_test.dir/numbers_test.cpp.o" "gcc" "CMakeFiles/numbers_test.dir/numbers_test.cpp.o.d"
+  "/home/simao/osto/ostomachion/numeric/tests/points_vectors_test.cpp" "CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o" "gcc" "CMakeFiles/numbers_test.dir/points_vectors_test.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
