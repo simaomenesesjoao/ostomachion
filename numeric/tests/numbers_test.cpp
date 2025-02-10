@@ -1,5 +1,4 @@
 #include "numbers.hpp"
-#include "numbers.cpp"
 #include <iostream>
 #include <random>
 
