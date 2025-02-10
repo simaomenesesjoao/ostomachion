@@ -9,6 +9,7 @@ before_script:
 
 # Build and install Catch2 (from GitHub)
 install_catch2:
+  image: alpine
   stage: prepare
   script:
     - git clone --branch v2.13.6 --single-branch https://github.com/catchorg/Catch2.git /Catch2
