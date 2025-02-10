@@ -5,7 +5,7 @@ stages:
 # Define the build environment
 before_script:
   - apk update
-  - apk add --no-cache catch2 cmake
+  - apk add --no-cache build-essential catch2 cmake
 
 # # Build and install Catch2 (from GitHub)
 # install_catch2:
