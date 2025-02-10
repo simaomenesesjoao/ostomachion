@@ -1,8 +1,8 @@
-/home/simao/osto/ostomachion/build/CMakeFiles/interactive.dir
-/home/simao/osto/ostomachion/build/CMakeFiles/solver.dir
-/home/simao/osto/ostomachion/build/CMakeFiles/edit_cache.dir
-/home/simao/osto/ostomachion/build/CMakeFiles/rebuild_cache.dir
-/home/simao/osto/ostomachion/build/CMakeFiles/list_install_components.dir
-/home/simao/osto/ostomachion/build/CMakeFiles/install.dir
-/home/simao/osto/ostomachion/build/CMakeFiles/install/local.dir
-/home/simao/osto/ostomachion/build/CMakeFiles/install/strip.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/interactive.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/solver.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/edit_cache.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/rebuild_cache.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/list_install_components.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/install.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/install/local.dir
+/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/install/strip.dir

@@ -1,4 +1,4 @@
-# Install script for directory: /home/simao/osto/ostomachion
+# Install script for directory: /home/simao/projectos_pessoais/ostomachion
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -29,7 +29,7 @@ endif()
 
 # Install shared libraries without execute permission?
 if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
-  set(CMAKE_INSTALL_SO_NO_EXE "1")
+  set(CMAKE_INSTALL_SO_NO_EXE "0")
 endif()
 
 # Is this installation the result of a crosscompile?
@@ -43,65 +43,65 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/interactive" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/interactive")
+  if(EXISTS "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/interactive" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/interactive")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/interactive"
+         FILE "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/interactive"
          RPATH "")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/simao/osto/ostomachion/bin/interactive")
+   "/home/simao/projectos_pessoais/ostomachion/bin/interactive")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/home/simao/osto/ostomachion/bin" TYPE EXECUTABLE FILES "/home/simao/osto/ostomachion/build/interactive")
-  if(EXISTS "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/interactive" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/interactive")
+  file(INSTALL DESTINATION "/home/simao/projectos_pessoais/ostomachion/bin" TYPE EXECUTABLE FILES "/home/simao/projectos_pessoais/ostomachion/build/interactive")
+  if(EXISTS "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/interactive" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/interactive")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/interactive")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/interactive")
     endif()
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  include("/home/simao/osto/ostomachion/build/CMakeFiles/interactive.dir/install-cxx-module-bmi-noconfig.cmake" OPTIONAL)
+  include("/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/interactive.dir/install-cxx-module-bmi-noconfig.cmake" OPTIONAL)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/solver" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/solver")
+  if(EXISTS "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/solver" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/solver")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/solver"
+         FILE "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/solver"
          RPATH "")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/simao/osto/ostomachion/bin/solver")
+   "/home/simao/projectos_pessoais/ostomachion/bin/solver")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/home/simao/osto/ostomachion/bin" TYPE EXECUTABLE FILES "/home/simao/osto/ostomachion/build/solver")
-  if(EXISTS "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/solver" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/solver")
+  file(INSTALL DESTINATION "/home/simao/projectos_pessoais/ostomachion/bin" TYPE EXECUTABLE FILES "/home/simao/projectos_pessoais/ostomachion/build/solver")
+  if(EXISTS "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/solver" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/solver")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/simao/osto/ostomachion/bin/solver")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/simao/projectos_pessoais/ostomachion/bin/solver")
     endif()
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  include("/home/simao/osto/ostomachion/build/CMakeFiles/solver.dir/install-cxx-module-bmi-noconfig.cmake" OPTIONAL)
+  include("/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles/solver.dir/install-cxx-module-bmi-noconfig.cmake" OPTIONAL)
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/simao/osto/ostomachion/build/install_local_manifest.txt"
+  file(WRITE "/home/simao/projectos_pessoais/ostomachion/build/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -117,6 +117,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/simao/osto/ostomachion/build/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/home/simao/projectos_pessoais/ostomachion/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

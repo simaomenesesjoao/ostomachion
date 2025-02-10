@@ -3,9 +3,8 @@ stages:
   - build
 
 # Define the build environment
-# before_script:
-#   - apk update
-#   - apk add --no-cache build-essential catch2 cmake
+before_script:
+  - apt-get install libgmp3-dev
 
 # # Build and install Catch2 (from GitHub)
 # install_catch2:
