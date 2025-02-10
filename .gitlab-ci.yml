@@ -3,9 +3,9 @@ stages:
   - build
 
 # Define the build environment
-before_script:
-  - apk update
-  - apk add --no-cache build-essential catch2 cmake
+# before_script:
+#   - apk update
+#   - apk add --no-cache build-essential catch2 cmake
 
 # # Build and install Catch2 (from GitHub)
 # install_catch2:
@@ -22,7 +22,7 @@ before_script:
 #       - /usr/local/include/catch2
 
 build:
-  image: alpine
+  image: danger89/cmake
   stage: build
   script:
     - echo "Building solver"
@@ -34,7 +34,7 @@ build:
       - bin/
 
 test_numeric:
-  image: alpine
+  image: danger89/cmake
   stage: build
   script:
     - cd numeric/tests
