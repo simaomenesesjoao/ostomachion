@@ -1,6 +1,28 @@
+stages:
+  - prepare
+  - build
+
+# Define the build environment
+before_script:
+  - apk update
+  - apk add --no-cache build-base cmake git bash curl
+
+# Build and install Catch2 (from GitHub)
+install_catch2:
+  stage: prepare
+  script:
+    - git clone --branch v2.13.6 --single-branch https://github.com/catchorg/Catch2.git /Catch2
+    - cd /Catch2
+    - cmake -B build -S . -DCMAKE_INSTALL_PREFIX=/usr/local
+    - cmake --build build --target install
+    - rm -rf /Catch2
+  artifacts:
+    paths:
+      - /usr/local/include/catch2
 
 build:
-  image: gcc:latest
+  image: alpine
+  stage: build
   script:
     - echo "Building solver"
     - cmake -S . -B build
@@ -11,26 +33,29 @@ build:
       - bin/
 
 test_numeric:
-  image: gcc:latest
+  image: alpine
+  stage: build
   script:
     - cd numeric/tests
     - cmake -S . -B build
     - cmake --build build
     - build/numbers_test
 
-test_state:
-  image: gcc:latest
-  script:
-    - cd numeric/tests
-    - cmake -S . -B build
-    - cmake --build build
-    - build/numbers_test
+# test_state:
+#   image: gcc:latest
+#   stage: test
+#   script:
+#     - cd numeric/tests
+#     - cmake -S . -B build
+#     - cmake --build build
+#     - build/numbers_test
     
-benchmark:
-  image: gcc:latest
-  script:
-    - cd numeric/tests
-    - cmake -S . -B build
-    - cmake --build build
-    - build/numbers_test
+# benchmark:
+#   stage: test
+#   image: gcc:latest
+#   script:
+#     - cd numeric/tests
+#     - cmake -S . -B build
+#     - cmake --build build
+#     - build/numbers_test
     
