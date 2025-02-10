@@ -1,10 +1,10 @@
 #pragma once
 
 #include "numbers.hpp"
+#include "approx_sqrt.cpp"
 #include <vector>
 #include <cassert>
 #include <gmpxx.h>
-#include "approx_sqrt.cpp"
 
 template <typename T, int... Ints>
 template <typename... U>

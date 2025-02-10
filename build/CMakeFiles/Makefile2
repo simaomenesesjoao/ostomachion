@@ -54,20 +54,22 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/simao/projectos_pessoais/ostomachion
+CMAKE_SOURCE_DIR = /home/simao/osto/ostomachion
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/simao/projectos_pessoais/ostomachion/build
+CMAKE_BINARY_DIR = /home/simao/osto/ostomachion/build
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/Main.dir/all
+all: CMakeFiles/interactive.dir/all
+all: CMakeFiles/solver.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
-codegen: CMakeFiles/Main.dir/codegen
+codegen: CMakeFiles/interactive.dir/codegen
+codegen: CMakeFiles/solver.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -75,40 +77,73 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/Main.dir/clean
+clean: CMakeFiles/interactive.dir/clean
+clean: CMakeFiles/solver.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/Main.dir
+# Target rules for target CMakeFiles/interactive.dir
 
 # All Build rule for target.
-CMakeFiles/Main.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles --progress-num=1,2 "Built target Main"
-.PHONY : CMakeFiles/Main.dir/all
+CMakeFiles/interactive.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/interactive.dir/build.make CMakeFiles/interactive.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/interactive.dir/build.make CMakeFiles/interactive.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/simao/osto/ostomachion/build/CMakeFiles --progress-num=1,2 "Built target interactive"
+.PHONY : CMakeFiles/interactive.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/Main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/simao/projectos_pessoais/ostomachion/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Main.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/simao/projectos_pessoais/ostomachion/build/CMakeFiles 0
-.PHONY : CMakeFiles/Main.dir/rule
+CMakeFiles/interactive.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/simao/osto/ostomachion/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/interactive.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/simao/osto/ostomachion/build/CMakeFiles 0
+.PHONY : CMakeFiles/interactive.dir/rule
 
 # Convenience name for target.
-Main: CMakeFiles/Main.dir/rule
-.PHONY : Main
+interactive: CMakeFiles/interactive.dir/rule
+.PHONY : interactive
 
 # codegen rule for target.
-CMakeFiles/Main.dir/codegen:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/simao/projectos_pessoais/ostomachion/build/CMakeFiles --progress-num=1,2 "Finished codegen for target Main"
-.PHONY : CMakeFiles/Main.dir/codegen
+CMakeFiles/interactive.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/interactive.dir/build.make CMakeFiles/interactive.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/simao/osto/ostomachion/build/CMakeFiles --progress-num=1,2 "Finished codegen for target interactive"
+.PHONY : CMakeFiles/interactive.dir/codegen
 
 # clean rule for target.
-CMakeFiles/Main.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/clean
-.PHONY : CMakeFiles/Main.dir/clean
+CMakeFiles/interactive.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/interactive.dir/build.make CMakeFiles/interactive.dir/clean
+.PHONY : CMakeFiles/interactive.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/solver.dir
+
+# All Build rule for target.
+CMakeFiles/solver.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/solver.dir/build.make CMakeFiles/solver.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/solver.dir/build.make CMakeFiles/solver.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/simao/osto/ostomachion/build/CMakeFiles --progress-num=3,4 "Built target solver"
+.PHONY : CMakeFiles/solver.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/solver.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/simao/osto/ostomachion/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/solver.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/simao/osto/ostomachion/build/CMakeFiles 0
+.PHONY : CMakeFiles/solver.dir/rule
+
+# Convenience name for target.
+solver: CMakeFiles/solver.dir/rule
+.PHONY : solver
+
+# codegen rule for target.
+CMakeFiles/solver.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/solver.dir/build.make CMakeFiles/solver.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/simao/osto/ostomachion/build/CMakeFiles --progress-num=3,4 "Finished codegen for target solver"
+.PHONY : CMakeFiles/solver.dir/codegen
+
+# clean rule for target.
+CMakeFiles/solver.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/solver.dir/build.make CMakeFiles/solver.dir/clean
+.PHONY : CMakeFiles/solver.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

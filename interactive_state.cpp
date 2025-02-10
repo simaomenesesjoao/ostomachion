@@ -13,13 +13,11 @@ int main(int argc, char** argv){
         indices.push_back(index);
     }
 
-    //indices = {6,3};
-
     using T = mpz_class;
     using Num = Number<T, 2, 5, 13, 17>;
+    
     State<Num> state;
     std::vector<State<Num>> next_states = state.find_next_states();
-
 
     for(auto& index: indices){
         

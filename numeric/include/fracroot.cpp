@@ -2,8 +2,6 @@
 #include "fracroot.hpp"
 #include <vector>
 
-
-
 template <typename T, int... Ints>
 std::pair<int, int> FracRoot<T, Ints...>::remove_perfect_squares(int r) const{
     // Check if there's any perfect square inside r

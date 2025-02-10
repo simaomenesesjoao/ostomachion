@@ -29,7 +29,7 @@ int main(){
     // using T = mpz_class;
     // using Num = Number<T, 2, 5, 13, 17>;
     State<Num> state;
-    auto indices = std::vector<unsigned>{10, 4, 4, 0, 22};
+    auto indices = std::vector<unsigned>{10, 4, 4, 0};
 
     int n=0;
     for(auto& index: indices){

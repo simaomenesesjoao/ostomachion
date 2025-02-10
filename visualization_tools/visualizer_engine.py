@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib
-import sys
 import numpy as np
+import subprocess
+import sys
 import re
 
 
@@ -27,7 +28,6 @@ class State:
     def __init__(self, frame, used_polys):
         self.frame = frame
         self.used_polys = used_polys
-
 
 
 def parse_states_string(states_string):
@@ -62,6 +62,17 @@ def parse_states_string(states_string):
                 
         states_list.append(State(frame, used_polygons_list))
     
+    return states_list
+
+
+
+def get_cpp_state(indices):
+    cpp_program = '../bin/interactive'  # Path to the compiled C++ program
+    arguments = [str(index) for index in indices]
+
+    # Run the C++ program with arguments using subprocess
+    result = subprocess.run([cpp_program] + arguments, capture_output=True, text=True)
+    states_list = parse_states_string(result.stdout)
     return states_list
 
 

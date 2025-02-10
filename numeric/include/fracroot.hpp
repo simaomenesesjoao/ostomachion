@@ -1,7 +1,7 @@
 #pragma once
 #include <utility>
 #include <ostream>
-#include "fraction.hpp"
+#include "fraction.cpp"
 
 template<typename T = int, int... Ints>
 class FracRoot{

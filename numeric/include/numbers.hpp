@@ -1,7 +1,7 @@
 #pragma once
 #include <ostream>
 #include <map>
-#include "fracroot.hpp"
+#include "fracroot.cpp"
 
 template <typename T = int, int... Ints>
 class Number{

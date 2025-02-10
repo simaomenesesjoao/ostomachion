@@ -1,22 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib
-import sys
 import numpy as np
-import subprocess
-import re
-import visualizer2 as vis
-
-
-def get_cpp_state(indices):
-    cpp_program = './interactive_state'  # Path to the compiled C++ program
-    arguments = [str(index) for index in indices]
-
-    # Run the C++ program with arguments using subprocess
-    result = subprocess.run([cpp_program] + arguments, capture_output=True, text=True)
-    states_list = vis.parse_states_string(result.stdout)
-    return states_list
-
-
+import visualizer_engine as vis
 
 
 fig = plt.figure()
@@ -57,14 +42,14 @@ def on_click(event):
     ax = event.inaxes  # The axis that was clicked
     if ax is not None:        
         subplot_number = ax.get_subplotspec().num1
-        print("A", subplot_number)
+        print("Selected next state ", subplot_number)
         indices.append(subplot_number)
         plt.clf()
-        states_list = get_cpp_state(indices)
+        states_list = vis.get_cpp_state(indices)
         plot_states(states_list)
 
 fig.canvas.mpl_connect('button_press_event', on_click)
 
 indices = []
-states_list = get_cpp_state([])
+states_list = vis.get_cpp_state([])
 plot_states(states_list)

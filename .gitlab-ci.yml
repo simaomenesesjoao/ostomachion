@@ -1,22 +1,32 @@
-stages:
-  - build
-  - test
 
-build_numeric:
-  stage: build
+build:
   image: gcc:latest
   script:
-    - echo "Building Numeric library"
-    - cd numeric
+    - echo "Building solver"
     - cmake -S . -B build
-    - cmake --build build
+    - cmake --build build -j10
     - cmake --install build
   artifacts:
     paths:
-      - lib/
+      - bin/
 
 test_numeric:
-  stage: test
+  image: gcc:latest
+  script:
+    - cd numeric/tests
+    - cmake -S . -B build
+    - cmake --build build
+    - build/numbers_test
+
+test_state:
+  image: gcc:latest
+  script:
+    - cd numeric/tests
+    - cmake -S . -B build
+    - cmake --build build
+    - build/numbers_test
+    
+benchmark:
   image: gcc:latest
   script:
     - cd numeric/tests
