@@ -5,21 +5,21 @@ stages:
 # Define the build environment
 before_script:
   - apk update
-  - apk add --no-cache build-base cmake git bash curl
+  - apk add --no-cache catch2 cmake
 
-# Build and install Catch2 (from GitHub)
-install_catch2:
-  image: alpine
-  stage: prepare
-  script:
-    - git clone --branch v2.13.6 --single-branch https://github.com/catchorg/Catch2.git /Catch2
-    - cd /Catch2
-    - cmake -B build -S . -DCMAKE_INSTALL_PREFIX=/usr/local
-    - cmake --build build --target install
-    - rm -rf /Catch2
-  artifacts:
-    paths:
-      - /usr/local/include/catch2
+# # Build and install Catch2 (from GitHub)
+# install_catch2:
+#   image: alpine
+#   stage: prepare
+#   script:
+#     - git clone --branch v2.13.6 --single-branch https://github.com/catchorg/Catch2.git /Catch2
+#     - cd /Catch2
+#     - cmake -B build -S . -DCMAKE_INSTALL_PREFIX=/usr/local
+#     - cmake --build build --target install
+#     - rm -rf /Catch2
+#   artifacts:
+#     paths:
+#       - /usr/local/include/catch2
 
 build:
   image: alpine
