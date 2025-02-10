@@ -1,70 +1,66 @@
 #include "approx_sqrt.cpp"
-#include <iostream>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
+#include <algorithm>
 
-int main(){
-    static_assert(nearest_perfect_sqrt(10)==3);
-    static_assert(nearest_perfect_sqrt(6)==2);
-    static_assert(nearest_perfect_sqrt(15)==3);
-    static_assert(nearest_perfect_sqrt(16)==4);
-    static_assert(nearest_perfect_sqrt(20)==4);
+TEST_CASE("nearest_perfect_sqrt", "[custom]"){
+    REQUIRE(nearest_perfect_sqrt(10)==3);
+    REQUIRE(nearest_perfect_sqrt(6)==2);
+    REQUIRE(nearest_perfect_sqrt(15)==3);
+    REQUIRE(nearest_perfect_sqrt(16)==4);
+    REQUIRE(nearest_perfect_sqrt(20)==4);
+}
 
+TEST_CASE("find_fractional_approximation", "[custom]"){
     constexpr std::pair<int, int> pair = find_fractional_approximation(2,1);
-    static_assert(pair.first == 3);
-    static_assert(pair.second == 2);
+    REQUIRE(pair.first == 3);
+    REQUIRE(pair.second == 2);
 
     constexpr std::pair<int, int> pair2 = find_fractional_approximation(2,2);
-    static_assert(pair2.first == 7);
-    static_assert(pair2.second == 5);
+    REQUIRE(pair2.first == 7);
+    REQUIRE(pair2.second == 5);
 
     constexpr std::pair<int, int> pair3 = find_fractional_approximation(2,3);
-    static_assert(pair3.first == 17);
-    static_assert(pair3.second == 12);
+    REQUIRE(pair3.first == 17);
+    REQUIRE(pair3.second == 12);
 
     constexpr std::pair<int, int> pair4 = find_fractional_approximation(6,4);
-    static_assert(pair4.first == 218);
-    static_assert(pair4.second == 89);
-    double pair4_d = (double)pair4.first/pair4.second;
+    REQUIRE(pair4.first == 218);
+    REQUIRE(pair4.second == 89);
+}
 
-    std::cout << pair4.first << " " << pair4.second << " " << pair4_d << std::endl;
-
+TEST_CASE("find_bounds", "[custom]"){
     constexpr long N = 21;
     constexpr Limits limits = find_bounds(N, 1e-6);
     constexpr double lower = (double)limits.lower_num/limits.lower_den;
     constexpr double upper = (double)limits.upper_num/limits.upper_den;
-    static_assert(lower*lower < N and upper*upper > N);
-    std::cout << lower*lower - N << " " << upper*upper - N << std::endl;
-    
-    std::cout << "here" << std::endl;
+    REQUIRE(lower*lower < N);
+    REQUIRE(upper*upper > N);
+    REQUIRE(std::abs(lower*lower - N) < 1e-5);
+    REQUIRE(std::abs(upper*upper - N) < 1e-5);
+}
+
+TEST_CASE("precompute_array", "[custom]"){
+    std::array<int, 8> array = precompute_array<2, 3, 5>();
+    std::sort(array.begin(), array.end());
+    REQUIRE(array == std::array<int, 8>{1,2,3,5,6,10,15,30});    
+}
+
+TEST_CASE("populate_array", "[custom]"){
     using T = long;
-    constexpr auto array = precompute_array<2, 3, 5>();
-    for(auto& bounds: array){
-        T a = bounds;
-        std::cout << a << std::endl;
-    }
-
-    std::cout << " \n";
-    constexpr auto arr = populate_array<T, 2, 3, 5>();
-
-    for(auto& comb: array){
-        auto& limits = arr[comb-1];
-
-        double lower = (double)limits.lower_num/limits.lower_den;
-        double upper = (double)limits.upper_num/limits.upper_den;
-        std::cout << comb << " " << lower*lower - comb << " " <<  upper*upper - comb << std::endl;
-
-    }
-
-    std::cout << " \n";
     constexpr auto arr2 = precompute_array<2, 5, 13,17>();
     constexpr auto arr3 = populate_array<T, 2, 5, 13, 17>();
 
-    for(auto& comb: arr2){
-        auto& limits = arr3[comb-1];
+    for(auto& N: arr2){
+        
+        auto& limits = arr3[N-1];
 
         double lower = (double)limits.lower_num/limits.lower_den;
         double upper = (double)limits.upper_num/limits.upper_den;
-        std::cout << comb << " " << lower*lower - comb << " " <<  upper*upper - comb << std::endl;
+
+        REQUIRE(std::abs(lower*lower - N) < 1e-4);
+        REQUIRE(std::abs(upper*upper - N) < 1e-4);
 
     }
-    
 }
+

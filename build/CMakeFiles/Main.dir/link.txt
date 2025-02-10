@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/Main.dir/link.d CMakeFiles/Main.dir/main_number.cpp.o -o Main  /home/simao/projectos_pessoais/ostomachion/numeric/lib/libNumeric.a -lgmp -lgmpxx

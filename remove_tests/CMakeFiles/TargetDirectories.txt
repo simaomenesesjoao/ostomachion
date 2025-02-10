@@ -1,3 +1,0 @@
-/home/simao/projectos_pessoais/ostomachion/tests/CMakeFiles/test.dir
-/home/simao/projectos_pessoais/ostomachion/tests/CMakeFiles/edit_cache.dir
-/home/simao/projectos_pessoais/ostomachion/tests/CMakeFiles/rebuild_cache.dir

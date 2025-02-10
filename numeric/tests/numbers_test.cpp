@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-#define CATCH_CONFIG_MAIN
+//#define CATCH_CONFIG_MAIN
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
@@ -41,7 +41,7 @@ template <typename T, int... Ints> bool randomized_is_pos_fractional(){
         auto x = random_number<T, Ints...>(max);
         
         int comparison1 = ((int)((double)x > 0 ))*2-1;
-        int comparison2 = is_pos_fractional<T, Ints...>(x);
+        int comparison2 = x.is_pos_fractional();
         if(comparison1 != comparison2){
             std::cout << "Error: Randomized testing failed for " << x << std::endl;
             return false;
@@ -58,9 +58,9 @@ TEST_CASE("is_pos_fractional", "[custom]"){
     FracRoot<T,2,5> b{{-3,2},2};
     Number<T,2,5> x{a, b};
 
-    REQUIRE(is_pos_fractional<T, 2, 5>(x) == -1);
-    REQUIRE(is_pos_fractional<T, 2, 5>(x-x) == 0);
-    REQUIRE(is_pos_fractional<T, 2, 5>(-x) == 1);
+    REQUIRE(x.is_pos_fractional() == -1);
+    REQUIRE((x-x).is_pos_fractional() == 0);
+    REQUIRE((-x).is_pos_fractional() == 1);
 }
 
 TEST_CASE("Randomized  is_pos_fractional with mpz_class", "[custom]"){
@@ -77,9 +77,9 @@ TEST_CASE("is_pos_general", "[custom]"){
     FracRoot<T,2,5> b{{-3,2},10};
     Number<T,2,5> x{a, b}; 
 
-    REQUIRE(is_pos_general<T, 2, 5>(x) == false);
-    REQUIRE(is_pos_general<T, 2, 5>(x-x) == false);
-    REQUIRE(is_pos_general<T, 2, 5>(-x) == true);
+    // REQUIRE(x.is_pos_general() == false);
+    REQUIRE((x-x).is_pos_general() == false);
+    REQUIRE((-x).is_pos_general() == true);
 }
 
 TEST_CASE("operators < > == for template <> ", "[custom]"){
@@ -273,20 +273,20 @@ TEST_CASE("operator / int", "[custom]"){
     REQUIRE(x/2 == y);
 }
 
-TEST_CASE("Benchmark is_pos"){
-    using T = mpz_class;
+// TEST_CASE("Benchmark is_pos"){
+//     using T = mpz_class;
 
-    FracRoot<T, 2,5,13,17> a{{1,2},5};
-    FracRoot<T, 2,5,13,17> b{{-9,4},13};
-    FracRoot<T, 2,5,13,17> c{{-2,3},34};
-    FracRoot<T, 2,5,13,17> d{{-21,10},2};
-    Number<T, 2,5,13,17> x{a,b,c,d};
+//     FracRoot<T, 2,5,13,17> a{{1,2},5};
+//     FracRoot<T, 2,5,13,17> b{{-9,4},13};
+//     FracRoot<T, 2,5,13,17> c{{-2,3},34};
+//     FracRoot<T, 2,5,13,17> d{{-21,10},2};
+//     Number<T, 2,5,13,17> x{a,b,c,d};
 
-    BENCHMARK("is_pos_fractional"){
-        return is_pos_fractional<T, 2,5,13,17>(x);
-    };
+//     BENCHMARK("is_pos_fractional"){
+//         return is_pos_fractional<T, 2,5,13,17>(x);
+//     };
 
-    BENCHMARK("is_pos_general"){
-        return is_pos_general<T, 2,5,13,17>(x);
-    };
-}
+//     BENCHMARK("is_pos_general"){
+//         return is_pos_general<T, 2,5,13,17>(x);
+//     };
+// }

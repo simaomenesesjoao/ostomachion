@@ -11,11 +11,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.31.5/CMakeCCompiler.cmake"
   "CMakeFiles/3.31.5/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.31.5/CMakeSystem.cmake"
-  "/home/simao/projectos_pessoais/ostomachion/numeric/CMakeLists.txt"
-  "/usr/lib/cmake/Catch2/Catch2Config.cmake"
-  "/usr/lib/cmake/Catch2/Catch2ConfigVersion.cmake"
-  "/usr/lib/cmake/Catch2/Catch2Targets-noconfig.cmake"
-  "/usr/lib/cmake/Catch2/Catch2Targets.cmake"
   "/usr/share/cmake/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake/Modules/CMakeCXXInformation.cmake"
   "/usr/share/cmake/Modules/CMakeCommonLanguageInclude.cmake"
@@ -55,11 +50,9 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
-  "numeric/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/NumTest.dir/DependInfo.cmake"
-  "numeric/CMakeFiles/Numeric.dir/DependInfo.cmake"
+  "CMakeFiles/Main.dir/DependInfo.cmake"
   )

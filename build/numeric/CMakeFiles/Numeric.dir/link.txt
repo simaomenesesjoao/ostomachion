@@ -1,2 +1,0 @@
-/usr/bin/ar qc libNumeric.a CMakeFiles/Numeric.dir/instantiator.cpp.o
-/usr/bin/ranlib libNumeric.a

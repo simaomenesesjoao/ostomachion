@@ -1,10 +1,7 @@
-#include "numeric/numbers.cpp"
-#include <gmpxx.h>
+#include "numbers.hpp"
 #include <iostream>
 
 int main(){
-
-    Number<mpz_class, 2, 5> x{3};
-    std::cout << x.is_zero() << std::endl;
-
+    Number<int, 2, 5> x{3};
+    std::cout << x-x << std::endl;
 }
