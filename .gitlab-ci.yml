@@ -4,7 +4,7 @@ stages:
 
 # Define the build environment
 before_script:
-  - apt-get install libgmp3-dev
+  - apt-get install libgmp-dev
 
 # # Build and install Catch2 (from GitHub)
 # install_catch2:
