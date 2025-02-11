@@ -3,8 +3,8 @@ stages:
   - build
 
 # Define the build environment
-before_script:
-  - apt-get install libgmp-dev
+# before_script:
+#   - apt-get install libgmp-dev
 
 # # Build and install Catch2 (from GitHub)
 # install_catch2:
@@ -21,7 +21,7 @@ before_script:
 #       - /usr/local/include/catch2
 
 build:
-  image: danger89/cmake
+  image: smjoao/osto:latest
   stage: build
   script:
     - echo "Building solver"
@@ -33,7 +33,7 @@ build:
       - bin/
 
 test_numeric:
-  image: danger89/cmake
+  image: smjoao/osto:latest
   stage: build
   script:
     - cd numeric/tests
