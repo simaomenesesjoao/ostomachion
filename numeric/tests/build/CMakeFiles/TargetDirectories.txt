@@ -1,3 +1,0 @@
-/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles/numbers_test.dir
-/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles/edit_cache.dir
-/home/simao/osto/ostomachion/numeric/tests/build/CMakeFiles/rebuild_cache.dir

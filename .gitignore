@@ -1,4 +1,5 @@
 .vscode
+explorations
 __pycache__
 build
 CMakeFiles
