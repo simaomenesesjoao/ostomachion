@@ -2,127 +2,103 @@
 #include <cassert>
 #include "polygon.cpp"
 
-int main(){
-    {
-        std::cout << "Testing_edges_intersect" << std::endl;
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 
-        using P = Point<Number<int, 2, 3>>;
-        P A{0,0}, B{1,2}, C{0,1}, D{1,0}, E{1,-1};
+TEST_CASE("edges_intersect", "[custom]"){
+    using P = Point<Number<int, 2, 3>>;
+    P A{0,0}, B{1,2}, C{0,1}, D{1,0}, E{1,-1};
 
-        //   | B
-        //   C
-        // --AD---->
-        //   |E
+    //   | B
+    //   C
+    // --AD---->
+    //   |E
 
-        assert(edges_intersect(A, B, C, D) == true);
-        assert(edges_intersect(A, E, C, D) == false);
-        assert(edges_intersect(A, B, A, B) == false);
-        assert(edges_intersect(A, B, D, E) == false);
-        assert(edges_intersect(A, C, A, D) == false);
-        assert(edges_intersect(C,-C, A, D) == false);
-    }
-
-
-      {
-        std::cout << "Testing point_on_edge" << std::endl;
-        using P = Point<Number<int, 2, 3>>;
-        P A{0,0}, B{1,1}, C{2,2}, D{1,0}, E{1,-1};
-
-        //   | C
-        //   |B
-        // --AD---->
-        //   |E
-
-        assert(point_on_edge(A, B, C) == false);
-        assert(point_on_edge(A, C, B) == true);
-        assert(point_on_edge(A, B, D) == false);
-        assert(point_on_edge(A, B, B) == false);
-        
-    }
+    REQUIRE(edges_intersect(A, B, C, D) == true);
+    REQUIRE(edges_intersect(A, E, C, D) == false);
+    REQUIRE(edges_intersect(A, B, A, B) == false);
+    REQUIRE(edges_intersect(A, B, D, E) == false);
+    REQUIRE(edges_intersect(A, C, A, D) == false);
+    REQUIRE(edges_intersect(C,-C, A, D) == false);
+}
 
 
-    {
-        std::cout << "Testing edge_intersects_vertex" << std::endl;
+TEST_CASE("point_on_edge", "[custom]"){
+    using P = Point<Number<int, 2, 3>>;
+    
+    P A{0,0}, B{1,1}, C{2,2}, D{1,0}, E{1,-1};
 
-        Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
+    //   | C
+    //   |B
+    // --AD---->
+    //   |E
 
-        assert(is_inner_vertex({-1,-1}, {1,1}, poly.head) == false);
-        assert(is_inner_vertex({-1,1}, {1,-1}, poly.head) == false);
-        assert(is_inner_vertex({1,-1}, {-1,1}, poly.head) == true);
-        
-        
-    }
+    REQUIRE(point_on_edge(A, B, C) == false);
+    REQUIRE(point_on_edge(A, C, B) == true);
+    REQUIRE(point_on_edge(A, B, D) == false);
+    REQUIRE(point_on_edge(A, B, B) == false);
+}
 
-
-    {
-        std::cout << "Testing edge_splits_vertex" << std::endl;
-
-        Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
-
-        assert(edge_splits_vertex({-1,-1}, {1,1}, poly.head) == true);
-        assert(edge_splits_vertex({-1,1}, {1,-1}, poly.head) == false);
-        assert(edge_splits_vertex({1,-1}, {-1,1}, poly.head) == false);
-        
-    }
-
+TEST_CASE("edge_intersects_vertex", "[custom]"){
+    Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
+    REQUIRE(is_inner_vertex({-1,-1}, {1,1}, poly.head) == false);
+    REQUIRE(is_inner_vertex({-1,1}, {1,-1}, poly.head) == false);
+    REQUIRE(is_inner_vertex({1,-1}, {-1,1}, poly.head) == true);
+}
 
 
-    {
-        std::cout << "Testing shoelace area formula" << std::endl;
-        using Num = Number<int, 2, 3>;
-        Point<Num> A{0,0}, B{1,0}, C{1,1}, D{0,1}; 
-        assert((shoelace_area<Num>({A,B,C,D})) == 1); // anticlockwise polygon > 0
-        assert((shoelace_area<Num>({D,C,B,A})) == -1); // clockwise polygon < 0
+TEST_CASE("edge_splits_vertex", "[custom]"){
+    Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
+    REQUIRE(edge_splits_vertex({-1,-1}, {1,1}, poly.head) == true);
+    REQUIRE(edge_splits_vertex({-1,1}, {1,-1}, poly.head) == false);
+    REQUIRE(edge_splits_vertex({1,-1}, {-1,1}, poly.head) == false);
+    
+}
 
-    }
-
-
-
-    {
-        std::cout << "Testing nodes_compatible" << std::endl;
-
-        Node<Number<int, 2, 3, 5>> M({0,0}), N({0,0}), P({0,0}), A({0,0}), B({0,0});
-
-
-        // /_
-        A.update_start({1,1});
-        A.update_end({1,0});
+TEST_CASE("shoelace area formula", "[custom]"){
+    using Num = Number<int, 2, 3>;
+    Point<Num> A{0,0}, B{1,0}, C{1,1}, D{0,1}; 
+    REQUIRE((shoelace_area<Num>({A,B,C,D})) == 1); // anticlockwise polygon > 0
+    REQUIRE((shoelace_area<Num>({D,C,B,A})) == -1); // clockwise polygon < 0
+}
 
 
-        // //
-        B.update_start({1,2});
-        B.update_end({2,1});
+TEST_CASE("nodes_compatible", "[custom]"){
+    Node<Number<int, 2, 3, 5>> M({0,0}), N({0,0}), P({0,0}), A({0,0}), B({0,0});
 
-        // /_
-        M.update_start({1,0});
-        M.update_end({1,1});
-
-        // _|
-        N.update_start({0,1});
-        N.update_end({-1,0});
-
-        // |_
-        P.update_start({1,0});
-        P.update_end({0,1});
-
-        assert(nodes_compatible(M,N) == true);
-        assert(nodes_compatible(M,P) == false);
-        assert(nodes_compatible(N,P) == true);
-
-        assert(nodes_compatible(A,M) == true);
-        assert(nodes_compatible(A,P) == false);
-        assert(nodes_compatible(B,P) == false);
-    }
+    // /_
+    A.update_start({1,1});
+    A.update_end({1,0});
 
 
+    // //
+    B.update_start({1,2});
+    B.update_end({2,1});
 
-    {
-        std::cout << "Testing angles_compatible" << std::endl;
-        
-        Angle<Number<int, 2, 3>> A{0,1}, B{-1,1}, C{-1,-1};
-        assert(angles_compatible(A,B) == true);
-        assert(angles_compatible(C,C) == false);
-        assert(angles_compatible(A,C) == true);
-        assert(angles_compatible(B,C) == true);
-    }
+    // /_
+    M.update_start({1,0});
+    M.update_end({1,1});
+
+    // _|
+    N.update_start({0,1});
+    N.update_end({-1,0});
+
+    // |_
+    P.update_start({1,0});
+    P.update_end({0,1});
+
+    REQUIRE(nodes_compatible(M,N) == true);
+    REQUIRE(nodes_compatible(M,P) == false);
+    REQUIRE(nodes_compatible(N,P) == true);
+    REQUIRE(nodes_compatible(A,M) == true);
+    REQUIRE(nodes_compatible(A,P) == false);
+    REQUIRE(nodes_compatible(B,P) == false);
+}
+
+TEST_CASE("angles_compatible", "[custom]"){
+    Angle<Number<int, 2, 3>> A{0,1}, B{-1,1}, C{-1,-1};
+    REQUIRE(angles_compatible(A,B) == true);
+    REQUIRE(angles_compatible(C,C) == false);
+    REQUIRE(angles_compatible(A,C) == true);
+    REQUIRE(angles_compatible(B,C) == true);
 }
