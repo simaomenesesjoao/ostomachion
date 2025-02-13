@@ -2,16 +2,16 @@ build:
   image: smjoao/osto:latest
   script:
     - echo "Building solver"
+    - cd solver
     - cmake -S . -B build
     - cmake --build build -j10
     - cmake --install build
-  artifacts:
-    paths:
-      - bin/
+
 
 test_numeric:
   image: smjoao/osto:latest
   script:
+    - echo "Testing numeric"
     - cd numeric/tests
     - cmake -S . -B build
     - cmake --build build
@@ -21,21 +21,13 @@ test_numeric:
 test_state:
   image: smjoao/osto:latest
   script:
+    - echo "Testing state"
     - cd state/tests
     - cmake -S . -B build
     - cmake --build build
     - build/state_test
 
 
-# test_state:
-#   image: gcc:latest
-#   stage: test
-#   script:
-#     - cd numeric/tests
-#     - cmake -S . -B build
-#     - cmake --build build
-#     - build/numbers_test
-    
 # benchmark:
 #   stage: test
 #   image: gcc:latest
