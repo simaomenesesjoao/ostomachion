@@ -112,18 +112,17 @@ int Number<T, Ints...>::is_pos_fractional() const {
         return 0;
 }
 
-template <typename U, int... Ints2>
 template <typename T, int A, int... Ints>
-bool Number<U, Ints2...>::is_pos_general() const {
+bool is_pos_general_f(Number<T, A, Ints...> const & x){
 
-    if((*this) == 0){
+    if(x == 0){
         return false;
     }
         
 
     Number<T, Ints...> a{}, b{}; 
     
-    for(auto& [root, digit]: digits){
+    for(auto& [root, digit]: x.digits){
         T num = digit.get_num();
         T den = digit.get_den();
         if(root % A == 0){
@@ -134,39 +133,44 @@ bool Number<U, Ints2...>::is_pos_general() const {
     }
 
     if(a == 0){
-        return b.is_pos_general();
+        return is_pos_general_f(b);
     } else if(b == 0){
-        return a.is_pos_general();
+        return is_pos_general_f(a);
     }
 
-    bool a_pos = a.is_pos_general();
-    bool b_pos = b.is_pos_general();
+    bool a_pos = is_pos_general_f(a);
+    bool b_pos = is_pos_general_f(b);
 
     if(a_pos and b_pos) return true;
     if(!a_pos and !b_pos) return false;
 
     Number<T, Ints...> c = a*a - b*b*A; // numeric precision problem!
-    bool c_pos = c.is_pos_general();
+    bool c_pos = is_pos_general_f(c);
     return (a_pos and c_pos) or (!a_pos and !c_pos);
 }
 
 // This will only match when there's an empty parameter stack
 template <typename T, int... Ints>
-bool Number<T, Ints...>::is_pos_general() const{
-    if((*this) == 0) {
+bool is_pos_general_f(Number<T, Ints...> const& x){
+    if(x == 0) {
         return false;
     } else {
-        auto& [root, digit] = *(digits.begin());
+        auto& [root, digit] = *x.digits.begin();
         return digit.get_num()*digit.get_den() > 0;
 
     }   
 }
 
 template <typename T, int... Ints>
+bool Number<T, Ints...>::is_pos_general() const{
+    return is_pos_general_f(*this);
+}
+
+template <typename T, int... Ints>
 bool Number<T, Ints...>::is_pos() const {
     int fractional_compare = is_pos_fractional();
     if(fractional_compare == 0)
-        return is_pos_general();
+        return this->is_pos_general();
     else 
         return fractional_compare > 0;
 }

@@ -50,7 +50,13 @@ public:
     Number conjugate(int) const;
     Number inverse() const;
 
-    template <typename U, int A, int... Ints2> bool is_pos_general() const;
+    template <typename U, int A, int... Ints2>
+    friend bool is_pos_general_f(Number<U, A, Ints2...> const&);
+
+    template <typename U, int... Ints2>
+    friend bool is_pos_general_f(Number<U, Ints2...> const &);
+    
+
     bool is_pos_general() const;
     int is_pos_fractional() const;
     bool is_pos() const;
