@@ -15,7 +15,7 @@ class Tracker{
 
 template <typename Num>
 class State{
-    using Type = Num::Type;
+    //using Type = Num::Type;
     using Poly = Polygon<Num>;
     using Nod = Node<Num>;
     using Ang = Angle<Num>;
@@ -36,9 +36,9 @@ public:
         current_polygon{_poly}, used_polys{_used_polys}{}
 
     // Constructor
-    State():current_polygon(polygons<Type>::frame){
+    State():current_polygon(polygons<Num>::frame){
         // grid{2, 3, {-1,1}, {-1,1}, {13,1}, {13,1}}
-        for(unsigned i=0; i<polygons<Type>::num_polygons; i++){
+        for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
             used_polys.push_back(std::vector<Poi>());
         }
 
@@ -95,13 +95,13 @@ public:
         Nod& obtusest_node = current_polygon.ll_node_from_index(obtusest_node_index)->data;
 
         // Find which polygons haven't been used yet
-        for(unsigned i = 0; i < polygons<Type>::num_polygons; i++){
+        for(unsigned i = 0; i < polygons<Num>::num_polygons; i++){
             
 
             if(used_polys.at(i).size() != 0) 
                 continue;
 
-            Poly poly = Poly(polygons<Type>::polyset.at(i));
+            Poly poly = Poly(polygons<Num>::polyset.at(i));
             LL_Node<Nod> *current = poly.head;
             for(unsigned j = 0; j < poly.size_ll; j++){
                 Nod& proposed_node = current->data;

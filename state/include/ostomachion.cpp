@@ -8,7 +8,7 @@
 template <typename T>
 struct polygons{
 
-    using Poly = Polygon<Number<T,2,5,13,17>>;
+    using Poly = Polygon<T>;
     static Poly frame, poly1, poly2, poly3,  poly4,  poly5,  poly6,  poly7,
                              poly8, poly9, poly10, poly11, poly12, poly13, poly14;
 
@@ -38,16 +38,3 @@ std::vector<typename polygons<T>::Poly> polygons<T>::polyset{
         polygons::poly4,  polygons::poly5,  polygons::poly6,   polygons::poly7, 
         polygons::poly8,  polygons::poly9,  polygons::poly10,  polygons::poly11, 
         polygons::poly12, polygons::poly13, polygons::poly14};
-
-// int main(){
-    
-//     std::cout << "Frame:" << std::endl;
-//     polygons::frame.print();
-
-//     int i = 0;
-//     for(auto& polygon: polygons::polyset){
-//         std::cout << "polygon " << i << std::endl;
-//         polygon.print();
-//         i++;
-//     }
-// }

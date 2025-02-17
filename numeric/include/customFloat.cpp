@@ -38,10 +38,6 @@ public:
         return *this;
     }
 
-    // Float  operator+(Fraction<T> const& x) const;
-    // Float& operator+=(Fraction<T> const& x);
-    // Float  operator+(FracRoot<T, Ints...> const& x) const;
-    // Float& operator+=(FracRoot<T, Ints...> const& x);
     Float  operator+(Float const& other) const {
         Float ff{*this};
         ff.x += other.x;
@@ -115,23 +111,22 @@ public:
         return x < other.x;
     }
 
-    template <typename U> bool operator<(U other) const {
+    template <typename U> bool operator<(U const& other) const {
         return x < other;
     }
 
     template <typename U> bool operator>=(U const& other) const {
-        return !(x < other);
+        return !(other > x);
     }
+
     template <typename U> bool operator<=(U const& other) const {
-        return !(x > other);
+        return !(other < x);
     }
 
     template <typename U> explicit operator U() const {
         return (U)x;
     };
-    // bool is_zero() const;
-    // Float conjugate(int) const;
-    // Float inverse() const;
+    
 
     template <typename U, int...Args>
     friend std::ostream& operator<<(std::ostream & os, Float<U> const& Float);
