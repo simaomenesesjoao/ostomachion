@@ -116,7 +116,7 @@ constexpr Limits<Integer> find_bounds(Integer N, double precision){
 }
 
 template <typename T>
-constexpr int return2(T x){
+constexpr int return2([[maybe_unused]] T x){
     return 2;
 }
 

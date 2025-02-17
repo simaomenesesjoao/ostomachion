@@ -3,6 +3,10 @@
 #include <map>
 #include "fracroot.cpp"
 
+#ifndef APPROX_COMPARISON
+#define APPROX_COMPARISON 1
+#endif
+
 template <typename T = int, int... Ints>
 class Number{
     

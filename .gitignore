@@ -4,7 +4,7 @@ __pycache__
 build
 CMakeFiles
 bin
-*.out
+*.out*
 *.log
 *.o
 *.o.d

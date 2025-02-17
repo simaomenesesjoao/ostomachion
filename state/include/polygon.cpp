@@ -546,7 +546,8 @@ public:
         // std::cout << "points in2: " << cond6 << std::endl;
         // return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
 
-        return edge_edge_intersection(other) or node_node_intersection(other) 
+        // return edge_edge_intersection(other);
+        return edge_edge_intersection(other) or  node_node_intersection(other) 
         or edge_node_intersection(other) or other.edge_node_intersection(*this) 
              or points_inside(other) or other.points_inside(*this);
     }

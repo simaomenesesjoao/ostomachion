@@ -6,6 +6,11 @@ set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
 project(Main1 VERSION 1.0)
 # find_library(NUMERIC Numeric PATHS ${CMAKE_CURRENT_SOURCE_DIR}/numeric/lib/ REQUIRED)
 
+if(DEFINED APPROX_COMPARISON)
+    message(STATUS "APPROX_COMPARISON is defined with value: ${APPROX_COMPARISON}")
+    add_definitions(-DAPPROX_COMPARISON)
+endif()
+
 add_executable(interactive src/interactive_state.cpp)
 target_link_libraries(interactive PUBLIC gmp gmpxx)
 target_include_directories(interactive PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../numeric/include)

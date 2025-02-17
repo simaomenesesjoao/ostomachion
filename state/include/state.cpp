@@ -1,9 +1,10 @@
 #ifndef STATE_C
 #define STATE_C
 
-#include "polygon.cpp"
 #include <set>
+#include "polygon.cpp"
 #include "ostomachion.cpp"
+#include "grid.cpp"
 
 template <int... Ints>
 class Tracker{
@@ -24,12 +25,8 @@ class State{
 public:
     
     Poly current_polygon;
+    Grid<Num> grid;
     std::vector<std::vector<Poi>> used_polys;
-    
-    // Tracker<Ints...> tracker;
-
-    // State(Tracker& tracker): current_polygon{polygons::frame}, tracker{tracker}{
-    // }
 
     State(State const& other):
         current_polygon(other.current_polygon), 
@@ -38,10 +35,21 @@ public:
     State(Poly const& _poly, std::vector<std::vector<Poi>> const& _used_polys):
         current_polygon{_poly}, used_polys{_used_polys}{}
 
+    // Constructor
     State():current_polygon(polygons<Type>::frame){
+        // grid{2, 3, {-1,1}, {-1,1}, {13,1}, {13,1}}
         for(unsigned i=0; i<polygons<Type>::num_polygons; i++){
             used_polys.push_back(std::vector<Poi>());
         }
+
+        LL_Node<Node<Num>>* current = current_polygon.head;
+        for(unsigned i=0; i<current_polygon.size_ll; i++){
+            // grid.rasterize_edge(current);
+            current = current->next;
+        }
+
+        
+
     }
     // ~State(){
 
@@ -104,6 +112,7 @@ public:
                     poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, 
                                 obtusest_node.position);
                     if(not current_polygon.overlaps(poly)){
+                    // if(true or not current_polygon.overlaps(poly)){
 
                         // Posso ter um merge que não canibalize o outro polígono - rvalue refs
                         Poly new_frame{current_polygon}; // move this into the next state

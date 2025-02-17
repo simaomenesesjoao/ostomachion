@@ -6,6 +6,8 @@
 #include <cassert>
 #include <gmpxx.h>
 
+
+
 template <typename T, int... Ints>
 template <typename... U>
 Number<T, Ints...>::Number(U... digit_list){
@@ -168,11 +170,15 @@ bool Number<T, Ints...>::is_pos_general() const{
 
 template <typename T, int... Ints>
 bool Number<T, Ints...>::is_pos() const {
+#if APPROX_COMPARISON == 1
     int fractional_compare = is_pos_fractional();
     if(fractional_compare == 0)
         return this->is_pos_general();
     else 
         return fractional_compare > 0;
+#else 
+    return this->is_pos_general();
+#endif
 }
 
 
