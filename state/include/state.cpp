@@ -15,13 +15,10 @@ class Tracker{
 
 template <typename Num>
 class State{
-    //using Type = Num::Type;
     using Poly = Polygon<Num>;
     using Nod = Node<Num>;
     using Ang = Angle<Num>;
     using Poi = Point<Num>;
-    // Characterizes an ostomachion state by the current polygon 
-    // (through the positions of the Nodes) and unused polygons
 public:
     
     Poly current_polygon;
@@ -82,9 +79,6 @@ public:
 
     }
 
-    
-
-    
     std::vector<State> find_next_states() const{
         // Find the node with smallest internal angle
         std::vector<State> next_states;
@@ -97,7 +91,6 @@ public:
         // Find which polygons haven't been used yet
         for(unsigned i = 0; i < polygons<Num>::num_polygons; i++){
             
-
             if(used_polys.at(i).size() != 0) 
                 continue;
 

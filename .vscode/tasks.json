@@ -58,25 +58,6 @@
             "dependsOn": [
                 "Configure DEBUG"
             ]
-        },
-        {
-            "label": "Config + Build (DEBUG)",
-            "type": "cppbuild",
-            "command": "ls",
-            "args": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "simao CMake configure and build in debug mode.",
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Configure DEBUG",
-                "Build simao"
-            ]
         }
     ]
 }
