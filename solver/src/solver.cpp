@@ -48,6 +48,10 @@ int main(int argc, char** argv){
     int n=0;
     for(auto& index: indices){
         auto next_states = state.find_next_states();
+
+        if(next_states.size() == 0)
+            return 0;
+
         state = next_states.at(index);
         n++;
     }

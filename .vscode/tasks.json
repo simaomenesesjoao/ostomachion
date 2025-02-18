@@ -1,0 +1,82 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Configure DEBUG",
+            "type": "cppbuild",
+            "command": "cmake",
+            "args": [
+                "-S",
+                ".",
+                "-B",
+                "build",
+                "-DCMAKE_BUILD_TYPE=Debug"
+            ],
+            "options": {
+                "cwd": "${fileDirname}/.."
+            },
+            "group": {
+                "kind": "build"
+            },
+            "detail": "CMake configure task -simao."
+        },
+        {
+            "label": "Configure RELEASE",
+            "type": "cppbuild",
+            "command": "cmake",
+            "args": [
+                "-S",
+                ".",
+                "-B",
+                "build"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "group": {
+                "kind": "build"
+            },
+            "detail": "CMake configure task -simao."
+        },
+        {
+            "label": "Build simao",
+            "type": "cppbuild",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "-j10"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "options": {
+                "cwd": "${fileDirname}/.."
+            },
+
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Configure DEBUG"
+            ]
+        },
+        {
+            "label": "Config + Build (DEBUG)",
+            "type": "cppbuild",
+            "command": "ls",
+            "args": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "simao CMake configure and build in debug mode.",
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Configure DEBUG",
+                "Build simao"
+            ]
+        }
+    ]
+}

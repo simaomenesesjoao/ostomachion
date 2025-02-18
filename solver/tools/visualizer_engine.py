@@ -67,7 +67,7 @@ def parse_states_string(states_string):
 
 
 def get_cpp_state(indices):
-    cpp_program = '../bin/interactive'  # Path to the compiled C++ program
+    cpp_program = '../build/interactive'  # Path to the compiled C++ program
     arguments = [str(index) for index in indices]
 
     # Run the C++ program with arguments using subprocess

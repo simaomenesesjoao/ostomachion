@@ -131,9 +131,12 @@ public:
     template <typename U, int...Args>
     friend std::ostream& operator<<(std::ostream & os, Float<U> const& Float);
 
+    T get(){
+        return x;
+    }
 private:
     T x;
-    T tol = 1e-6;
+    T tol = 1e-9;
 };
 
 template <typename T, int... Ints>

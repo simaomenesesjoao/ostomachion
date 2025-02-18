@@ -4,6 +4,7 @@
 #include <fstream>
 #include <gmpxx.h>
 #include <iostream>
+#include "customFloat.cpp"
 
 int main(int argc, char** argv){
 
@@ -14,7 +15,8 @@ int main(int argc, char** argv){
     }
 
     using T = mpz_class;
-    using Num = Number<T, 2, 5, 13, 17>;
+    // using Num = Number<T, 2, 5, 13, 17>;
+    using Num = Float<double>;
     
     State<Num> state;
     std::vector<State<Num>> next_states = state.find_next_states();
