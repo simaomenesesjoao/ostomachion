@@ -1,5 +1,6 @@
 #include "include/customFloat.cpp"
 #include <iostream>
+#include <iomanip>
 
 template <typename T>
 T operations(T const& x){
@@ -27,12 +28,27 @@ T operations(T const& x){
 }
 
 int main(){
-    using F = Float<float>;
-    F x(0,1,2,3,4), y{3};
-    auto out1 = operations(x).get();
-    auto out2 = operations(x.get());
 
-    std::cout << "identical? " << out1 << "  " << out2 << " " << out1-out2 << " " << (out1 == out2) << "\n";
+    {
+        using F = Float<double>;
+        F x{0}, y{0};
+        x = x + 0.89442719099991597;
+        y = y + -0.44721359549995798;
+
+
+        std::cout << x << " " << (x == 1) << "\n";
+        std::cout << y << " " << (y == 0) << "\n";
+    }
+
+    {
+        using F = Float<float>;
+        F x(0,1,2,3,4), y{3};
+        auto out1 = operations(x).get();
+        auto out2 = operations(x.get());
+
+        std::cout << "identical? " << out1 << "  " << out2 << " " << out1-out2 << " " << (out1 == out2) << "\n";
+    }
+
 
     // std::cout << "1: " << x << " " << y << "\n";
 

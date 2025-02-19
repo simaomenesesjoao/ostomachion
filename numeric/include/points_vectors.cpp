@@ -283,6 +283,17 @@ public:
 };
 
 
+template <typename Num>
+std::ostream & operator<<(std::ostream& stream, Node<Num> const& node){
+    stream <<    "( " << node.position << ", " 
+                      << node.angle_start << ", "
+                      << node.angle_end << ", "
+                      << node.angle_opening << ")";
+    return stream;
+}
+
+
+
 template <typename T>
 struct LL_Node{
     T data;

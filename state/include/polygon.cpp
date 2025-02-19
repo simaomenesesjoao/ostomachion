@@ -588,12 +588,4 @@ std::ostream& operator<<(std::ostream& stream, Polygon<Num> const& poly){
     return stream;
 }
 
-template <typename Num>
-std::ostream & operator<<(std::ostream& stream, Node<Num> const& node){
-    stream <<    "( " << node.position << ", " 
-                      << node.angle_start << ", "
-                      << node.angle_end << ")";
-    return stream;
-}
-
 #endif // POLYGON_C

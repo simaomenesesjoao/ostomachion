@@ -88,31 +88,31 @@ public:
 
     // Comparison operators
     bool operator==(Float const& other) const {
-        return abs(x - other.x) < tol;
+        return fabs(x - other.x) < tol;
     }
 
     bool operator==(int other) const {
-        return abs(x - other) < tol;
+        return fabs(x - other) < tol;
     }
 
     template <typename U> bool operator!=(U const& other) const {
-        return abs(x - other) > tol;
+        return fabs(x - other) > tol;
     }
 
     bool operator>(Float const& other) const {
-        return x > other.x;
+        return x > other.x + tol;
     }
 
     template <typename U> bool operator>(U other) const {
-        return x > other;
+        return x > other + tol;
     }
 
     bool operator<(Float const& other) const {
-        return x < other.x;
+        return x + tol < other.x;
     }
 
     template <typename U> bool operator<(U const& other) const {
-        return x < other;
+        return x + tol < other;
     }
 
     template <typename U> bool operator>=(U const& other) const {
@@ -136,7 +136,7 @@ public:
     }
 private:
     T x;
-    T tol = 1e-9;
+    T tol = 1e-6;
 };
 
 template <typename T, int... Ints>

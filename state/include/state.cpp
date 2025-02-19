@@ -87,9 +87,11 @@ public:
         
         unsigned obtusest_node_index = current_polygon.get_obtusest_index();
         Nod& obtusest_node = current_polygon.ll_node_from_index(obtusest_node_index)->data;
+        std::cout << current_polygon << "\n";
 
         // Find which polygons haven't been used yet
         for(unsigned i = 0; i < polygons<Num>::num_polygons; i++){
+
             
             if(used_polys.at(i).size() != 0) 
                 continue;
@@ -99,7 +101,7 @@ public:
             for(unsigned j = 0; j < poly.size_ll; j++){
                 Nod& proposed_node = current->data;
                 current = current->next;
-
+                
                 if(angles_compatible(proposed_node.angle_opening, obtusest_node.angle_opening)){
                     poly.translate(obtusest_node.position - proposed_node.position);
                     poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, 
@@ -115,7 +117,9 @@ public:
                         LL_Node<Nod> *node_poly = new_poly.ll_node_from_index(j);
 
                         new_frame.merge(node_frame, new_poly, node_poly);
+                        // std::cout << "New frame after merge " << new_frame << "\n";
                         new_frame.prune_LL({node_frame, node_poly});
+                        // std::cout << "New frame after prune " << new_frame << "\n";
                         std::vector<std::vector<Poi>> new_used_polys{used_polys};
 
                         LL_Node<Nod> *poly_node = poly.head;

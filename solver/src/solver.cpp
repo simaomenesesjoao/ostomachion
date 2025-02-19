@@ -5,7 +5,7 @@
 // valgrind --tool=callgrind ./test
 
 
-//using Num = Number<long long, 2, 5, 13, 17>;
+// using Num = Number<mpz_class, 2, 5, 13, 17>;
 using Num = Float<double>;
 
 std::vector<State<Num>> dfs(State<Num> const& state){
@@ -29,7 +29,6 @@ std::vector<State<Num>> dfs(State<Num> const& state){
 int main(int argc, char** argv){
     std::vector<unsigned> indices;
 
-    // auto indices = std::vector<unsigned>{10, 4, 4, 0};
     for(unsigned i=1; i<argc; i++){
         unsigned index = atoi(argv[i]);
         indices.push_back(index);

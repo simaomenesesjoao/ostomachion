@@ -24,8 +24,8 @@ int main(int argc, char** argv){
     for(auto& index: indices){
         
         if(next_states.size() == 0){
-            std::cout << "empty" << std::endl;
-            break;
+            // std::cout << "empty" << std::endl;
+            // break;
         }
 
         state = next_states.at(index);
