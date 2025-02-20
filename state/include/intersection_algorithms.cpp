@@ -77,11 +77,12 @@ bool point_on_edge(Point<Num> const& P, Point<Num> const& Q,
     Point<Num> q{Q-P};
     Num dq = q.dot(V-P);
     
+    return dq > 0 and dq < q.dot(q) and q.cross(V-P) == 0;
 
-    if(dq <= 0 or dq >= q.dot(q))
-        return false;
+    // if(dq <= 0 or dq >= q.dot(q))
+    //     return false;
 
-    return q.cross(V-P)==0;
+    // return q.cross(V-P)==0;
 }
 
 

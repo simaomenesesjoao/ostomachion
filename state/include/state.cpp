@@ -87,7 +87,7 @@ public:
         
         unsigned obtusest_node_index = current_polygon.get_obtusest_index();
         Nod& obtusest_node = current_polygon.ll_node_from_index(obtusest_node_index)->data;
-        std::cout << current_polygon << "\n";
+        //std::cout << current_polygon << "\n";
 
         // Find which polygons haven't been used yet
         for(unsigned i = 0; i < polygons<Num>::num_polygons; i++){
