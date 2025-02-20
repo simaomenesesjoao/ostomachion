@@ -14,9 +14,8 @@ int main(int argc, char** argv){
         indices.push_back(index);
     }
 
-    using T = mpz_class;
-    // using Num = Number<T, 2, 5, 13, 17>;
-    using Num = Float<double>;
+    using Num = Number<mpz_class, 2, 5, 13, 17>;
+    //using Num = Float<double>;
     
     State<Num> state;
     std::vector<State<Num>> next_states = state.find_next_states();
@@ -24,8 +23,8 @@ int main(int argc, char** argv){
     for(auto& index: indices){
         
         if(next_states.size() == 0){
-            // std::cout << "empty" << std::endl;
-            // break;
+            std::cout << "empty" << std::endl;
+            break;
         }
 
         state = next_states.at(index);
