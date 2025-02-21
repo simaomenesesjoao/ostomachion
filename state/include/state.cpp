@@ -106,6 +106,8 @@ public:
                     poly.translate(obtusest_node.position - proposed_node.position);
                     poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, 
                                 obtusest_node.position);
+                    // std::cout << poly << std::flush;
+                    poly.print(); std::cout << "\n\n";
                     if(not current_polygon.overlaps(poly)){
                     // if(true or not current_polygon.overlaps(poly)){
 
@@ -129,6 +131,7 @@ public:
                         }
                         
                         next_states.push_back({new_frame, new_used_polys});
+                        std::cout << "accepted\n";
                     }
                 }   
             }

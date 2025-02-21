@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/../build/${fileBasenameNoExtension}",
-            "args": ["10", "4", "4", "0"],
+            "args": ["10", "4", "4", "0", "22", "11"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

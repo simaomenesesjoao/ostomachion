@@ -1,5 +1,4 @@
 #include "intersection_algorithms.cpp"
-#include <cassert>
 #include "polygon.cpp"
 
 #include <catch2/catch_test_macros.hpp>
