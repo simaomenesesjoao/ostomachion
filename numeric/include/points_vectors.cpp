@@ -21,6 +21,33 @@ Angle<Num>::Angle(Num const& cos, Num const& sin):
 template <typename Num>
 Angle<Num>::Angle(){};
 
+template <typename Num>
+Angle<Num>::Angle(Angle&& other):sin(std::move(other.sin)),
+                                 cos(std::move(other.cos)){}
+template <typename Num>
+Angle<Num>::Angle(const Angle& other):sin(other.sin), cos(other.cos){}
+
+template <typename Num>
+Angle<Num>& Angle<Num>::operator=(Angle&& other){
+    if(this == &other)
+        return *this;
+
+    sin = std::move(other.sin);
+    cos = std::move(other.cos);
+    return *this;
+}
+
+template <typename Num>
+Angle<Num>& Angle<Num>::operator=(const Angle& other){
+    if(this == &other)
+        return *this;
+
+    sin = other.sin;
+    cos = other.cos;
+    return *this;
+}
+
+
 
 template <typename Num>
 Num Angle<Num>::get_cos() const{ return cos;}
@@ -120,6 +147,12 @@ bool Angle<Num>::is_zero() const{
     return cos == 1 && sin == 0;
 }
 
+
+template <typename Num>
+bool Angle<Num>::is_180() const{
+    return cos == -1 && sin == 0;
+}
+
 template <typename Num>
 std::ostream& operator<<(std::ostream& stream, Angle<Num> const& angle){
     stream << "ang=(" << angle.get_sin() << " " << angle.get_cos() << ")";
@@ -148,6 +181,28 @@ Point<Num>::Point(int x, int y):x{Num{x}}, y{Num{y}}{}
 
 template <typename Num>
 Point<Num>::Point(Num const& x, Num const& y):x{x}, y{y}{}
+
+template <typename Num>
+Point<Num>::Point(Point&& other):x{std::move(other.x)}, y{std::move(other.y)}{}
+
+template <typename Num>
+Point<Num>::Point(const Point& other):x{other.x}, y{other.y}{}
+
+
+template <typename Num>
+Point<Num>& Point<Num>::operator=(Point&& other){
+    x = std::move(other.x);
+    y = std::move(other.y);
+    return *this;
+}
+
+template <typename Num>
+Point<Num>& Point<Num>::operator=(const Point& other){
+    x = other.x;
+    y = other.y;
+    return *this;
+}
+
 
 template <typename Num>
 Point<Num>::operator std::pair<Num, Num>() const {

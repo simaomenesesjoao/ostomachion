@@ -299,7 +299,8 @@ public:
                     next.angle_end = -next.angle_end;
                     next.update_opening();
                 }
-
+            } else if(curr.angle_opening.is_180()){
+                // Nothing to do in this case
             } else {
                 // std::cout << "Nothing to do with this node" << std::endl;
                 modified = false;
@@ -473,6 +474,10 @@ public:
 
                 if(point_on_edge(P, Q, other_current->data.position)){
                     if(is_inner_vertex(P, Q, other_current)){
+                        // std::cout << "ij: " << i << " " << j << "\n";
+                        // std::cout << "PQ: " << P << " " << Q << " " << "\n";
+                        // std::cout << "other:" << other_current->data.position << "\n\n";
+                        
                         return true;
                     }
                 }
@@ -531,12 +536,12 @@ public:
 
     bool overlaps(Polygon const& other) const{
 
-        bool cond1 = edge_edge_intersection(other);
-        bool cond2 = node_node_intersection(other);
-        bool cond3 = edge_node_intersection(other);
-        bool cond4 = other.edge_node_intersection(*this);
-        bool cond5 = points_inside(other);
-        bool cond6 = other.points_inside(*this);
+        // bool cond1 = edge_edge_intersection(other);
+        // bool cond2 = node_node_intersection(other);
+        // bool cond3 = edge_node_intersection(other);
+        // bool cond4 = other.edge_node_intersection(*this);
+        // bool cond5 = points_inside(other);
+        // bool cond6 = other.points_inside(*this);
 
         // std::cout << "____\nedge edge: "  << cond1 << std::endl;
         // std::cout << "node node: "  << cond2 << std::endl;
@@ -544,12 +549,12 @@ public:
         // std::cout << "node edge: "  << cond4 << std::endl;
         // std::cout << "points in1: " << cond5 << std::endl;
         // std::cout << "points in2: " << cond6 << std::endl;
-        return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
+        // return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
 
         // return edge_edge_intersection(other);
-        // return edge_edge_intersection(other) or  node_node_intersection(other) 
-        // or edge_node_intersection(other) or other.edge_node_intersection(*this) 
-        //      or points_inside(other) or other.points_inside(*this);
+        return edge_edge_intersection(other) or  node_node_intersection(other) 
+        or edge_node_intersection(other) or other.edge_node_intersection(*this) 
+             or points_inside(other) or other.points_inside(*this);
     }
 
     LL_Node<Nod>* ll_node_from_index(unsigned index) const{

@@ -5,8 +5,8 @@
 // valgrind --tool=callgrind ./test
 
 
-using Num = Number<mpz_class, 2, 5, 13, 17>;
-//using Num = Float<double>;
+// using Num = Number<mpz_class, 2, 5, 13, 17>;
+using Num = Float<double>;
 
 std::vector<State<Num>> dfs(State<Num> const& state){
     //std::cout << "Calling dfs " << state.current_polygon.size_ll << std::endl;
@@ -14,7 +14,7 @@ std::vector<State<Num>> dfs(State<Num> const& state){
     if(state.current_polygon.size_ll == 0)
         return {state};
     
-    std::cout << state << "\n";
+    // std::cout << state << "\n";
     auto next_states = state.find_next_states();
 
     std::vector<State<Num>> final_states;

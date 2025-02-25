@@ -10,6 +10,11 @@ public:
     Angle(int x, int y);
     Angle(Num const& c, Num const& s);
     Angle();
+    Angle(Angle&&);
+    Angle(const Angle&);
+    Angle& operator=(const Angle&);
+    Angle& operator=(Angle&&);
+
     Angle operator+(Angle const& a) const;
     Angle operator-(Angle const& a) const;
     Angle operator-() const;
@@ -18,6 +23,7 @@ public:
     bool operator<(Angle const& a) const;
     // bool operator>(Angle const& a) const;
     bool is_zero() const;
+    bool is_180() const;
     bool is_larger_than_180() const;
     Num get_cos() const;
     Num get_sin() const;
@@ -39,6 +45,11 @@ class Point{
 public:
     Point(Num const& x, Num const& y);
     Point(int x, int y);
+    Point(Point&&);
+    Point(const Point&);
+    Point& operator=(Point&&);
+    Point& operator=(const Point&);
+    
     Point rotate(Angle<Num> const& a) const;
     Point operator+(Point const& P) const;
     Point operator-(Point const& P) const;

@@ -50,6 +50,39 @@ FracRoot<T, Ints...>::FracRoot(Fraction<T> const& fraction, int r):frac{fraction
 }
 
 
+
+template <typename T, int... Ints>
+FracRoot<T, Ints...>::FracRoot(FracRoot&& other):
+    frac{std::move(other.frac)}, root{other.root}{}
+
+template <typename T, int... Ints>
+FracRoot<T, Ints...>::FracRoot(const FracRoot& other):
+    frac(other.frac), root{other.root}{}
+
+template <typename T, int... Ints>
+FracRoot<T, Ints...>& FracRoot<T, Ints...>::operator=(FracRoot&& other){
+    if(this == &other)
+        return *this;
+
+    frac = std::move(other.frac);
+    root = other.root;    
+    return *this;
+
+}
+
+template <typename T, int... Ints>
+FracRoot<T, Ints...>& FracRoot<T, Ints...>::operator=(const FracRoot& other){
+    if(this == &other)
+        return *this;
+        
+    frac = other.frac;
+    root = other.root;  
+    return *this;
+}
+
+
+
+
 template <typename T, int... Ints>
 std::ostream& operator<<(std::ostream& os, FracRoot<T, Ints...> const & x){
     return os << x.frac.get_num() << "/" << x.frac.get_den() << "√" << x.root;

@@ -18,7 +18,9 @@ public:
     template <typename... U> explicit Number(U... digit_list);
     Number(int, int, int);
     Number(Number const& x);
+    Number(Number&&);
     Number& operator=(Number const&);
+    Number& operator=(Number&&);
 
     // Binary and unary operators
     Number  operator+(T x) const;

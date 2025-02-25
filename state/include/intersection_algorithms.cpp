@@ -28,9 +28,6 @@ bool edges_intersect(Point<Num> const& P1, Point<Num> const& P2,
     V perp_q{q.get_y(), -q.get_x()};
     V perp_p{p.get_y(), -p.get_x()};
 
-    Num pdv = perp_p.dot(v);
-    Num qdv = perp_q.dot(v);
-
     // q t - p s = v , s and t between 0 and 1
     // - perp_q . p s = perp_q . v
     // perp_p . q t = perp_p . v
@@ -109,7 +106,7 @@ bool is_inner_vertex(Point<Num> const& P, Point<Num> const& Q,
     Point<Num> q{Q-P};
 
     // If V isn't between P and Q, this algorithm doesn't make sense
-    assert(point_on_edge(P, Q, V));
+    // assert(point_on_edge(P, Q, V));
     
 
     // std::cout << "current, prev, next" << std::endl;

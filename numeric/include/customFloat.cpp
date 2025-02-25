@@ -115,13 +115,24 @@ public:
         return x + tol < other;
     }
 
+    // template <typename U> bool operator>=(U const& other) const {
+    //     // x >= other 
+    //     return !(other > x);
+    // }
+
+    // template <typename U> bool operator<=(U const& other) const {
+    //     return !(other < x);
+    // }
+
+
     template <typename U> bool operator>=(U const& other) const {
-        return !(other > x);
+        return !(x + tol < other);
     }
 
     template <typename U> bool operator<=(U const& other) const {
-        return !(other < x);
+        return !(x > other + tol);
     }
+
 
     template <typename U> explicit operator U() const {
         return (U)x;

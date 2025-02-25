@@ -8,6 +8,10 @@ class FracRoot{
 public:
     FracRoot();
     FracRoot(Fraction<T> const& fraction, int r);
+    FracRoot(FracRoot&&);
+    FracRoot(const FracRoot&);
+    FracRoot& operator=(FracRoot&&);
+    FracRoot& operator=(const FracRoot&);
 
     template<typename U, int... Args>
     friend std::ostream& operator<<(std::ostream& os, FracRoot<U, Args...> const & x);

@@ -15,27 +15,48 @@ Number<T, Ints...>::Number(U... digit_list){
     Number x{};
     (x += ... += digit_list);
     digits = std::move(x.digits);
-    number_double = (double)(*this);
+    // number_double = (double)(*this);
 }
 
 template <typename T, int... Ints>
-Number<T, Ints...>::Number(Number const& x){
-    digits = x.digits;
-    number_double = (double)(*this);
-}
-
+Number<T, Ints...>::Number(Number const& other):digits{other.digits}{}
 
 template <typename T, int... Ints>
-Number<T, Ints...>& Number<T, Ints...>::operator=(Number const& x){
-    digits = x.digits;
-    number_double = (double)(*this);
-    return *this;
+Number<T, Ints...>::Number(Number&& other):
+            digits{std::move(other.digits)}{
+    
+
 }
 
 // Constructor delegation
 template <typename T, int... Ints>
 Number<T, Ints...>::Number(int num, int den, int root):
     Number(FracRoot<T, Ints...>{{num, den}, root}){}
+
+
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator=(Number const& other){
+    if(this == &other)
+        return *this;
+    digits = other.digits;
+    // number_double = (double)(*this);
+    return *this;
+}
+
+
+template <typename T, int... Ints>
+Number<T, Ints...>& Number<T, Ints...>::operator=(Number&& other){
+    if(this == &other)
+        return *this;
+        
+    digits = std::move(other.digits);
+    
+    return *this;
+}
+
+
+
+
 
 
 
