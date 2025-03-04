@@ -194,7 +194,7 @@ public:
             
             current = temp;
         }
-        area_positive = !area_positive;
+        
     }
 
     void merge(LL_Node<Nod> *this_node, Polygon & other_poly, LL_Node<Nod> *other_node){
@@ -579,6 +579,24 @@ public:
         }
         return index_largest;
     }
+
+
+
+    std::vector<std::vector<double>> as_vector() const {
+        std::vector<std::vector<double>> vector;
+        LL_Node<Nod>* current{head}; 
+        for(unsigned i=0; i<size_ll; i++){
+            double x = (double)current->data.position.get_x();
+            double y = (double)current->data.position.get_y();
+            std::vector<double> point{x,y};
+            vector.push_back(point);
+            current = current->next;
+        }
+        
+        return vector;
+    }
+
+
 };
 
 template <typename Num>

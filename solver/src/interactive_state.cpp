@@ -7,6 +7,7 @@
 #include "customFloat.cpp"
 
 int main(int argc, char** argv){
+    bool allow_reflection = false;
 
     std::vector<int> indices;
     for(int i=1; i<argc; i++){
@@ -15,10 +16,11 @@ int main(int argc, char** argv){
     }
 
     using Num = Number<mpz_class, 2, 5, 13, 17>;
+    using Inner = InnerState<Num, true, true>;
     //using Num = Float<double>;
     
-    State<Num> state;
-    std::vector<State<Num>> next_states = state.find_next_states();
+    State<Num, Inner> state;
+    std::vector<State<Num, Inner>> next_states = state.find_next_states(allow_reflection);
 
     for(auto& index: indices){
         
@@ -28,7 +30,7 @@ int main(int argc, char** argv){
         }
 
         state = next_states.at(index);
-        next_states = state.find_next_states();
+        next_states = state.find_next_states(allow_reflection);
     }
 
     for(auto& state: next_states)

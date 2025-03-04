@@ -43,13 +43,14 @@ template <typename Num>
 class Point{
     
 public:
+    Point();
     Point(Num const& x, Num const& y);
     Point(int x, int y);
     Point(Point&&);
     Point(const Point&);
     Point& operator=(Point&&);
     Point& operator=(const Point&);
-    
+
     Point rotate(Angle<Num> const& a) const;
     Point operator+(Point const& P) const;
     Point operator-(Point const& P) const;

@@ -23,9 +23,3 @@ target_include_directories(solver_parallel PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
 
 # install(TARGETS interactive DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 # install(TARGETS solver DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-
-# add_executable(degub src/degub.cpp)
-# target_link_libraries(degub PUBLIC gmp gmpxx)
-# target_include_directories(degub PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../numeric/include)
-# target_include_directories(degub PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../state/include)
-

@@ -16,20 +16,20 @@ struct polygons{
     static unsigned const num_polygons{14};
 };
 
-template <typename T> polygons<T>::Poly polygons<T>::frame({{0,0},  {0,12}, {12,12}, {12,0}});
-template <typename T> polygons<T>::Poly polygons<T>::poly1({{0,0},  {3,0},  {2,4}});
-template <typename T> polygons<T>::Poly polygons<T>::poly2({{3,0},  {3,6},  {2,4}});
-template <typename T> polygons<T>::Poly polygons<T>::poly3({{3,0},  {6,0},  {6,6},    {4,8}, {3,6}});
-template <typename T> polygons<T>::Poly polygons<T>::poly4({{0,0},  {4,8},  {2,10}});
-template <typename T> polygons<T>::Poly polygons<T>::poly5({{0,0},  {2,10}, {0,12}});
-template <typename T> polygons<T>::Poly polygons<T>::poly6({{0,12}, {4,8},  {6,12}});
-template <typename T> polygons<T>::Poly polygons<T>::poly7({{4,8},  {6,6},  {6,12}});
-template <typename T> polygons<T>::Poly polygons<T>::poly8({{6,0},  {8,4},  {6,6}});
-template <typename T> polygons<T>::Poly polygons<T>::poly9({{6,0},  {12,0}, {8,4}});
+template <typename T> polygons<T>::Poly polygons<T>::frame( {{0,0},  {0,12}, {12,12},  {12,0}});
+template <typename T> polygons<T>::Poly polygons<T>::poly1( {{0,0},  {3,0},  {2,4}});
+template <typename T> polygons<T>::Poly polygons<T>::poly2( {{3,0},  {3,6},  {2,4}});
+template <typename T> polygons<T>::Poly polygons<T>::poly3( {{3,0},  {6,0},  {6,6},    {4,8}, {3,6}});
+template <typename T> polygons<T>::Poly polygons<T>::poly4( {{0,0},  {4,8},  {2,10}});
+template <typename T> polygons<T>::Poly polygons<T>::poly5( {{0,0},  {2,10}, {0,12}});
+template <typename T> polygons<T>::Poly polygons<T>::poly6( {{0,12}, {4,8},  {6,12}});
+template <typename T> polygons<T>::Poly polygons<T>::poly7( {{4,8},  {6,6},  {6,12}});
+template <typename T> polygons<T>::Poly polygons<T>::poly8( {{8,4},  {6,6},  {6,0}});
+template <typename T> polygons<T>::Poly polygons<T>::poly9( {{12,0}, {8,4},  {6,0}});
 template <typename T> polygons<T>::Poly polygons<T>::poly10({{8,4},  {12,0}, {9,6}});
 template <typename T> polygons<T>::Poly polygons<T>::poly11({{9,6},  {12,0}, {12,6}});
 template <typename T> polygons<T>::Poly polygons<T>::poly12({{9,6},  {12,6}, {12,8}});
-template <typename T> polygons<T>::Poly polygons<T>::poly13({{6,6},  {8,4},  {9,6},   {6,12}});
+template <typename T> polygons<T>::Poly polygons<T>::poly13({{6,6},  {8,4},  {9,6},    {6,12}});
 template <typename T> polygons<T>::Poly polygons<T>::poly14({{9,6},  {12,8}, {12,12},  {6,12}});
 
 template <typename T>

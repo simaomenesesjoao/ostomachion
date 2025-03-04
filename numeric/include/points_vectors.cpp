@@ -175,6 +175,8 @@ Angle<Num>::operator T() const{
 
 
 
+template <typename Num>
+Point<Num>::Point():x{Num{0}}, y{Num{0}}{}
 
 template <typename Num>
 Point<Num>::Point(int x, int y):x{Num{x}}, y{Num{y}}{}
