@@ -96,7 +96,7 @@ private:
     std::mutex mtx;
 
 public:
-    void insert(const std::vector<State>& states, const std::vector<bool>& mask){
+    void insert(std::vector<State>& states, const std::vector<bool>& mask){
         std::lock_guard<std::mutex> lock(mtx);
         assert(states.size() == mask.size());
 
@@ -107,16 +107,24 @@ public:
 
     }
 
-    std::optional<State> get_next_pointer(){
+    std::optional<State> get_next_pointer(int i){
 
         std::lock_guard<std::mutex> lock(mtx);
+        
 
-        if(queue.size() == 0)
+        int N = queue.size();
+        if(N == 0)
             return std::nullopt;
 
+        // auto it = queue.rbegin() + std::min(N-1, i);
+        int n = N-1-i;
 
-        State last_state = std::move(queue.back());
-        queue.pop_back();
+        auto it = queue.begin() + std::max(n, 0);
+        // std::cout << n << " ";
+        
+        State last_state = *it;
+        //queue.pop_back();
+        queue.erase(it);
 
         return last_state;
     }

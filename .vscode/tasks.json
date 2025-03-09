@@ -2,8 +2,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Configure DEBUG",
-            "type": "cppbuild",
+            "label": "Configure DEBUG ..",
+            "type": "process",
             "command": "cmake",
             "args": [
                 "-S",
@@ -21,14 +21,15 @@
             "detail": "CMake configure task -simao."
         },
         {
-            "label": "Configure RELEASE",
-            "type": "cppbuild",
+            "label": "Configure DEBUG",
+            "type": "process",
             "command": "cmake",
             "args": [
                 "-S",
                 ".",
                 "-B",
-                "build"
+                "build",
+                "-DCMAKE_BUILD_TYPE=Debug"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -40,7 +41,28 @@
         },
         {
             "label": "Build simao",
-            "type": "cppbuild",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "-j10"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Configure DEBUG"
+            ]
+        },
+        {
+            "label": "Build simao ..",
+            "type": "process",
             "command": "cmake",
             "args": [
                 "--build",
@@ -56,7 +78,7 @@
 
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Configure DEBUG"
+                "Configure DEBUG .."
             ]
         }
     ]

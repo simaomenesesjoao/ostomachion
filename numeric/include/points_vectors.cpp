@@ -291,28 +291,25 @@ class Node{
     using Poin = Point<Num>;
 
 public:
-    Node(Poin const& P): position{P}{};
+    Node(Poin const& P): position{P}, end_init{false}, start_init{false}{};
 
 
     void update_opening(){
-        assert(end_init == true and start_init == true);
-        //if(end_init and start_init){
+        // assert(end_init == true and start_init == true);
+        if(end_init and start_init)
             angle_opening = angle_end - angle_start;
-            // larger_than_180 = angle_opening.larger_than_180();
-        //}
-        
     }
 
     void update_end(Ang const& A){
         angle_end = A;
         end_init = true;
-        // update_opening();
+        update_opening();
     }
 
     void update_start(Ang const& A){
         angle_start = A;
         start_init = true;
-        // update_opening();
+        update_opening();
     }
 
     void print(){

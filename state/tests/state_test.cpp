@@ -223,13 +223,13 @@ void process(Archive& archive,
              Queue& queue,
              std::vector<bool>& threads_status,
              unsigned thread_index,
-             bool allow_reflection){
+             bool allow_reflection, unsigned j){
 
     // double mutex_wait{0}, process_time{0};
     while(true){
 
 
-        auto maybe_state = queue.get_next_pointer();
+        auto maybe_state = queue.get_next_pointer(j);
             
         if(not maybe_state){
             // std::cout << "stopped\n";

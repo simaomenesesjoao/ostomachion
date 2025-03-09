@@ -13,7 +13,8 @@
 #include "graphics.cpp"
 #include "ArchiveQueue.cpp"
 
-using Num = Float<double>;
+//using Num = Float<double>;
+using Num = Number<mpz_class, 2, 5, 13, 17>;
 using Inner = InnerState<Num, true, true>;
 using Stat = State<Num, Inner>;
 

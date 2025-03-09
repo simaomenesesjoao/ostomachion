@@ -123,7 +123,9 @@ class InnerState{
 public:
     InnerState():
         state_{std::vector<std::vector<Poi>>(polygons<Num>::num_polygons)}, 
-        size_{0}{}
+        size_{0}{
+            calculate_hash();
+        }
 
     bool is_set(unsigned i){
         return state_.at(i).size() != 0;
@@ -141,22 +143,27 @@ public:
     }
 
     void calculate_hash(){
-        if(!enable_hash) 
+        if(!enable_hash){
             hash_ = 0;
-
-        long h = 0;
-        for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
-            auto& poly = state_.at(i);
-            for(auto& point: poly){
-                double x = (double)point.get_x();
-                double y = (double)point.get_y();
-                h += (long)(x*100000000) + (long)(y*10000);
-                h = h%100000;
-            }
-
+            return;
         }
-        hash_ = h;
+
+        // long h = 0;
+        // for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
+        //     auto& poly = state_.at(i);
+        //     for(auto& point: poly){
+        //         double x = (double)point.get_x();
+        //         double y = (double)point.get_y();
+        //         h += (long)(x*94833373);
+        //         h = h%100003;
+        //         h += (long)(y*94373);
+        //         h = h%100003;
+        //     }
+        // }
+        // hash_ = h;
+        // std::cout << hash_ << "\n";
     }
+
     std::size_t get_hash() const {
         return hash_;
     }
@@ -180,7 +187,7 @@ public:
         if(size_ != other.size())
             return false;
 
-        for(unsigned i=0; i<size_; i++){
+        for(unsigned i=0; i<max_size(); i++){
             if(i == 5 or i == 6 or i == 7 or i == 8){
                 continue;
             }
@@ -238,8 +245,22 @@ private:
 };
 
 
+template <typename Num, bool a, bool b>
+std::ostream& operator<<(std::ostream& stream, const InnerState<Num, a, b> & used_polys){
 
+    for(unsigned i=0; i<used_polys.max_size(); i++){
+        stream << "[";
+        for(auto point: used_polys.at(i)){
+            double x = (double)point.get_x();
+            double y = (double)point.get_y();
+            stream << "(" << x << "," << y << ") ";
+        }
+        stream << " ]";
+    }
 
+    stream << std::endl;
+    return stream;    
+}
 
 template <typename Num, typename Inner>
 class State{
@@ -402,16 +423,9 @@ std::ostream& operator<<(std::ostream& stream, State<Num, Inner> const& state){
     
     // Print used polys
     stream << " Used polys:";
-    for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
-        stream << "[";
-        for(auto point: state.used_polys->at(i)){
-            double x = (double)point.get_x();
-            double y = (double)point.get_y();
-            stream << "(" << x << "," << y << ") ";
-        }
-        stream << " ]";
-    }
-    stream << std::endl;
+    const Inner& inner = *state.used_polys;
+    stream << inner << "\n";
+    
     return stream;
 }
 
