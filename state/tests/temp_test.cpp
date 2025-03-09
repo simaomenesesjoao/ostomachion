@@ -21,11 +21,11 @@
 //     }
 // }
 
-// std::mutex mtx2;
+std::mutex mtx2;
 
 template <typename Archive, typename Queue>
 void process(Archive& archive, 
-             Queue& queue){
+             Queue& queue, std::vector<bool>& threads_status, int thread_index){
     std::cout << "start\n";
 
     bool allow_reflection = true;
@@ -37,31 +37,31 @@ void process(Archive& archive,
         if(not maybe_state)
             break;
 
-        // if(not maybe_state){
-        //     // std::cout << "stopped\n";
-        //     mtx2.lock();
-        //     threads_status.at(thread_index) = false;
-        //     bool all_stopped = true;
-        //     for(auto running: threads_status){
-        //         if(running){
-        //             all_stopped = false;
-        //             break;
-        //         }
-        //     }
-        //     mtx2.unlock();
+        if(not maybe_state){
+            // std::cout << "stopped\n";
+            mtx2.lock();
+            threads_status.at(thread_index) = false;
+            bool all_stopped = true;
+            for(auto running: threads_status){
+                if(running){
+                    all_stopped = false;
+                    break;
+                }
+            }
+            mtx2.unlock();
 
-        //     if(all_stopped)
-        //         break;
-        //     else{
-        //         std::this_thread::sleep_for(std::chrono::milliseconds(30));
+            if(all_stopped)
+                break;
+            else{
+                std::this_thread::sleep_for(std::chrono::milliseconds(30));
                 
-        //         continue;
-        //     }
-        // }
+                continue;
+            }
+        }
 
-        // mtx2.lock();
-        // threads_status.at(thread_index) = true;
-        // mtx2.unlock();
+        mtx2.lock();
+        threads_status.at(thread_index) = true;
+        mtx2.unlock();
         
         // Graphics graphics;
         auto next_states = maybe_state->find_next_states(allow_reflection);
@@ -86,7 +86,7 @@ void process(Archive& archive,
 }
 
 template <typename Num, bool hash, bool comp>
-Archive<InnerState<Num, hash, comp>> get_(std::vector<unsigned int> indices){
+Archive<InnerState<Num, hash, comp>> get_(std::vector<unsigned int> indices, unsigned int num_threads){
     using Inner = InnerState<Num, hash, comp>;
     using Stat = State<Num, Inner>;
     bool allow_reflection = true;
@@ -99,17 +99,25 @@ Archive<InnerState<Num, hash, comp>> get_(std::vector<unsigned int> indices){
     Queue<Stat> queue;
     std::vector<bool> mask = archive.insert(next_states);
     queue.insert(next_states, mask);
-    std::vector<bool> status{true};
+    std::vector<bool> status;
 
-    process<Archive<Inner>, Queue<Stat>>(archive, queue);
-    // std::vector<std::thread> threads;
-    // threads.push_back(std::thread([&archive, &queue](){
-    //     process<Archive<Inner>, Queue<Stat>>(archive, queue);
-    // }));
 
-    // for (auto& t : threads) {
-    //     t.join();
-    // }
+    // process<Archive<Inner>, Queue<Stat>>(archive, queue);
+    std::vector<std::thread> threads;
+
+    for(int i=0; i<num_threads; i++){
+        status.push_back(false);
+    }
+
+    for(int i=0; i<num_threads; i++){
+        threads.push_back(std::thread([&archive, &queue, &status, i](){
+            process<Archive<Inner>, Queue<Stat>>(archive, queue, status, i);
+        }));
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
 
     return archive;
 }
@@ -120,21 +128,21 @@ int main(int argc, char** argv){
     // if(argc>0)
     //     index = atoi(argv[1]);
     // std::cout << "argc: " << argc << " index: " << index << "\n";
-    std::vector<unsigned int> indices{68, 28, 49, 1, 0, 37};
+    std::vector<unsigned int> indices{68, 28, 49, 1, 0, 37, 11};
     // 68, 28, 49,  1,  0, 37, 11,  1, 14,  2,  1,  0,  0,  0},
     using Num1 = Float<double>;
     // using Num1 = Number<mpz_class, 2, 5, 13, 17>;
-    auto archive1 = get_<Num1, false, true>(indices);
-    auto archive2 = get_<Num1, false, true>(indices);
-    auto archive3 = get_<Num1, false, true>(indices);
-    auto archive4 = get_<Num1, false, true>(indices);
+    auto archive1 = get_<Num1, false, true>(indices, 1);
+    // auto archive2 = get_<Num1, false, true>(indices, 10);
+    // auto archive3 = get_<Num1, false, true>(indices, 1);
+    // auto archive4 = get_<Num1, false, true>(indices, 10);
 
     for(unsigned int i = 0; i < polygons<Float<double>>::num_polygons; i++){
         auto s1 = archive1.find_states_with_size(i);
-        auto s2 = archive2.find_states_with_size(i);
-        auto s3 = archive3.find_states_with_size(i);
-        auto s4 = archive4.find_states_with_size(i);
-        std::cout << i << " " << s1.size() << " " << s2.size() << " " << s3.size() << " " << s4.size() << "\n";
+        // auto s2 = archive2.find_states_with_size(i);
+        // auto s3 = archive3.find_states_with_size(i);
+        // auto s4 = archive4.find_states_with_size(i);
+        std::cout << i << " " << s1.size() << "\n";// << s2.size() << " " << s3.size() << " " << s4.size() << "\n";
     }
 
     // unsigned int ii = 8;
