@@ -145,6 +145,11 @@ public:
     T get(){
         return x;
     }
+
+    std::size_t get_hash(){
+        return (std::size_t)(x*29318397);
+    };
+
 private:
     T x;
     T tol = 1e-6;

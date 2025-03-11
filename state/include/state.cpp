@@ -148,20 +148,19 @@ public:
             return;
         }
 
-        // long h = 0;
-        // for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
-        //     auto& poly = state_.at(i);
-        //     for(auto& point: poly){
-        //         double x = (double)point.get_x();
-        //         double y = (double)point.get_y();
-        //         h += (long)(x*94833373);
-        //         h = h%100003;
-        //         h += (long)(y*94373);
-        //         h = h%100003;
-        //     }
-        // }
-        // hash_ = h;
-        // std::cout << hash_ << "\n";
+        long h = 0;
+        for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
+            auto& poly = state_.at(i);
+            for(auto& point: poly){
+                double x = (double)point.get_x();
+                double y = (double)point.get_y();
+                h += (long)(x*94833373);
+                h = h%100003;
+                h += (long)(y*94373);
+                h = h%100003;
+            }
+        }
+        hash_ = h;
     }
 
     std::size_t get_hash() const {
@@ -264,34 +263,58 @@ std::ostream& operator<<(std::ostream& stream, const InnerState<Num, a, b> & use
 
 template <typename Num, typename Inner>
 class State{
+
     using Poly = Polygon<Num>;
     using Nod = Node<Num>;
     // using Ang = Angle<Num>;
     using Poi = Point<Num>;
+    std::size_t hash_;
 
 public:
     // bool allow_reflection;
     std::unique_ptr<Poly> current_polygon;
     std::unique_ptr<Grid<Num>> grid;
     std::unique_ptr<Inner> used_polys;
+    int countme;
     // std::size_t state_hash;
 
 
     State(State const& other):
+        hash_{0},
         current_polygon(std::make_unique<Poly>(*other.current_polygon)),
         grid{std::make_unique<Grid<Num>>(*other.grid)},
-        used_polys(std::make_unique<Inner>(*other.used_polys)){}
+        used_polys(std::make_unique<Inner>(*other.used_polys)), 
+        countme{0}{
+            calculate_hash();
+        }
 
-    State(Poly&& _poly, std::unique_ptr<Inner>&& _used_polys):
+    // State(Poly&& _poly, std::unique_ptr<Inner>&& _used_polys):
+    //     current_polygon{std::make_unique<Poly>(_poly)}, 
+    //     used_polys{std::move(_used_polys)}{}
+
+        
+    State(const Poly& _poly, const Inner& _used_polys):
+        hash_{0},
         current_polygon{std::make_unique<Poly>(_poly)}, 
-        used_polys{std::move(_used_polys)}{}
+        used_polys{std::make_unique<Inner>(_used_polys)},
+        countme{0}{
+            calculate_hash();
+        }
 
-    State():current_polygon(std::make_unique<Poly>(polygons<Num>::frame)), 
-            used_polys(std::make_unique<Inner>()){}
+    State():hash_{0},
+            current_polygon(std::make_unique<Poly>(polygons<Num>::frame)), 
+            used_polys(std::make_unique<Inner>()),
+            countme{0}{
+                calculate_hash();
+            }
 
-    State(State&& other):current_polygon{std::move(other.current_polygon)},
-                         grid{std::move(other.grid)},
-                         used_polys{std::move(other.used_polys)}{}
+    State(State&& other): hash_{0},
+                          current_polygon{std::move(other.current_polygon)},
+                          grid{std::move(other.grid)},
+                          used_polys{std::move(other.used_polys)},
+                          countme{0}{
+                            calculate_hash();
+                          }
 
     State& operator=(State&& other){
         if(this == &other)
@@ -300,6 +323,8 @@ public:
         current_polygon = std::move(other.current_polygon);
         grid = std::move(other.grid);
         used_polys = std::move(other.used_polys);
+        countme = other.countme;
+        calculate_hash();
 
         return *this;
     }
@@ -311,20 +336,46 @@ public:
         current_polygon = std::make_unique<Poly>(*(other.current_polygon));
         grid = std::make_unique<Grid<Num>>(*(other.grid));
         used_polys = std::make_unique<Inner>(*(other.used_polys));
+        countme = other.countme;
+        calculate_hash();
 
         return *this;
     }
 
+    std::size_t get_hash() const {
+        return hash_;
+    }
+
+    void calculate_hash() {
+        std::size_t h1 = used_polys->get_hash();
+        std::size_t h2 = current_polygon->get_hash();
+        hash_ = (h1 + 19*h2)%991482311;
+    }
+
+    bool operator==(const State& other) const {
+        return *used_polys == *(other.used_polys) and *current_polygon == *(other.current_polygon);
+    }
+
+    unsigned size() const {
+        return used_polys->size();
+    }
 
 
-    std::vector<State> find_next_states(bool allow_reflection) const{
+
+    template <typename Getter>
+    std::vector<State> find_next_states(bool allow_reflection, Getter& getter, std::ostream& stream = std::cout) const{
         // Find the node with smallest internal angle
+        
         std::vector<State> next_states;
         if(current_polygon->head == nullptr)
             return next_states;
         
         unsigned obtusest_node_index = current_polygon->get_obtusest_index();
         Nod& obtusest_node = current_polygon->ll_node_from_index(obtusest_node_index)->data;
+
+        
+        // stream << "------------- state ---------------\n" << *this << "\n";
+
 
         // Find which polygons haven't been used yet
         for(unsigned i = 0; i < polygons<Num>::num_polygons; i++){
@@ -334,7 +385,8 @@ public:
 
             for(auto reflected: std::vector<bool>{true, false}){
 
-                Poly poly = Poly(polygons<Num>::polyset.at(i));
+                Poly poly = polygons<Num>::polyset.at(i);
+                // stream << "considering poly " << poly << " with size " << poly.size_ll << "\n";
 
                 if(not allow_reflection and reflected){
                     continue;
@@ -355,6 +407,8 @@ public:
                                     obtusest_node.position);
 
                         if(not current_polygon->overlaps(poly)){
+                            // stream << "#################### Found new non-overlap\n";
+                            // stream << "still considering poly " << poly << " with size " << poly.size_ll << "\n";
 
                             // Posso ter um merge que não canibalize o outro polígono - rvalue refs
                             Poly new_frame{*current_polygon}; 
@@ -363,25 +417,46 @@ public:
                             LL_Node<Nod> *node_frame = new_frame.ll_node_from_index(obtusest_node_index);
                             LL_Node<Nod> *node_poly = new_poly.ll_node_from_index(j);
 
+                            // stream << "before merge\n";
+                            // stream << "node frame: " << node_frame->data << "\n";
+                            // stream << "poly: " << new_poly << "\n";
+                            // stream << "node poly: " << node_poly->data << "\n";
+                            // stream << "new frame: " << new_frame << "\n";
                             new_frame.merge(node_frame, new_poly, node_poly);
-                            new_frame.prune_LL({node_frame, node_poly});
+                            // stream << "before prune\n" << new_frame << "\n";
+                            // stream << "update nodes: " << node_frame->data << " " << node_poly->data << "\n";
+                            new_frame.prune_LL({node_frame, node_poly}, getter, stream);
+                            // stream << "after prune\n" << new_frame << "\n";
                             
-                            std::unique_ptr<Inner> new_used_polys = std::make_unique<Inner>(*used_polys);
-                            new_used_polys->set_poly(i, poly);
                             
-                            State new_state{std::move(new_frame), std::move(new_used_polys)};
-                            next_states.push_back(std::move(new_state));
+                            // std::unique_ptr<Inner> new_used_polys = std::make_unique<Inner>(*used_polys);
+                            // new_used_polys->set_poly(i, poly);
+                            
+                            // State new_state{std::move(new_frame), std::move(new_used_polys)};
+                            // next_states.push_back(std::move(new_state));
                             // next_states.push_back({std::move(new_frame), std::move(new_used_polys)});
+                            
+                            Inner new_used_polys = *used_polys;
+                            new_used_polys.set_poly(i, poly);
+
+                            State new_state(new_frame, new_used_polys);
+                            // stream << "next state: " << new_state << "\n";
+                            next_states.push_back(new_state);
+                            
+
                         }
                     }   
                 }
             }
-        }
+        }                           
+        stream << "produced " << next_states.size() << " next states\n";
+        stream << "--------------------- end -----------------\n";
         return next_states;
     }
 
     State iterate(std::vector<unsigned> indices, bool allow_reflection){
-        std::vector<State> next_states = find_next_states(allow_reflection);
+        auto f = [](){return 0;};
+        std::vector<State> next_states = find_next_states(allow_reflection, f);
         State state;
 
         for(auto& index: indices){
@@ -397,7 +472,7 @@ public:
 
 
             state = std::move(next_states.at(index));
-            next_states = state.find_next_states(allow_reflection);
+            next_states = state.find_next_states(allow_reflection, f);
         }
         return state;
     }

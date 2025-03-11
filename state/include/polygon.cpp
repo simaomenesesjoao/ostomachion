@@ -223,14 +223,18 @@ public:
         other_node->data.update_opening();
     }
 
-    void prune_LL(std::unordered_set<LL_Node<Nod>*> update){
+    template <typename Getter>
+    void prune_LL(std::vector<LL_Node<Nod>*> update, Getter& getter, std::ostream& stream = std::cout){
         // Remove points from the LL which are coincident or have
         // an opening angle of 0. This is repeated until no more points
         // can be removed. It may happen that all points are removed, in
         // which case the LL head becomes a nullptr
-        // std::cout << "inside prune" << std::endl;
+        std::unordered_set<LL_Node<Nod>*> visited;
+        
 
         while(update.size()){
+            stream << "oooooooooooooo inside prune with frame \n " << *this << "\n";
+            
             // std::cout << "new iteration. size update, ll: " << update.size() << " " << size_ll << std::endl;
 
             if(size_ll == 1){
@@ -248,9 +252,24 @@ public:
 
             // std::cout << "done" << std::endl;
 
-            auto it = update.begin();
+            
+            int index = getter();
+            // std::cout << index << " " << update.size() << " " << std::flush;
+            // std::cout << index % update.size() << "\n";
+            int i = index % update.size();
+            
+            auto it = update.begin()+i;
             LL_Node<Nod> *node = *it;
             update.erase(it);
+
+            // auto it = update.end() - 1;
+            // LL_Node<Nod> *node = *it;
+            // update.pop_back();
+
+            auto [itt, successful] = visited.insert(node);
+            if(!successful){
+                continue;
+            }
 
             Nod& curr = node->data;
             // std::cout << "Considering node" << std::endl;
@@ -260,6 +279,7 @@ public:
             LL_Node<Nod> *next_node = node->next;
             Nod& prev = node->prev->data;
             Nod& next = node->next->data;
+            stream << "cpn:\n" << curr << "\n" << prev << "\n" << next << "\n";
 
             // std::cout << "positions: curr, prev, next: " << std::endl;
             // curr.position.print();
@@ -269,18 +289,19 @@ public:
             bool modified = true;
             
             if(curr.position == prev.position){
-                // std::cout << "current position is identical to previous" << std::endl;
+                
+                stream << "current position is identical to previous" << std::endl;
                 prev.angle_start = curr.angle_start;
                 prev.update_opening();
 
             } else if(curr.position == next.position){
-                // std::cout << "current position is identical to next" << std::endl;
+                stream << "current position is identical to next" << std::endl;
                 next.angle_end = curr.angle_end;
                 next.update_opening();
 
 
             } else if(curr.angle_opening.is_zero()){
-                // std::cout << "opening angle is zero" << std::endl;
+                stream << "opening angle is zero" << std::endl;
 
                 // Check which neighbour is closest
                 Poin vec_prev = curr.position - prev.position;
@@ -290,28 +311,30 @@ public:
                 Num dist_next2 = vec_next.get_x()*vec_next.get_x() + vec_next.get_y()*vec_next.get_y();
 
                 if(dist_prev2 < dist_next2){
-                    // std::cout << "prev is closer than next" << std::endl;
+                    stream << "prev is closer than next" << std::endl;
                     prev.angle_start = -prev.angle_start;
                     prev.update_opening();
 
                 } else {
-                    // std::cout << "next is closer than prev" << std::endl;
+                    stream << "next is closer than prev" << std::endl;
                     next.angle_end = -next.angle_end;
                     next.update_opening();
                 }
             } else if(curr.angle_opening.is_180()){
+                stream << "angle is 180\n";
                 // Nothing to do in this case
             } else {
-                // std::cout << "Nothing to do with this node" << std::endl;
+                stream << "Nothing to do with this node" << std::endl;
                 modified = false;
             }
 
             if(modified){
+                stream << "was modified\n";
 
                 next_node->prev = prev_node;
                 prev_node->next = next_node;
                 if(node == head){
-                    // std::cout << "node being erased is head" << std::endl;
+                    stream << "node being erased is head" << std::endl;
                     head = node->next;
                 }
                 
@@ -319,8 +342,8 @@ public:
                 // node->data.print();
                 delete node;
                 size_ll--;
-                update.insert(next_node);
-                update.insert(prev_node);
+                update.push_back(next_node);
+                update.push_back(prev_node);
             }
             
             // std::cout << "polygon after this iteration of prune:" << std::endl;
@@ -329,6 +352,28 @@ public:
 
         // std::cout << "finished prune" << std::endl;
         
+    }
+
+
+    std::size_t get_hash() const {
+        std::size_t h = 0;
+        LL_Node<Nod> *current = head;
+        for(unsigned i=0; i<size_ll; i++){
+            auto& pos = current->data.position;
+            h += pos.get_x().get_hash()*4872191 + pos.get_y().get_hash()*991911983;
+
+            h += current->data.angle_start.get_sin().get_hash();
+            h += current->data.angle_end.get_sin().get_hash();
+            h += current->data.angle_opening.get_sin().get_hash();
+            
+            h += current->data.angle_start.get_cos().get_hash();
+            h += current->data.angle_end.get_cos().get_hash();
+            h += current->data.angle_opening.get_cos().get_hash();
+            h = h%230984193;
+            current = current->next;
+        }
+
+        return h;
     }
 
     bool operator==(Polygon const& other_poly) const{

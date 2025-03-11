@@ -51,10 +51,12 @@ public:
     bool operator>(int x) const;
     bool operator<(Number const& x) const;
     bool operator<(int x) const;
-    template <typename U> explicit operator U() const;
     bool is_zero() const;
+
+    template <typename U> explicit operator U() const;
     Number conjugate(int) const;
     Number inverse() const;
+    std::size_t get_hash();
 
     template <typename U, int A, int... Ints2>
     friend bool is_pos_general_f(Number<U, A, Ints2...> const&);

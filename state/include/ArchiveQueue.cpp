@@ -28,7 +28,7 @@ public:
         std::vector<bool> mask;
 
         for(auto& state: states){
-            auto [it, success] = archive.insert(*state.used_polys);
+            auto [it, success] = archive.insert(state);
             mask.push_back(success);
         }
 
