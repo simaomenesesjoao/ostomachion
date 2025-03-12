@@ -449,8 +449,8 @@ public:
                 }
             }
         }                           
-        stream << "produced " << next_states.size() << " next states\n";
-        stream << "--------------------- end -----------------\n";
+        // stream << "produced " << next_states.size() << " next states\n";
+        // stream << "--------------------- end -----------------\n";
         return next_states;
     }
 

@@ -233,7 +233,7 @@ public:
         
 
         while(update.size()){
-            stream << "oooooooooooooo inside prune with frame \n " << *this << "\n";
+            // stream << "oooooooooooooo inside prune with framZe \n " << *this << "\n";
             
             // std::cout << "new iteration. size update, ll: " << update.size() << " " << size_ll << std::endl;
 
@@ -262,6 +262,8 @@ public:
             LL_Node<Nod> *node = *it;
             update.erase(it);
 
+            // stream << "index chosen:" << i << "\n";
+
             // auto it = update.end() - 1;
             // LL_Node<Nod> *node = *it;
             // update.pop_back();
@@ -279,7 +281,7 @@ public:
             LL_Node<Nod> *next_node = node->next;
             Nod& prev = node->prev->data;
             Nod& next = node->next->data;
-            stream << "cpn:\n" << curr << "\n" << prev << "\n" << next << "\n";
+            // stream << "cpn:\n" << curr << "\n" << prev << "\n" << next << "\n";
 
             // std::cout << "positions: curr, prev, next: " << std::endl;
             // curr.position.print();
@@ -290,18 +292,18 @@ public:
             
             if(curr.position == prev.position){
                 
-                stream << "current position is identical to previous" << std::endl;
+                // stream << "current position is identical to previous" << std::endl;
                 prev.angle_start = curr.angle_start;
                 prev.update_opening();
 
             } else if(curr.position == next.position){
-                stream << "current position is identical to next" << std::endl;
+                // stream << "current position is identical to next" << std::endl;
                 next.angle_end = curr.angle_end;
                 next.update_opening();
 
 
             } else if(curr.angle_opening.is_zero()){
-                stream << "opening angle is zero" << std::endl;
+                // stream << "opening angle is zero" << std::endl;
 
                 // Check which neighbour is closest
                 Poin vec_prev = curr.position - prev.position;
@@ -311,30 +313,30 @@ public:
                 Num dist_next2 = vec_next.get_x()*vec_next.get_x() + vec_next.get_y()*vec_next.get_y();
 
                 if(dist_prev2 < dist_next2){
-                    stream << "prev is closer than next" << std::endl;
+                    // stream << "prev is closer than next" << std::endl;
                     prev.angle_start = -prev.angle_start;
                     prev.update_opening();
 
                 } else {
-                    stream << "next is closer than prev" << std::endl;
+                    // stream << "next is closer than prev" << std::endl;
                     next.angle_end = -next.angle_end;
                     next.update_opening();
                 }
             } else if(curr.angle_opening.is_180()){
-                stream << "angle is 180\n";
+                // stream << "angle is 180\n";
                 // Nothing to do in this case
             } else {
-                stream << "Nothing to do with this node" << std::endl;
+                // stream << "Nothing to do with this node" << std::endl;
                 modified = false;
             }
 
             if(modified){
-                stream << "was modified\n";
+                // stream << "was modified\n";
 
                 next_node->prev = prev_node;
                 prev_node->next = next_node;
                 if(node == head){
-                    stream << "node being erased is head" << std::endl;
+                    // stream << "node being erased is head" << std::endl;
                     head = node->next;
                 }
                 
@@ -351,6 +353,8 @@ public:
         }
 
         // std::cout << "finished prune" << std::endl;
+
+        // stream << "        FINISHED prune with frame \n " << *this << "\n";
         
     }
 
@@ -377,7 +381,22 @@ public:
     }
 
     bool operator==(Polygon const& other_poly) const{
+        return false; // SIMAO REMOVE
         LL_Node<Nod> *list1{this->head}, *list2{other_poly.head};
+
+        if(size_ll != other_poly.size_ll)
+            return false;
+
+        // The polygons might be identical even though the heads are different
+        for(unsigned i=0; i<size_ll; i++){
+
+            if(list1->data.position == list2->data.position)
+                break;
+
+            list2 = list2->next;
+        }
+
+
         for(unsigned i=0; i<size_ll; i++){
             if(!(list1->data.position == list2->data.position))
                 return false;
