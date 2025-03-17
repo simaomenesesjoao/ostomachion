@@ -8,142 +8,149 @@
 #include <mutex>
 #include "../../solver/src/graphics.cpp"
 
-struct Getter{
-    private:
-        int count;
-    public:
-        Getter(int start):count{start}{
-            
-            // std::random_device rd;
-            // std::mt19937 gen(rd());  // Initialize the generator with a random seed
-            // std::uniform_int_distribution<> dis(0, 100);  // Distribute values between 0 and vector size - 1
-        }
-    
-        int operator()(){
-            // count++;
-            // count = count * 2;
-            // count+= 10;
-            // count = count%100;
-            return 0;
-        }
-    };
-// namespace std{
-//     bool operator==(const std::vector<std::vector<double>>& v1, const std::vector<std::vector<double>>& v2){
-//         for(auto& P1: v1){
-//             for(auto& P2: v2){
-//                 double tol = 1e-6;
-//                 if(std::abs(P1.at(0) - P2.at(0)) > tol or std::abs(P1.at(1) - P2.at(1)) > tol)
-//                     return false;
+// std::mutex mtx2;
+
+// template <typename Archive>
+// void process_level(Archive& archive_in, 
+//              Archive& archive_out,
+//              std::ostream& stream, 
+//              Getter& getter,
+//              std::vector<bool>& threads_status, 
+//              int thread_index){
+
+//     bool allow_reflection = true;
+//     while(true){
+
+//         auto maybe_state = archive_in.get_next_pointer();
+        
+//         if(not maybe_state){
+//             mtx2.lock();
+//             threads_status.at(thread_index) = false;
+//             bool all_stopped = true;
+//             for(auto running: threads_status){
+//                 if(running){
+//                     all_stopped = false;
+//                     break;
+//                 }
+//             }
+//             mtx2.unlock();
+
+//             if(all_stopped)
+//                 break;
+//             else{
+//                 std::this_thread::sleep_for(std::chrono::milliseconds(30));
+                
+//                 continue;
 //             }
 //         }
 
-//         return true;
+//         mtx2.lock();
+//         threads_status.at(thread_index) = true;
+//         mtx2.unlock();
+        
+        
+//         auto next_states = maybe_state->find_next_states(allow_reflection, getter, stream);
+//         // std::cout << "next states " << next_states.size() << "\n";;   
+//         archive_out.insert(next_states);
 //     }
 // }
 
-std::mutex mtx2;
+// template <typename Num, bool hash, bool comp>
+// Archive<State<Num, InnerState<Num, hash, comp>,SelectLeftest>> get_(std::vector<unsigned int> indices, Getter& getter, unsigned int num_threads, std::ostream& stream){
 
-template <typename Archive, typename Queue>
-void process(Archive& archive, 
-             Queue& queue, 
-             std::ostream& stream, 
-             std::vector<bool>& threads_status, 
-             int thread_index){
+//     // Definitions
+//     using Inner = InnerState<Num, hash, comp>;
+//     using Stat = State<Num, Inner, Selec>;
+//     bool allow_reflection = true;
 
-    Getter getter(0);
+//     // Initialization    
+//     State<Num, Inner> first_state;
+//     std::vector<Stat> next_states{first_state.iterate(indices, allow_reflection, getter, stream)};
+//     Archive<Stat> archive_in, archive_out;
+//     // Queue<Stat> queue_input, queue_output;
+
+//     archive_in.insert(next_states);
+//     // std::vector<bool> mask = archive.insert(next_states);
+//     // queue_input.insert(next_states, mask);
+//     std::vector<std::thread> threads;
+//     std::vector<bool> thread_status;
+
+//     std::cout << "initial size: " << archive_in.size() << "\n";
+    
+//     // for(int i=0; i<num_threads;i++)
+//     for(unsigned i=indices.size(); i<14; i++){
+//         process_level<Archive<Stat>>(archive_in, archive_out, stream, getter, thread_status, 0);
+//         archive_in.archive = std::move(archive_out.archive);
+//         // queue_input.queue = queue_output.queue;
+//         // queue_output.reset();
+//         std::cout << "archive sizes: " << archive_in.size() << "\n";
+        
+//     }
+
+
+//     return archive_out;
+// }
+
+template <typename State, typename Container>
+Container find_all(const std::vector<std::tuple<unsigned int, unsigned int, bool>>& indices){
+    State first_state;
     bool allow_reflection = true;
-    // double mutex_wait{0}, process_time{0};
+    std::ofstream stream("/dev/null");
+    std::vector<State> next_states{first_state.apply_iterations(indices, stream)};
+
+    std::cout << next_states.at(0) << "\n";
+    Container container;
+    container.insert(next_states);
+
     while(true){
+        auto state = container.get_next();
+        if(!state)
+            break;
+        auto next = state->find_next_states(allow_reflection, stream);
+        // std::cout << next.size();
+        container.insert(next);
+
+    }
+    return container;
+
+}
+
+template <typename T>
+std::vector<T> find_states_with_size(const std::vector<T>& container, unsigned int i){
+    
+    std::vector<T> states;
+    for(auto& state: container){
+        if(state.size() == i){
+            states.push_back(state);
+        }
+    }
+    return states;
+}
 
 
-        auto maybe_state = queue.get_next_pointer(0);
-        // if(not maybe_state)
-        //     break;
+template <typename Container>
+std::vector<typename Container::DataType> find_uniques(const Container& container){
 
-        if(not maybe_state){
-            // std::cout << "stopped\n";
-            mtx2.lock();
-            threads_status.at(thread_index) = false;
-            bool all_stopped = true;
-            for(auto running: threads_status){
-                if(running){
-                    all_stopped = false;
-                    break;
-                }
-            }
-            mtx2.unlock();
+    std::vector<typename Container::DataType> uniques;
 
-            if(all_stopped)
+    for(unsigned i=0; i<container.size(); i++){
+        auto& state1 = container.at(i);
+        bool unique = true;
+
+        for(unsigned j=i+1; j<container.size(); j++){
+            auto& state2 = container.at(j);
+
+            if(state2 == state1){
+                unique = false;
                 break;
-            else{
-                std::this_thread::sleep_for(std::chrono::milliseconds(30));
-                
-                continue;
             }
         }
 
-        mtx2.lock();
-        threads_status.at(thread_index) = true;
-        mtx2.unlock();
-        
-        // Graphics graphics;
-        
-        stream << "count: " << maybe_state->countme << "\n";
-        maybe_state->countme++;
-        auto next_states = maybe_state->find_next_states(allow_reflection, getter, stream);
-
-        
-        // auto used_polys = maybe_state->used_polys->used_polys_as_vector();
-        // graphics.draw_state(used_polys, maybe_state->current_polygon->as_vector());
-        // std::cout << "gave rise to\n";
-        std::vector<bool> mask = archive.insert(next_states);
-        // for(int i=0; i<next_states.size(); i++){
-        //     if(!mask.at(i))
-        //         std::cout << "      already exists\n";
-        //     else
-        //         std::cout << "      doesn't exist yet\n";
-
-        //     std::cout << next_states.at(i) << "\n";
-        // }
-        queue.insert(next_states, mask);
+        if(unique){
+            uniques.push_back(state1);
+        }
     }
-}
-
-template <typename Num, bool hash, bool comp>
-Archive<State<Num, InnerState<Num, hash, comp>>> get_(std::vector<unsigned int> indices, unsigned int num_threads, std::ostream& stream){
-    using Inner = InnerState<Num, hash, comp>;
-    using Stat = State<Num, Inner>;
-    bool allow_reflection = true;
-
-    State<Num, Inner> first_state;
-    first_state = first_state.iterate(indices, allow_reflection);
-    std::vector<Stat> next_states{first_state};
-
-    Archive<Stat> archive;
-    Queue<Stat> queue;
-    std::vector<bool> mask = archive.insert(next_states);
-    queue.insert(next_states, mask);
-    std::vector<bool> status;
-
-
-    // process<Archive<Stat>, Queue<Stat>>(archive, queue, stream);
-    std::vector<std::thread> threads;
-
-    for(int i=0; i<num_threads; i++){
-        status.push_back(false);
-    }
-
-    for(int i=0; i<num_threads; i++){
-        threads.push_back(std::thread([&archive, &queue, &status, &stream, i](){
-            process<Archive<Stat>, Queue<Stat>>(archive, queue, stream, status, i);
-        }));
-    }
-
-    for (auto& t : threads) {
-        t.join();
-    }
-
-    return archive;
+    return uniques;
 }
 
 int main(int argc, char** argv){
@@ -152,131 +159,40 @@ int main(int argc, char** argv){
     if(argc>0)
         index = atoi(argv[1]);
     std::cout << "argc: " << argc << " index: " << index << "\n";
-    std::vector<unsigned int> indices{68, 28, 49, 1, 0};
-    // 68, 28, 49,  1,  0, 37, 11,  1, 14,  2,  1,  0,  0,  0},
-    using Num1 = Float<double>;
-    // using Num1 = Number<mpz_class, 2, 5, 13, 17>;
-    std::ofstream file1, file2, file3, file4;
-    file1.open("out1");
-    file2.open("out2");
-    file3.open("out3");
-    file4.open("out4");
-    
-    auto archive1 = get_<Num1, false, true>(indices, index, file1);
-    auto archive2 = get_<Num1, false, true>(indices, index, file2);
-    auto archive3 = get_<Num1, false, true>(indices, index, file3);
-    auto archive4 = get_<Num1, false, true>(indices, index, file4);
 
-    for(unsigned int i = 0; i < polygons<Float<double>>::num_polygons+1; i++){
-        auto s1 = archive1.find_states_with_size(i);
-        auto s2 = archive2.find_states_with_size(i);
-        auto s3 = archive3.find_states_with_size(i);
-        auto s4 = archive4.find_states_with_size(i);
-        std::cout << i << " " << s1.size() << " " << s2.size() << " " << s3.size() << " " << s4.size() << "\n";
+    // std::vector<std::tuple<unsigned int, unsigned int, bool>> indices{
+    //     {4,0,0}, {3,0,0}, {0,0,0}, {5,0,0}, {1,2,0}, {2,0,0}, {6,0,0}};
+
+
+    std::vector<std::tuple<unsigned int, unsigned int, bool>> indices{};
+    using Num = Float<double>;
+    using Inner = InnerState<Num, true, true>;
+    // using st1 = State<Num, Inner, SelectObtusest, GetFirst>;
+    // using st2 = State<Num, Inner, SelectObtusest, GetLast>;
+    // using st3 = State<Num, Inner, SelectLeftest, GetFirst>;
+    using st4 = State<Num, Inner, SelectLeftest, GetLast>;
+    using ct4 = Stack<st4>;
+
+    
+
+
+    // auto res1 = find_all<st1>(indices);
+    // auto res2 = find_all<st2>(indices);
+    // auto res3 = find_all<st3>(indices);
+    auto res4 = find_all<st4, ct4>(indices).final_container;
+    // for(auto& r: res4.final_container){
+    //     std::cout << r << "\n";
+    // }
+
+
+    // std::cout <<
+    for(unsigned int i=0; i<polygons<Float<double>>::num_polygons+1; i++){
+        auto s1 = find_states_with_size(res4, i);
+        std::cout << i << " " << s1.size() << "\n";
+
     }
-
-    file1.close();
-    file2.close();
-    file3.close();
-    file4.close();
-
-    // unsigned int ii = 8;
-    // auto s1 = archive1.find_states_with_size(ii);
-    // auto s2 = archive2.find_states_with_size(ii);
-
     
-    // std::cout << s1.at(0) << "\n";
-    // std::cout << s2.at(0) << "\n";
-    // Graphics graphics;
-    // auto used_polys1 = s1.at(0).used_polys_as_vector();
-    // graphics.draw_state(used_polys, first_state.current_polygon->as_vector());
-    // auto used_polys2 = s.used_polys_as_vector();
-    // graphics.draw_state(used_polys, first_state.current_polygon->as_vector());
-
-    // std::vector<unsigned int> original1, original2;
-    // for(unsigned int i = 0; i < s1.size(); i++){
-    //     auto v1 = s1.at(i).used_polys_as_vector();
-    //     bool found = false;
-    //     unsigned int found_index = 99999;
-    //     for(unsigned int j = 0; j < s2.size(); j++){
-    //         auto v2 = s2.at(j).used_polys_as_vector();
-    //         bool b = (v1 == v2);
-    //         // if(b){
-    //         //     found = true;
-    //         //     found_index = j;
-    //         //     break;
-    //         // }
-    //         std::cout << b << "" ;
-    //     }
-    //     if(!found){
-    //         // original1.push_back()
-    //     }
-    //     std::cout << "\n";
-    // }
-
-    // Graphics graphics;
-    // for(unsigned i=6; i < polygons<Float<double>>::num_polygons; i++){
-        
-
-    //     auto s1 = archive.find_states_with_size(i);
-
-        // std::cout << "comparing hash\n";
-        // for(unsigned int i = 0; i<s1.size(); i++){
-        //     for(unsigned int j = 0; j<s1.size(); j++){
-        //         std::cout << (s1.at(i).get_hash() == s1.at(j).get_hash()) << " ";
-        //     }
-        //     std::cout << "\n";
-        // }
-
-        
-        // std::cout << "comparing equality\n";
-        // for(unsigned int i = 0; i<s1.size(); i++){
-        //     for(unsigned int j = 0; j<s1.size(); j++){
-        //         std::cout << (s1.at(i) == s1.at(j)) << " ";
-        //     }
-        //     std::cout << "\n";
-        // }
-
-        // std::cout << "equal but with different hash\n";
-        // int ii{-1}, jj{-1};
-        // for(unsigned int i = 0; i<s1.size(); i++){
-        //     bool found = false;
-        //     for(unsigned int j = 0; j<s1.size(); j++){
-        //         if((s1.at(i) == s1.at(j)) and s1.at(i).get_hash() != s1.at(j).get_hash()){
-        //             found = true;
-        //             ii = i;
-        //             jj = j;
-        //             break;
-        //         }
-        //     }
-        //     if(found)
-        //         break;
-        //     std::cout << "\n";
-        // }
-
-        // if(ii >= 0 and jj >= 0){
-        //     std::cout << "These have different hash but are identical\n";
-        //     std::cout << s1.at(ii).get_hash() << "\n" << s1.at(ii) << "\n";
-        //     std::cout << s1.at(jj).get_hash() << "\n" << s1.at(jj) << "\n";
-        // }
-        
-        // for(auto kk: std::vector<unsigned int>{ii, jj}){
-        //     auto s = s1.at(kk);
-        //     auto used_polys = s.used_polys_as_vector();
-        //     graphics.draw_state(used_polys, first_state.current_polygon->as_vector());
-        // }
-
-    //     auto u1 = archive.find_uniques(s1);
-    //     std::cout << "size " << i << ": " << s1.size() << " " << u1.size() << "\n"; // 30
-
-    // }
-    // std::cout << "\n";
-
-    // auto s1 = archive.find_states_with_size(polygons<Float<double>>::num_polygons);
-    // auto u1 = archive.find_uniques(s1);
-    // std::cout << archive.size() << "\n"; // 26222
-    // std::cout << s1.size() << "\n"; // 30
-    
-
-
+    // auto s1 = archive2.find_states_with_size(polygons<Float<double>>::num_polygons);
+    // auto s2 = archive2.find_states_with_size(polygons<Float<double>>::num_polygons);
+    // std::cout << "final: " << s1.size() << " " << s2.size() << "\n";
 }

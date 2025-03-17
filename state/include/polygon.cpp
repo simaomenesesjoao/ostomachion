@@ -23,9 +23,13 @@ public:
     LL_Node<Nod> *head;
     unsigned size_ll;
     bool area_positive;
+    bool first;
     
+    void set_first(bool value){
+        first = value;
+    }
 
-    Polygon(std::vector<std::vector<int>> points):head{nullptr}, size_ll{0}, area_positive{false}{
+    Polygon(std::vector<std::vector<int>> points):head{nullptr}, size_ll{0}, area_positive{false}, first{false}{
         // Turn the list of points into nodes, set them as the vertices of 
         // the polygon and calculate the angles between them
 
@@ -121,7 +125,7 @@ public:
         }
     }
 
-    Polygon(Polygon const& other_poly){
+    Polygon(Polygon const& other_poly):first{false}{
         build_this(other_poly);
     }
 
@@ -140,7 +144,6 @@ public:
         build_this(other);
         return *this;
     }
-
 
     Num get_area(){
         std::vector<std::pair<Num, Num>> points;
@@ -224,86 +227,72 @@ public:
     }
 
     template <typename Getter>
-    void prune_LL(std::vector<LL_Node<Nod>*> update, Getter& getter, std::ostream& stream = std::cout){
+    void prune_LL(std::vector<LL_Node<Nod>*> update, const Getter& getter, std::ostream& stream = std::cout){
         // Remove points from the LL which are coincident or have
         // an opening angle of 0. This is repeated until no more points
         // can be removed. It may happen that all points are removed, in
         // which case the LL head becomes a nullptr
-        std::unordered_set<LL_Node<Nod>*> visited;
+        // std::unordered_set<LL_Node<Nod>*> visited;
+
+        stream << "Entered prune_LL with the following frame ";
+        LL_Node<Nod> *current = head;
+        for(unsigned i=0; i<size_ll; i++){
+            stream << current->data.position << " ";
+            current = current->next;
+        }
+        stream << "\n";
+        
         
 
-        while(update.size()){
-            // stream << "oooooooooooooo inside prune with framZe \n " << *this << "\n";
-            
-            // std::cout << "new iteration. size update, ll: " << update.size() << " " << size_ll << std::endl;
 
+        while(update.size()){
+            
             if(size_ll == 1){
-                // std::cout << "deleting head" << std::endl;
                 delete head;
                 head = nullptr;
                 size_ll = 0;
                 break;
             }
 
-            // std::cout << "this is inside update:" << std::endl;
-            // for(auto& ll_node: update){
-            //     ll_node->data.print();
+
+            // auto it = update.end() - 1;
+            // if(first){
             // }
 
-            // std::cout << "done" << std::endl;
-
-            
-            int index = getter();
-            // std::cout << index << " " << update.size() << " " << std::flush;
-            // std::cout << index % update.size() << "\n";
-            int i = index % update.size();
-            
+            int i = getter.get(update.size());
             auto it = update.begin()+i;
+            
+
             LL_Node<Nod> *node = *it;
             update.erase(it);
 
-            // stream << "index chosen:" << i << "\n";
-
-            // auto it = update.end() - 1;
-            // LL_Node<Nod> *node = *it;
-            // update.pop_back();
-
-            auto [itt, successful] = visited.insert(node);
-            if(!successful){
+            if(std::find(update.begin(), update.end(), node) != update.end())
                 continue;
-            }
+            // auto [itt, successful] = visited.insert(node);
+            // if(!successful){
+            //     continue;
+            // }
 
             Nod& curr = node->data;
-            // std::cout << "Considering node" << std::endl;
-            // curr.print();
-
             LL_Node<Nod> *prev_node = node->prev;
             LL_Node<Nod> *next_node = node->next;
             Nod& prev = node->prev->data;
             Nod& next = node->next->data;
-            // stream << "cpn:\n" << curr << "\n" << prev << "\n" << next << "\n";
-
-            // std::cout << "positions: curr, prev, next: " << std::endl;
-            // curr.position.print();
-            // prev.position.print();
-            // next.position.print();
-
             bool modified = true;
+
+            stream << "   i=" << i;
+            stream << " cpn: " << curr.position << " " << prev.position << " " << next.position << "\n";
             
             if(curr.position == prev.position){
-                
-                // stream << "current position is identical to previous" << std::endl;
                 prev.angle_start = curr.angle_start;
                 prev.update_opening();
 
             } else if(curr.position == next.position){
-                // stream << "current position is identical to next" << std::endl;
                 next.angle_end = curr.angle_end;
                 next.update_opening();
 
 
             } else if(curr.angle_opening.is_zero()){
-                // stream << "opening angle is zero" << std::endl;
 
                 // Check which neighbour is closest
                 Poin vec_prev = curr.position - prev.position;
@@ -313,49 +302,51 @@ public:
                 Num dist_next2 = vec_next.get_x()*vec_next.get_x() + vec_next.get_y()*vec_next.get_y();
 
                 if(dist_prev2 < dist_next2){
-                    // stream << "prev is closer than next" << std::endl;
                     prev.angle_start = -prev.angle_start;
                     prev.update_opening();
 
                 } else {
-                    // stream << "next is closer than prev" << std::endl;
                     next.angle_end = -next.angle_end;
                     next.update_opening();
                 }
             } else if(curr.angle_opening.is_180()){
-                // stream << "angle is 180\n";
                 // Nothing to do in this case
             } else {
-                // stream << "Nothing to do with this node" << std::endl;
                 modified = false;
             }
 
             if(modified){
-                // stream << "was modified\n";
+                stream << "   modified\n";
 
                 next_node->prev = prev_node;
                 prev_node->next = next_node;
                 if(node == head){
-                    // stream << "node being erased is head" << std::endl;
                     head = node->next;
                 }
-                
-                // std::cout << "deleting" << std::endl;
-                // node->data.print();
+
                 delete node;
                 size_ll--;
                 update.push_back(next_node);
                 update.push_back(prev_node);
-            }
-            
-            // std::cout << "polygon after this iteration of prune:" << std::endl;
-            // this->print();
+            }   
         }
 
-        // std::cout << "finished prune" << std::endl;
 
-        // stream << "        FINISHED prune with frame \n " << *this << "\n";
-        
+        stream << "Left prune_LL with the following frame ";
+        current = head;
+        for(unsigned i=0; i<size_ll; i++){
+            stream << current->data.position << " ";
+            current = current->next;
+        }
+        stream << "\n";
+
+    }
+
+    bool is_canonical() const {
+        // SIMAO
+        // Check if the polygon doesn't have 180 degrees, 0 degrees or coincident points
+        // Optionally, I can also check if the angles make sense using doubles
+        return false;
     }
 
 
@@ -381,7 +372,6 @@ public:
     }
 
     bool operator==(Polygon const& other_poly) const{
-        return false; // SIMAO REMOVE
         LL_Node<Nod> *list1{this->head}, *list2{other_poly.head};
 
         if(size_ll != other_poly.size_ll)
@@ -644,6 +634,25 @@ public:
         return index_largest;
     }
 
+    unsigned get_leftest_node() const {
+        // Get the left-most node, then bottom-most
+        LL_Node<Node<Num>> *current = head;
+        LL_Node<Node<Num>> *leftest = head;
+        unsigned index_leftest = 0;
+        for(unsigned i = 0; i < size_ll; i++){
+            if(current->data.position.get_x() < leftest->data.position.get_x() or 
+                (current->data.position.get_x() == leftest->data.position.get_x() and 
+                 current->data.position.get_y() <  leftest->data.position.get_y())){
+
+                    leftest = current;
+                    index_leftest = i;
+            }
+
+            current = current->next;
+        }
+        return index_leftest;
+        
+    }
 
 
     std::vector<std::vector<double>> as_vector() const {

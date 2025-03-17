@@ -7,114 +7,6 @@
 #include "grid.cpp"
 #include <memory>
 
-// using Poi = Point<Num>;
-
-
-// bool are_polys_same(const std::vector<Poi>& this_poly,
-//                     const std::vector<Poi>& that_poly){
-
-//     unsigned N = this_poly.size();
-//     if(that_poly.size() != N)
-//         return false;
-//     if(N == 0)
-//         return true;
-
-//     // Check if any node is identical to the first
-//     unsigned index_origin_this = 0;
-//     unsigned index_origin_that;
-//     auto& point = this_poly.at(index_origin_this);
-//     bool found = false;
-    
-//     for(unsigned j=0; j<N; j++){
-//         auto& other_point = that_poly.at(j);
-//         if(other_point == point){
-//             found = true;
-//             index_origin_that = j;
-//             break;
-//         }
-//     }
-
-//     // std::cout << "indices: " << index_origin_this << " " << index_origin_that << "\n";
-
-//     if(not found){
-//         return false;
-//     }
-
-//     // Check in the direct order
-//     bool direct_order = true;
-//     for(unsigned j=0; j<N; j++){
-//         auto& this_point = this_poly.at((j+index_origin_this)%N);
-//         auto& that_point = that_poly.at((j+index_origin_that)%N);
-//         if(this_point != that_point){
-//             direct_order = false;
-//             break;
-//         }
-//     }
-
-//     if(direct_order)
-//         return true;
-
-//     // Check in the reverse order 
-//     bool reverse_order = true;
-//     for(unsigned j=0; j<N; j++){
-//         auto& this_point = this_poly.at((j+index_origin_this)%N);
-//         auto& that_point = that_poly.at((N-j+index_origin_that)%N);
-//         if(this_point != that_point){
-//             reverse_order = false;
-//             break;
-//         }
-//     }
-
-//     if(reverse_order)
-//         return true;
-
-//     return false;
-
-// }
-
-    // bool operator==(State const& other_state) const {
-    //     // return true;
-    //     // Some polygons are identical, even though they have different ids
-    //     // poly6 == poly9, poly7 == poly8
-
-    //     auto a_list = std::vector<unsigned>{5, 6}; 
-    //     auto b_list = std::vector<unsigned>{8, 7};
-
-    //     for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
-
-    //         if(std::count(a_list.begin(), a_list.end(), i) > 0 or 
-    //            std::count(b_list.begin(), b_list.end(), i) > 0)
-    //             continue;
-
-    //         auto& this_poly = used_polys->at(i);
-    //         auto& that_poly = other_state->used_polys.at(i);
-    //         if(not are_polys_same(this_poly, that_poly))
-    //             return false;
-            
-    //     }
-
-
-    //     for(unsigned k=0; k<2; k++){
-    //         unsigned a = a_list.at(k);
-    //         unsigned b = b_list.at(k);
-    //         bool b1 = are_polys_same(used_polys->at(a), other_state.used_polys->at(a));
-    //         bool b2 = are_polys_same(used_polys->at(b), other_state.used_polys->at(b));
-    //         bool b3 = are_polys_same(used_polys->at(b), other_state.used_polys->at(a));
-    //         bool b4 = are_polys_same(used_polys->at(a), other_state.used_polys->at(b));
-
-    //         if(!(b1 and b2) and !(b3 and b4))
-    //             return false;
-    //     }
-
-
-            
-    //     return true;
-    // }
-
-
-
-
-
 
 template <typename Num, bool enable_hash = true, bool enable_comparison = true>
 class InnerState{
@@ -261,7 +153,34 @@ std::ostream& operator<<(std::ostream& stream, const InnerState<Num, a, b> & use
     return stream;    
 }
 
-template <typename Num, typename Inner>
+template <typename Num>
+struct SelectObtusest{
+    static unsigned int select(const Polygon<Num>& polygon){
+        return polygon.get_obtusest_node();
+    }
+};
+
+template <typename Num>
+struct SelectLeftest{
+    static unsigned int select(const Polygon<Num>& polygon){
+        return polygon.get_leftest_node();       
+    }
+};
+
+struct GetFirst{
+    static unsigned int get([[maybe_unused]] int max){
+        return 0;
+    }
+};
+
+
+struct GetLast{
+    static unsigned int get(int max){
+        return max-1;
+    }
+};
+
+template <typename Num, typename Inner, template <typename> class Selector, typename Getter>
 class State{
 
     using Poly = Polygon<Num>;
@@ -275,7 +194,7 @@ public:
     std::unique_ptr<Poly> current_polygon;
     std::unique_ptr<Grid<Num>> grid;
     std::unique_ptr<Inner> used_polys;
-    int countme;
+    std::vector<unsigned> history;
     // std::size_t state_hash;
 
 
@@ -284,7 +203,7 @@ public:
         current_polygon(std::make_unique<Poly>(*other.current_polygon)),
         grid{std::make_unique<Grid<Num>>(*other.grid)},
         used_polys(std::make_unique<Inner>(*other.used_polys)), 
-        countme{0}{
+        history{other.history}{
             calculate_hash();
         }
 
@@ -293,18 +212,18 @@ public:
     //     used_polys{std::move(_used_polys)}{}
 
         
-    State(const Poly& _poly, const Inner& _used_polys):
+    State(const Poly& _poly, const Inner& _used_polys, const std::vector<unsigned>& hist):
         hash_{0},
         current_polygon{std::make_unique<Poly>(_poly)}, 
         used_polys{std::make_unique<Inner>(_used_polys)},
-        countme{0}{
+        history{hist}{
             calculate_hash();
         }
 
     State():hash_{0},
             current_polygon(std::make_unique<Poly>(polygons<Num>::frame)), 
             used_polys(std::make_unique<Inner>()),
-            countme{0}{
+            history{{}}{
                 calculate_hash();
             }
 
@@ -312,7 +231,7 @@ public:
                           current_polygon{std::move(other.current_polygon)},
                           grid{std::move(other.grid)},
                           used_polys{std::move(other.used_polys)},
-                          countme{0}{
+                          history{std::move(other.history)}{
                             calculate_hash();
                           }
 
@@ -323,7 +242,7 @@ public:
         current_polygon = std::move(other.current_polygon);
         grid = std::move(other.grid);
         used_polys = std::move(other.used_polys);
-        countme = other.countme;
+        history = std::move(other.history);
         calculate_hash();
 
         return *this;
@@ -336,7 +255,7 @@ public:
         current_polygon = std::make_unique<Poly>(*(other.current_polygon));
         grid = std::make_unique<Grid<Num>>(*(other.grid));
         used_polys = std::make_unique<Inner>(*(other.used_polys));
-        countme = other.countme;
+        history = other.history;
         calculate_hash();
 
         return *this;
@@ -362,20 +281,19 @@ public:
 
 
 
-    template <typename Getter>
-    std::vector<State> find_next_states(bool allow_reflection, Getter& getter, std::ostream& stream = std::cout) const{
+    std::vector<State> find_next_states(bool allow_reflection, std::ostream& stream = std::cout) const{
         // Find the node with smallest internal angle
         
         std::vector<State> next_states;
         if(current_polygon->head == nullptr)
             return next_states;
         
-        unsigned obtusest_node_index = current_polygon->get_obtusest_index();
-        Nod& obtusest_node = current_polygon->ll_node_from_index(obtusest_node_index)->data;
+        //unsigned obtusest_node_index = current_polygon->get_obtusest_index();
+        unsigned int node_index = Selector<Num>::select(*current_polygon);
+        Nod& obtusest_node = current_polygon->ll_node_from_index(node_index)->data;
 
         
         // stream << "------------- state ---------------\n" << *this << "\n";
-
 
         // Find which polygons haven't been used yet
         for(unsigned i = 0; i < polygons<Num>::num_polygons; i++){
@@ -414,7 +332,7 @@ public:
                             Poly new_frame{*current_polygon}; 
                             Poly new_poly{poly};
 
-                            LL_Node<Nod> *node_frame = new_frame.ll_node_from_index(obtusest_node_index);
+                            LL_Node<Nod> *node_frame = new_frame.ll_node_from_index(node_index);
                             LL_Node<Nod> *node_poly = new_poly.ll_node_from_index(j);
 
                             // stream << "before merge\n";
@@ -425,7 +343,7 @@ public:
                             new_frame.merge(node_frame, new_poly, node_poly);
                             // stream << "before prune\n" << new_frame << "\n";
                             // stream << "update nodes: " << node_frame->data << " " << node_poly->data << "\n";
-                            new_frame.prune_LL({node_frame, node_poly}, getter, stream);
+                            new_frame.prune_LL({node_frame, node_poly}, Getter(), stream);
                             // stream << "after prune\n" << new_frame << "\n";
                             
                             
@@ -438,11 +356,12 @@ public:
                             
                             Inner new_used_polys = *used_polys;
                             new_used_polys.set_poly(i, poly);
+                            std::vector<unsigned> new_history = history;
+                            new_history.push_back(next_states.size());
 
-                            State new_state(new_frame, new_used_polys);
+                            State new_state(new_frame, new_used_polys, new_history);
                             // stream << "next state: " << new_state << "\n";
                             next_states.push_back(new_state);
-                            
 
                         }
                     }   
@@ -454,25 +373,76 @@ public:
         return next_states;
     }
 
-    State iterate(std::vector<unsigned> indices, bool allow_reflection){
-        auto f = [](){return 0;};
-        std::vector<State> next_states = find_next_states(allow_reflection, f);
+
+    std::optional<State> iterate(
+            unsigned int poly_index, unsigned int num_rotations, 
+            bool reflected, std::ostream& stream = std::cout) const{
+        
+        if(current_polygon->head == nullptr)
+            return std::nullopt;
+        
+        unsigned int node_index = Selector<Num>::select(*current_polygon);
+        Nod& obtusest_node = current_polygon->ll_node_from_index(node_index)->data;
+
+        if(used_polys->is_set(poly_index))
+            return std::nullopt;
+
+        Poly poly = polygons<Num>::polyset.at(poly_index);
+
+        if(num_rotations >= poly.size_ll) 
+            return std::nullopt;
+
+        if(reflected)
+            poly.flip_x();
+
+        LL_Node<Nod> *current = poly.head;
+        for(unsigned j = 0; j < num_rotations; j++)
+            current = current->next;
+            
+        Nod& proposed_node = current->data;
+        if(angles_compatible(proposed_node.angle_opening, obtusest_node.angle_opening)){
+            poly.translate(obtusest_node.position - proposed_node.position);
+            poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, 
+                        obtusest_node.position);
+
+            if(not current_polygon->overlaps(poly)){
+                
+                Poly new_frame{*current_polygon}; 
+                Poly new_poly{poly};
+
+                LL_Node<Nod> *node_frame = new_frame.ll_node_from_index(node_index);
+                LL_Node<Nod> *node_poly = new_poly.ll_node_from_index(num_rotations);
+
+                new_frame.merge(node_frame, new_poly, node_poly);
+                new_frame.prune_LL({node_frame, node_poly}, Getter(), stream);
+
+                Inner new_used_polys = *used_polys;
+                new_used_polys.set_poly(poly_index, poly);
+
+                State new_state(new_frame, new_used_polys, {});
+                return new_state;
+
+            }
+        }   
+    
+    
+        return std::nullopt;
+    }
+
+
+    State apply_iterations
+        (std::vector<std::tuple<unsigned int, unsigned int, bool>> indices, 
+        std::ostream& stream){
+        
         State state;
 
         for(auto& index: indices){
-            
-            if(next_states.size() == 0){
-                std::cout << "empty\n";
-                break;
-            }
-            if(index >= next_states.size()){
-                std::cout << "out of range\n";
-                break;
-            }
-
-
-            state = std::move(next_states.at(index));
-            next_states = state.find_next_states(allow_reflection, f);
+            unsigned int poly_index = std::get<0>(index);
+            unsigned int num_rotations = std::get<1>(index);
+            bool reflect = std::get<2>(index);
+            std::optional<State> new_state = state.iterate(poly_index, num_rotations, reflect, stream);
+            assert(new_state);
+            state = *new_state;
         }
         return state;
     }
@@ -480,8 +450,8 @@ public:
 
 };
 
-template <typename Num, typename Inner>
-std::ostream& operator<<(std::ostream& stream, State<Num, Inner> const& state){
+template <typename Num, typename Inner, template <typename> class Select, typename Get>
+std::ostream& operator<<(std::ostream& stream, State<Num, Inner, Select, Get> const& state){
     
 
     // Print frame
@@ -499,8 +469,13 @@ std::ostream& operator<<(std::ostream& stream, State<Num, Inner> const& state){
     // Print used polys
     stream << " Used polys:";
     const Inner& inner = *state.used_polys;
-    stream << inner << "\n";
-    
+    stream << inner << " ";
+
+    stream << "history: ";
+    for(auto& h: state.history)
+        stream << h << " ";
+    stream << "\n";
+
     return stream;
 }
 
