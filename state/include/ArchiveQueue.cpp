@@ -7,7 +7,8 @@ public:
     using DataType = T;
     virtual int insert(const std::vector<T>& states) = 0;
     virtual std::optional<T> get_next() = 0;
-    // virtual void clear() = 0;
+    virtual void clear() = 0;
+    virtual std::vector<T> get_solutions() = 0;
 };
 
 
@@ -54,175 +55,84 @@ public:
         return state;
     }
 
-    // std::vector<Inner> find_uniques(const std::vector<Inner>& completes){
+    std::vector<T> get_solutions() override {
+        return final_container;
+    }
 
-    //     std::vector<Inner> uniques;
-    //     for(unsigned i=0; i<completes.size(); i++){
-    //         auto& state1 = completes.at(i);
-    //         bool unique = true;
 
-    //         for(unsigned j=i+1; j<completes.size(); j++){
-    //             auto& state2 = completes.at(j);
-
-    //             if(state2.are_polys_same(state1)){
-    //                 unique = false;
-    //                 break;
-    //             }
-    //         }
-
-    //         if(unique){
-    //             uniques.push_back(state1);
-    //         }
-    //     }
-    //     return uniques;
-
-    // }
-    // void reset() {
-    //     archive.clear();
-    // }
+    void clear() override {
+        container.clear();
+    }
 
 };
 
 
-template <typename Inner>
-class Hash : public Container<Inner> {
+template <typename T>
+class Hash : public Container<T> {
 private:
     struct HashStruct {
-        size_t operator()(const Inner& inner_state) const {
+        size_t operator()(const T& inner_state) const {
             return inner_state.get_hash();
         }
     };
     std::mutex mtx;
-    // double counter;
 
 public:
-    std::unordered_set<Inner, HashStruct> archive;
+    std::unordered_set<T, HashStruct> container, last;
+
     Hash(){};
     Hash(Hash&& other):
-        archive{std::move(other.archive)},
-        mtx(std::mutex( )){}
+    mtx(std::mutex()),
+    container{std::move(other.container)},
+    last{std::move(other.last)}{}
 
-    template <typename State>
-    std::vector<bool> insert(const std::vector<State>& states){
+
+    int insert(const std::vector<T>& states) override {
         std::lock_guard<std::mutex> lock(mtx);
 
-        std::vector<bool> mask;
+        int count = 0;
 
         for(auto& state: states){
-            auto [it, success] = archive.insert(state);
-            mask.push_back(success);
+            auto [it, success] = container.insert(state);
+            if(success)
+                count++;
         }
 
-        return mask;
+        return count;
     }
 
     unsigned size(){
-        return archive.size();
+        return container.size();
     }
 
-
-    std::optional<Inner> get_next_pointer(){
+    std::optional<T> get_next() override {
         std::lock_guard<std::mutex> lock(mtx);
         
-
-        int N = archive.size();
-        if(N == 0)
+        if(container.size() == 0)
             return std::nullopt;
 
-        // auto it = queue.rbegin() + std::min(N-1, i);
-        //int n = N-1-i;
-
-        auto it = archive.begin();// + std::max(n, 0);
-        // std::cout << n << " ";
+        auto it = container.begin();
+        T state = *it;
         
-        Inner last_state = *it;
-        //queue.pop_back();
-        archive.erase(it);
+        if(state.size() == 14)
+            last.insert(state);
 
-        return last_state;
+        container.erase(it);
+
+        return state;
     }
 
-    // std::vector<Inner> find_uniques(const std::vector<Inner>& completes){
+    std::vector<T> get_solutions() override{
+        std::vector<T> solutions;
 
-    //     std::vector<Inner> uniques;
-    //     for(unsigned i=0; i<completes.size(); i++){
-    //         auto& state1 = completes.at(i);
-    //         bool unique = true;
+        for(auto& state: last)
+            solutions.push_back(state);
 
-    //         for(unsigned j=i+1; j<completes.size(); j++){
-    //             auto& state2 = completes.at(j);
+        return solutions;
+    }
 
-    //             if(state2.are_polys_same(state1)){
-    //                 unique = false;
-    //                 break;
-    //             }
-    //         }
-
-    //         if(unique){
-    //             uniques.push_back(state1);
-    //         }
-    //     }
-    //     return uniques;
-
-    // }
-    void reset() override {
-        archive.clear();
+    void clear() override {
+        container.clear();
     }
 
 };
-
-// template <typename State>
-// class Queue{
-// private:
-//     std::mutex mtx;
-
-// public:
-//     std::vector<State> queue;
-//     void insert(std::vector<State>& states, const std::vector<bool>& mask){
-//         std::lock_guard<std::mutex> lock(mtx);
-//         assert(states.size() == mask.size());
-
-//         for(unsigned i=0; i<states.size(); i++){
-//             if(mask.at(i))
-//                 queue.push_back(std::move(states.at(i)));
-//         }
-
-//     }
-
-//     std::optional<State> get_next_pointer(int i){
-
-//         std::lock_guard<std::mutex> lock(mtx);
-        
-
-//         int N = queue.size();
-//         if(N == 0)
-//             return std::nullopt;
-
-//         // auto it = queue.rbegin() + std::min(N-1, i);
-//         int n = N-1-i;
-
-//         auto it = queue.begin() + std::max(n, 0);
-//         // std::cout << n << " ";
-        
-//         State last_state = *it;
-//         //queue.pop_back();
-//         queue.erase(it);
-
-//         return last_state;
-//     }
-
-//     unsigned size() const {
-//         return queue.size();
-//     }
-
-//     void reset() {
-//         queue.clear();
-//     }
-    
-//     // Queue& operator=(const Queue& other){
-
-//     // }
-// };
-
-
-// class ThreadPool{};

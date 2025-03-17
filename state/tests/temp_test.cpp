@@ -128,10 +128,10 @@ std::vector<T> find_states_with_size(const std::vector<T>& container, unsigned i
 }
 
 
-template <typename Container>
-std::vector<typename Container::DataType> find_uniques(const Container& container){
+template <typename T>
+std::vector<T> find_uniques(const std::vector<T>& container){
 
-    std::vector<typename Container::DataType> uniques;
+    std::vector<T> uniques;
 
     for(unsigned i=0; i<container.size(); i++){
         auto& state1 = container.at(i);
@@ -153,6 +153,23 @@ std::vector<typename Container::DataType> find_uniques(const Container& containe
     return uniques;
 }
 
+template <typename T, typename U>
+bool sets_are_equal(const std::vector<T>& set1, const std::vector<U>& set2){
+    if(set1.size() != set2.size())
+        return false;
+
+    for(auto& s1: set1){
+        bool found = false;
+        for(auto& s2: set2){
+            if(*(s1.used_polys) == *(s2.used_polys))
+                found = true;
+        }
+        if(!found)
+            return false;
+    }
+    return true;
+}
+
 int main(int argc, char** argv){
     
     int index = 0;
@@ -160,17 +177,17 @@ int main(int argc, char** argv){
         index = atoi(argv[1]);
     std::cout << "argc: " << argc << " index: " << index << "\n";
 
-    // std::vector<std::tuple<unsigned int, unsigned int, bool>> indices{
-    //     {4,0,0}, {3,0,0}, {0,0,0}, {5,0,0}, {1,2,0}, {2,0,0}, {6,0,0}};
+    std::vector<std::tuple<unsigned int, unsigned int, bool>> indices;
+    // indices = {{4,0,0}, {3,0,0}, {0,0,0}, {5,0,0}, {1,2,0}, {2,0,0}, {6,0,0}};
+    indices = {{4,0,0}, {3,0,0}, {0,0,0}, {5,0,0}, {1,2,0}, {2,0,0}};
 
-
-    std::vector<std::tuple<unsigned int, unsigned int, bool>> indices{};
     using Num = Float<double>;
     using Inner = InnerState<Num, true, true>;
     // using st1 = State<Num, Inner, SelectObtusest, GetFirst>;
     // using st2 = State<Num, Inner, SelectObtusest, GetLast>;
-    // using st3 = State<Num, Inner, SelectLeftest, GetFirst>;
+    using st3 = State<Num, Inner, SelectLeftest, GetLast>;
     using st4 = State<Num, Inner, SelectLeftest, GetLast>;
+    using ct3 = Hash<st3>;
     using ct4 = Stack<st4>;
 
     
@@ -179,20 +196,21 @@ int main(int argc, char** argv){
     // auto res1 = find_all<st1>(indices);
     // auto res2 = find_all<st2>(indices);
     // auto res3 = find_all<st3>(indices);
-    auto res4 = find_all<st4, ct4>(indices).final_container;
+    auto res3 = find_all<st3, ct3>(indices).get_solutions();
+    auto res4 = find_all<st4, ct4>(indices).get_solutions();
     // for(auto& r: res4.final_container){
     //     std::cout << r << "\n";
     // }
 
+    std::cout << sets_are_equal(res3, res4) << std::endl;
 
-    // std::cout <<
-    for(unsigned int i=0; i<polygons<Float<double>>::num_polygons+1; i++){
-        auto s1 = find_states_with_size(res4, i);
-        std::cout << i << " " << s1.size() << "\n";
 
-    }
+    auto s3 = find_states_with_size(res3, polygons<Float<double>>::num_polygons);
+    auto s4 = find_states_with_size(res4, polygons<Float<double>>::num_polygons);
+    std::cout << "complete: " << " " << s3.size() << " " << s4.size() << "\n";
+
+    auto v3 = find_uniques(res3);
+    auto v4 = find_uniques(res4);
+    std::cout << "uniques: " << " " << v3.size() << " " << v4.size() << "\n";
     
-    // auto s1 = archive2.find_states_with_size(polygons<Float<double>>::num_polygons);
-    // auto s2 = archive2.find_states_with_size(polygons<Float<double>>::num_polygons);
-    // std::cout << "final: " << s1.size() << " " << s2.size() << "\n";
 }
