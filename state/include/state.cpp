@@ -6,7 +6,7 @@
 #include "ostomachion.cpp"
 #include "grid.cpp"
 #include <memory>
-
+#include <optional>
 
 template <typename Num, bool enable_hash = true, bool enable_comparison = true>
 class InnerState{
@@ -381,7 +381,7 @@ public:
         if(current_polygon->head == nullptr)
             return std::nullopt;
         
-        unsigned int node_index = Selector<Num>::select(*current_polygon);
+        unsigned int node_index = SelectLeftest<Num>::select(*current_polygon);
         Nod& obtusest_node = current_polygon->ll_node_from_index(node_index)->data;
 
         if(used_polys->is_set(poly_index))

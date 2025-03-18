@@ -619,7 +619,7 @@ public:
         return current;
     }
 
-    unsigned get_obtusest_index() const {
+    unsigned get_obtusest_node() const {
         // Get the node with the largest internal opening
         LL_Node<Nod> *current = head;
         LL_Node<Nod> *largest = head;

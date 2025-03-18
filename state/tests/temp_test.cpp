@@ -91,15 +91,15 @@
 //     return archive_out;
 // }
 
-template <typename State, typename Container>
-Container find_all(const std::vector<std::tuple<unsigned int, unsigned int, bool>>& indices){
+template <typename State, template <typename> class Container>
+Container<State> find_all(const std::vector<std::tuple<unsigned int, unsigned int, bool>>& indices){
     State first_state;
     bool allow_reflection = true;
     std::ofstream stream("/dev/null");
     std::vector<State> next_states{first_state.apply_iterations(indices, stream)};
 
     std::cout << next_states.at(0) << "\n";
-    Container container;
+    Container<State> container;
     container.insert(next_states);
 
     while(true){
@@ -129,7 +129,7 @@ std::vector<T> find_states_with_size(const std::vector<T>& container, unsigned i
 
 
 template <typename T>
-std::vector<T> find_uniques(const std::vector<T>& container){
+std::vector<T> find_uniques_brute(const std::vector<T>& container){
 
     std::vector<T> uniques;
 
@@ -149,6 +149,28 @@ std::vector<T> find_uniques(const std::vector<T>& container){
         if(unique){
             uniques.push_back(state1);
         }
+    }
+    return uniques;
+}
+
+template <typename T>
+std::vector<T> find_uniques_hash(const std::vector<T>& container){
+
+
+    struct HashStruct {
+        size_t operator()(const T& x) const {
+            return x.get_hash();
+        }
+    };
+
+    std::unordered_set<T, HashStruct> uniques_hash;
+    for(auto& state: container){
+        uniques_hash.insert(state);
+    }
+
+    std::vector<T> uniques;
+    for(auto& state: uniques_hash){
+        uniques.insert(state);
     }
     return uniques;
 }
@@ -179,38 +201,43 @@ int main(int argc, char** argv){
 
     std::vector<std::tuple<unsigned int, unsigned int, bool>> indices;
     // indices = {{4,0,0}, {3,0,0}, {0,0,0}, {5,0,0}, {1,2,0}, {2,0,0}, {6,0,0}};
-    indices = {{4,0,0}, {3,0,0}, {0,0,0}, {5,0,0}, {1,2,0}, {2,0,0}};
+    indices = {{4,0,0}, {3,0,0}, {0,0,0}};
 
     using Num = Float<double>;
-    using Inner = InnerState<Num, true, true>;
+    using Inner = InnerState<Num, true, true>;    
     // using st1 = State<Num, Inner, SelectObtusest, GetFirst>;
     // using st2 = State<Num, Inner, SelectObtusest, GetLast>;
+    using st2 = State<Num, Inner, SelectObtusest, GetLast>;
     using st3 = State<Num, Inner, SelectLeftest, GetLast>;
     using st4 = State<Num, Inner, SelectLeftest, GetLast>;
-    using ct3 = Hash<st3>;
-    using ct4 = Stack<st4>;
-
-    
-
 
     // auto res1 = find_all<st1>(indices);
     // auto res2 = find_all<st2>(indices);
-    // auto res3 = find_all<st3>(indices);
-    auto res3 = find_all<st3, ct3>(indices).get_solutions();
-    auto res4 = find_all<st4, ct4>(indices).get_solutions();
+    auto re2 = find_all<st2, Hash>(indices);
+    auto re3 = find_all<st3, Hash>(indices);
+    auto re4 = find_all<st4, Stack>(indices);
+
+    auto res2 = re2.get_solutions();
+    auto res3 = re3.get_solutions();
+    auto res4 = re4.get_solutions();
     // for(auto& r: res4.final_container){
     //     std::cout << r << "\n";
     // }
 
-    std::cout << sets_are_equal(res3, res4) << std::endl;
 
+    std::cout << "complete: " << res2.size() << " " << res3.size() << " " << res4.size() << "\n";
+    auto v2 = find_uniques_brute(res2);
+    auto v3 = find_uniques_brute(res3);
+    auto v4 = find_uniques_brute(res4);
 
-    auto s3 = find_states_with_size(res3, polygons<Float<double>>::num_polygons);
-    auto s4 = find_states_with_size(res4, polygons<Float<double>>::num_polygons);
-    std::cout << "complete: " << " " << s3.size() << " " << s4.size() << "\n";
+    std::cout << "uniques: " << v2.size() << " " << v3.size() << " " << v4.size() << "\n";
 
-    auto v3 = find_uniques(res3);
-    auto v4 = find_uniques(res4);
-    std::cout << "uniques: " << " " << v3.size() << " " << v4.size() << "\n";
+    std::cout << sets_are_equal(v2, v3) << std::endl;
+    std::cout << sets_are_equal(v3, v4) << std::endl;
+
+    re2.print_analytics();
+    re3.print_analytics();
+    re4.print_analytics();
+
     
 }
