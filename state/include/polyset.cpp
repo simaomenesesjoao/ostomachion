@@ -2,19 +2,27 @@
 
 #include "polygon.cpp"
 #include <functional>
-
+#include <vector>
 
 template <typename Poly>
 class PolySet {
 private:
     unsigned int size_;
+    unsigned long long hash_;
 
 public:
     virtual void insert(unsigned int i, const Poly& poly) = 0;
+
     unsigned int get_size(){
         return size_;
     }
+    
+    virtual bool operator==(const PolySet& other) = 0;
+    virtual bool calculate_hash() = 0;
 
+    bool get_hash(){
+        return hash_;
+    };
 
 };
 
@@ -38,7 +46,7 @@ private:
         // first set, so that two sets can be identical if they differ by 
         // rotation or reflection
 
-        if(size_ != other.size_)
+        if(this->size_ != other.size_)
             return false;
 
         for(unsigned int i = 0; i < num_distinct_polys; i++){
@@ -65,55 +73,67 @@ private:
         return true;
     }
 
+    
+    Poly identity(const Poly& poly){
+        return poly;
+    };
+
+    Poly rotation90(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.rotate({1,0},{6,6});
+        return poly2;
+    };
+
+    // auto rotation180 = [](const Poly& poly){
+    //     Poly poly2 = poly;
+    //     poly2.rotate({0,-1},{6,6});
+    //     return poly2;
+    // };
+
+    // auto rotation270 = [](const Poly& poly){
+    //     Poly poly2 = poly;
+    //     poly2.rotate({-1,0},{6,6});
+    //     return poly2;
+    // };
+
+    // auto flip_x = [](const Poly& poly){
+    //     Poly poly2 = poly;
+    //     poly2.flip_x();
+    //     poly2.translate({4,0});
+    //     return poly2;
+    // };
+
+    // auto flip_y = [](const Poly& poly){
+    //     Poly poly2 = poly;
+    //     poly2.flip_y();
+    //     poly2.translate({0,4});
+    //     return poly2;
+    // };
+
+
+    std::vector<std::function<Poly(const Poly&)>> transformations{identity, rotation90};
+
 public:
     static unsigned int max_size;
     static unsigned int num_distinct_polys;
 
-
+    
 
     bool operator==(const PolySet& other){
-
-        auto identity = [](const Poly& poly){
-            return poly;
-        };
-
-        auto rotation90 = [](const Poly& poly){
-            Poly poly2 = poly;
-            poly2.rotate({1,0},{6,6});
-            return poly2;
-        };
-
-        // auto rotation180 = [](const Poly& poly){
-        //     Poly poly2 = poly;
-        //     poly2.rotate({0,-1},{6,6});
-        //     return poly2;
-        // };
-
-        // auto rotation270 = [](const Poly& poly){
-        //     Poly poly2 = poly;
-        //     poly2.rotate({-1,0},{6,6});
-        //     return poly2;
-        // };
-
-        // auto flip_x = [](const Poly& poly){
-        //     Poly poly2 = poly;
-        //     poly2.flip_x();
-        //     poly2.translate({4,0});
-        //     return poly2;
-        // };
-
-        // auto flip_y = [](const Poly& poly){
-        //     Poly poly2 = poly;
-        //     poly2.flip_y();
-        //     poly2.translate({0,4});
-        //     return poly2;
-        // };
 
 
 
 
         return equals(other, identity) or equals(other, rotation180);
 
+    }
+
+    unsigned long long get_hash(){
+        // Calculates a hash that is invariant under rotation and reflection
+        long long h = 0;
+        for(auto& polyrow: polyset){
+
+        }
     }
 };
 
