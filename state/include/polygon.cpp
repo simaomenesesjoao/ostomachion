@@ -179,6 +179,12 @@ public:
         }
     }
 
+    // void rotate90(Poin const& rot_center){
+    //     // Rotate the polygon by angle around the rotation center
+    //     Ang const& angle, 
+    //     rotate(angle)
+    // }
+
     void flip_x(){
         // Flip the polygon along x, but preserve orientation. In practice, 
         // this means changing the sign of every quantity which depends on x
@@ -199,6 +205,29 @@ public:
         }
         
     }
+
+
+    void flip_y(){
+        // Flip the polygon along y, but preserve orientation. In practice, 
+        // this means changing the sign of every quantity which depends on y
+        LL_Node<Nod> *current{head}, *temp;
+
+        for(unsigned i=0; i<size_ll; i++){
+            temp = current->next;
+            current->next = current->prev;
+            current->prev = temp;
+            current->data.position = {current->data.position.get_x(), -current->data.position.get_y()};
+
+            auto start = current->data.angle_start;
+            auto end = current->data.angle_end;
+            current->data.angle_start = Ang{end.get_cos(), -end.get_sin()};
+            current->data.angle_end = Ang{start.get_cos(), -start.get_sin()};
+            
+            current = temp;
+        }
+        
+    }
+
 
     void merge(LL_Node<Nod> *this_node, Polygon & other_poly, LL_Node<Nod> *other_node){
 
