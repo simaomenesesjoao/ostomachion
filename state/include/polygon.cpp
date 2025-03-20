@@ -224,10 +224,8 @@ public:
             current->data.angle_end = Ang{start.get_cos(), -start.get_sin()};
             
             current = temp;
-        }
-        
+        }   
     }
-
 
     void merge(LL_Node<Nod> *this_node, Polygon & other_poly, LL_Node<Nod> *other_node){
 
