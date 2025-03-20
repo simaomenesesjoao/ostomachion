@@ -97,10 +97,8 @@ public:
         }
 
         head = new LL_Node<Nod>(other_poly.head->data);
-        LL_Node<Nod> *node = head;
-        
+        LL_Node<Nod> *node = head;        
         LL_Node<Nod> *other_node = other_poly.head->next;
-
 
         for(unsigned i=1; i<other_poly.size_ll; i++){
             node->next = new LL_Node<Nod>(other_node->data);
@@ -128,7 +126,6 @@ public:
     Polygon(Polygon const& other_poly):first{false}{
         build_this(other_poly);
     }
-
 
     ~Polygon(){
         delete_this();

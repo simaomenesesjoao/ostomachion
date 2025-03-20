@@ -11,9 +11,10 @@ class PolySet {
 protected:
 
     unsigned long long hash_;
-    unsigned int size_;
     std::vector<std::vector<Poly>> polygons;
-    PolySet(unsigned int i):polygons(i){};
+    unsigned int size_;
+
+    PolySet(unsigned int i):polygons(i), size_{0}{};
 
 public:
     virtual void insert(unsigned int i, const Poly& poly) = 0;
@@ -21,8 +22,9 @@ public:
     unsigned int get_size() const {
         return size_;
     }
+
     virtual unsigned int get_max_size() const = 0;
-    
+    virtual unsigned int get_num_distinct_polys() const = 0;    
     virtual bool operator==(const PolySet& other) = 0;
     virtual void calculate_hash() = 0;
 
@@ -38,10 +40,17 @@ public:
 
 template <typename Poly>
 std::ostream& operator<<(std::ostream& stream, const PolySet<Poly>& polyset){
-    for(unsigned int i=0; i<polyset.get_max_size(); i++){
+    for(unsigned int i=0; i<polyset.get_num_distinct_polys(); i++){
         auto polyrow = polyset.get_poly_at(i);
+        std::cout << "row " << i << " ";
         for(auto& poly: polyrow){
-            stream << poly << " ";
+            auto node = poly.head;
+            for(unsigned int j=0; j<poly.size_ll; j++){
+                const auto& pos = node->data.position;
+                stream << "(" << pos.get_x() << "," << pos.get_y() << ") ";
+                node = node->next;
+            }
+            stream << " | ";
         }
         stream << "\n";
     }
@@ -67,7 +76,8 @@ private:
         // first set, so that two sets can be identical if they differ by 
         // rotation or reflection
 
-        if(this->size_ != other.get_size())
+
+        if(this->get_size() != other.get_size())
             return false;
 
         for(unsigned int i = 0; i < num_distinct_polys; i++){
@@ -105,6 +115,14 @@ private:
         return poly2;
     };
 
+    
+    static Poly rotation270(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.rotate({-1,0},{6,6});
+        return poly2;
+    };
+
+
     // auto rotation180 = [](const Poly& poly){
     //     Poly poly2 = poly;
     //     poly2.rotate({0,-1},{6,6});
@@ -132,21 +150,27 @@ private:
     // };
 
 
-    std::vector<std::function<Poly(const Poly&)>> transformations = {identity, rotation90};
+    std::vector<std::function<Poly(const Poly&)>> transformations = {identity, rotation90, rotation270};
     
 
 public:
     static unsigned int max_size;
     static unsigned int num_distinct_polys;
 
+    Ostomini():PolySet<Poly>(polyset.size()){}
+
+    
     unsigned int get_max_size() const override {
         return max_size;
     }
     
-    Ostomini():PolySet<Poly>(polyset.size()){}
-
+    unsigned int get_num_distinct_polys() const override {
+        return num_distinct_polys;
+    }
+    
     void insert(unsigned int i, const Poly& poly) override {
         auto& polyrow = this->polygons.at(i);
+        assert(poly.size_ll == polyset.at(i).first.size_ll);
         assert(polyrow.size() < polyset.at(i).second);
         polyrow.push_back(poly);
     }
@@ -183,15 +207,15 @@ Poly Ostomini<Poly>::frame{{0,0}, {0,4}, {4,4}, {4,0}};
 
 template <typename Poly> 
 std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly>::polyset{{
-    {{{{0,0}, {2,4}, {0,4}}}, 2}}};
-    // , 
-    // {{{0,0}, {1,0}, {1,2}}, 2},
-    // {{{1,0}, {3,0}, {3,2}, {3,1}}, 1},
-    // {{{1,2}, {3,2}, {2,4}}, 1});
+    {{{{0,0}, {2,4}, {0,4}}}, 2},
+    {{{{0,0}, {1,0}, {1,2}}}, 2},
+    {{{{1,0}, {3,0}, {3,2}, {3,1}}}, 1},
+    {{{{1,2}, {3,2}, {2,4}}}, 1}
+}};
 
 template <typename Poly>
-unsigned int Ostomini<Poly>::max_size = polyset.size();
+unsigned int Ostomini<Poly>::max_size = 6;
 template <typename Poly>
-unsigned int Ostomini<Poly>::num_distinct_polys = 4;
+unsigned int Ostomini<Poly>::num_distinct_polys = polyset.size();
 
 
