@@ -25,7 +25,6 @@ public:
 
     virtual unsigned int get_max_size() const = 0;
     virtual unsigned int get_num_distinct_polys() const = 0;    
-    virtual bool operator==(const PolySet& other) = 0;
     virtual void calculate_hash() = 0;
 
     unsigned long long get_hash() const {
@@ -70,7 +69,7 @@ private:
 
 
 
-    bool equals(const PolySet<Poly>& other, std::function<Poly(const Poly&)> transform){
+    bool equals(const PolySet<Poly>& other, std::function<Poly(const Poly&)> transform) const {
         // Compare the positions of each set of polygons. Returns true if all
         // of them are identical. Allows a transformation to be applied to the 
         // first set, so that two sets can be identical if they differ by 
@@ -107,50 +106,41 @@ private:
     
     static Poly identity(const Poly& poly){
         return poly;
-    };
+    }
 
     static Poly rotation90(const Poly& poly){
         Poly poly2 = poly;
-        poly2.rotate({1,0},{6,6});
+        poly2.rotate({0,1},{2,2});
         return poly2;
-    };
+    }
 
-    
     static Poly rotation270(const Poly& poly){
         Poly poly2 = poly;
-        poly2.rotate({-1,0},{6,6});
+        poly2.rotate({0,-1},{2,2});
         return poly2;
-    };
+    }
 
+    static Poly rotation180(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.rotate({-1,0},{2,2});
+        return poly2;
+    }
 
-    // auto rotation180 = [](const Poly& poly){
-    //     Poly poly2 = poly;
-    //     poly2.rotate({0,-1},{6,6});
-    //     return poly2;
-    // };
+    static Poly flip_x(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.flip_x();
+        poly2.translate({4,0});
+        return poly2;
+    }
 
-    // auto rotation270 = [](const Poly& poly){
-    //     Poly poly2 = poly;
-    //     poly2.rotate({-1,0},{6,6});
-    //     return poly2;
-    // };
+    static Poly flip_y(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.flip_y();
+        poly2.translate({0,4});
+        return poly2;
+    }
 
-    // auto flip_x = [](const Poly& poly){
-    //     Poly poly2 = poly;
-    //     poly2.flip_x();
-    //     poly2.translate({4,0});
-    //     return poly2;
-    // };
-
-    // auto flip_y = [](const Poly& poly){
-    //     Poly poly2 = poly;
-    //     poly2.flip_y();
-    //     poly2.translate({0,4});
-    //     return poly2;
-    // };
-
-
-    std::vector<std::function<Poly(const Poly&)>> transformations = {identity, rotation90, rotation270};
+    std::vector<std::function<Poly(const Poly&)>> transformations = {identity, rotation90, rotation180, rotation270, flip_x, flip_y};
     
 
 public:
@@ -175,9 +165,11 @@ public:
         polyrow.push_back(poly);
     }
 
-    bool operator==(const PolySet<Poly>& other){
+    bool operator==(const Ostomini& other) const {
 
+        int count = 0;
         for(auto& f: transformations){
+            count++;
             if(equals(other, f))
                 return true;
         }
