@@ -678,6 +678,34 @@ public:
         
     }
 
+    
+    unsigned int get_farthest_node(int center_x, int center_y) const {
+        // Get the node farthest from the center. If several nodes have the same distance
+        // choose the bottom-most one
+        LL_Node<Node<Num>> *current = head;
+        LL_Node<Node<Num>> *farthest = head;
+        unsigned int index_farthest = 0;
+        Num farthest_d{-1};
+        for(unsigned i = 0; i < size_ll; i++){
+            Num dx = current->data.position.get_x() - Num(center_x);
+            Num dy = current->data.position.get_y() - Num(center_y);
+            Num d = dx*dx + dy*dy;
+
+            if(d > farthest_d or 
+                (d == farthest_d and 
+                 current->data.position.get_y() < farthest->data.position.get_y())){
+
+                    farthest = current;
+                    index_farthest = i;
+                    farthest_d = d;
+            }
+
+            current = current->next;
+        }
+        return index_farthest;
+        
+    }
+
 
     std::vector<std::vector<double>> as_vector() const {
         std::vector<std::vector<double>> vector;
