@@ -8,155 +8,162 @@
 #include <memory>
 #include <optional>
 
-template <typename Num, bool enable_hash = true, bool enable_comparison = true>
-class InnerState{
-    using Poi = Point<Num>;
-    using Nod = Node<Num>;
-public:
-    InnerState():
-        state_{std::vector<std::vector<Poi>>(polygons<Num>::num_polygons)}, 
-        size_{0}{
-            calculate_hash();
-        }
+// template <typename Num, bool enable_hash = true, bool enable_comparison = true>
+// class InnerState{
+//     using Poi = Point<Num>;
+//     using Nod = Node<Num>;
+// public:
+//     InnerState():
+//         state_{std::vector<std::vector<Poi>>(polygons<Num>::num_polygons)}, 
+//         size_{0}{
+//             calculate_hash();
+//         }
 
-    bool is_set(unsigned i){
-        return state_.at(i).size() != 0;
-    }
+//     bool is_set(unsigned i){
+//         return state_.at(i).size() != 0;
+//     }
 
-    void set_poly(unsigned i, const Polygon<Num> & polygon){
+//     void set_poly(unsigned i, const Polygon<Num> & polygon){
 
-        LL_Node<Nod> *poly_node = polygon.head;
-        for(unsigned k = 0; k < polygon.size_ll; k++){
-            state_.at(i).push_back(poly_node->data.position);
-            poly_node = poly_node->next;
-        }
-        calculate_hash();
-        size_++;
-    }
+//         LL_Node<Nod> *poly_node = polygon.head;
+//         for(unsigned k = 0; k < polygon.size_ll; k++){
+//             state_.at(i).push_back(poly_node->data.position);
+//             poly_node = poly_node->next;
+//         }
+//         calculate_hash();
+//         size_++;
+//     }
 
-    void calculate_hash(){
-        if(!enable_hash){
-            hash_ = 0;
-            return;
-        }
+//     void calculate_hash(){
+//         if(!enable_hash){
+//             hash_ = 0;
+//             return;
+//         }
 
-        long h = 0;
-        for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
-            auto& poly = state_.at(i);
-            for(auto& point: poly){
-                double x = (double)point.get_x();
-                double y = (double)point.get_y();
-                h += (long)(x*94833373);
-                h = h%100003;
-                h += (long)(y*94373);
-                h = h%100003;
-            }
-        }
-        hash_ = h;
-    }
+//         long h = 0;
+//         for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
+//             auto& poly = state_.at(i);
+//             for(auto& point: poly){
+//                 double x = (double)point.get_x();
+//                 double y = (double)point.get_y();
+//                 h += (long)(x*94833373);
+//                 h = h%100003;
+//                 h += (long)(y*94373);
+//                 h = h%100003;
+//             }
+//         }
+//         hash_ = h;
+//     }
 
-    std::size_t get_hash() const {
-        return hash_;
-    }
+//     std::size_t get_hash() const {
+//         return hash_;
+//     }
     
-    unsigned size() const {
-        return size_;
-    }
+//     unsigned size() const {
+//         return size_;
+//     }
 
-    unsigned max_size() const {
-        return state_.size();
-    }
+//     unsigned max_size() const {
+//         return state_.size();
+//     }
 
-    std::vector<Poi> at(unsigned i) const{
-        return state_.at(i);
-    }
+//     std::vector<Poi> at(unsigned i) const{
+//         return state_.at(i);
+//     }
 
 
 
-    template <typename T>
-    bool are_polys_same(const T& other) const {
-        if(size_ != other.size())
-            return false;
+//     template <typename T>
+//     bool are_polys_same(const T& other) const {
+//         if(size_ != other.size())
+//             return false;
 
-        for(unsigned i=0; i<max_size(); i++){
-            if(i == 5 or i == 6 or i == 7 or i == 8){
-                continue;
-            }
+//         for(unsigned i=0; i<max_size(); i++){
+//             if(i == 5 or i == 6 or i == 7 or i == 8){
+//                 continue;
+//             }
 
-            if(at(i) != other.at(i))
-                return false;
+//             if(at(i) != other.at(i))
+//                 return false;
             
-        }
+//         }
 
-        auto a_list = std::vector<unsigned>{5, 6}; 
-        auto b_list = std::vector<unsigned>{8, 7};
+//         auto a_list = std::vector<unsigned>{5, 6}; 
+//         auto b_list = std::vector<unsigned>{8, 7};
 
-        for(unsigned k=0; k<2; k++){
-            unsigned a = a_list.at(k);
-            unsigned b = b_list.at(k);
-            bool b1 = (at(a) == other.at(a));
-            bool b2 = (at(b) == other.at(b));
-            bool b3 = (at(b) == other.at(a));
-            bool b4 = (at(a) == other.at(b));
+//         for(unsigned k=0; k<2; k++){
+//             unsigned a = a_list.at(k);
+//             unsigned b = b_list.at(k);
+//             bool b1 = (at(a) == other.at(a));
+//             bool b2 = (at(b) == other.at(b));
+//             bool b3 = (at(b) == other.at(a));
+//             bool b4 = (at(a) == other.at(b));
 
-            if(!(b1 and b2) and !(b3 and b4))
-                return false;
-        }
+//             if(!(b1 and b2) and !(b3 and b4))
+//                 return false;
+//         }
 
 
-        return true;
-    }
+//         return true;
+//     }
 
-    bool operator==(const InnerState& other) const {
-        if(!enable_comparison)
-            return false;
-        return are_polys_same(other);
-    }
+//     bool operator==(const InnerState& other) const {
+//         if(!enable_comparison)
+//             return false;
+//         return are_polys_same(other);
+//     }
     
-    std::vector<std::vector<std::vector<double>>> used_polys_as_vector() const {
-        std::vector<std::vector<std::vector<double>>> vector;
-        for(auto& poly: state_){
-            std::vector<std::vector<double>> pol;
-            for(auto& point: poly){
-                double x = (double)point.get_x();
-                double y = (double)point.get_y();
-                std::vector<double> P{x,y};
-                pol.push_back(P);
-            }
-            vector.push_back(pol);
+//     std::vector<std::vector<std::vector<double>>> used_polys_as_vector() const {
+//         std::vector<std::vector<std::vector<double>>> vector;
+//         for(auto& poly: state_){
+//             std::vector<std::vector<double>> pol;
+//             for(auto& point: poly){
+//                 double x = (double)point.get_x();
+//                 double y = (double)point.get_y();
+//                 std::vector<double> P{x,y};
+//                 pol.push_back(P);
+//             }
+//             vector.push_back(pol);
 
-        }
-        return vector;
-    }
+//         }
+//         return vector;
+//     }
 
-private:
-    std::vector<std::vector<Poi>> state_;
-    unsigned size_;
-    std::size_t hash_;
-};
+// private:
+//     std::vector<std::vector<Poi>> state_;
+//     unsigned size_;
+//     std::size_t hash_;
+// };
 
 
-template <typename Num, bool a, bool b>
-std::ostream& operator<<(std::ostream& stream, const InnerState<Num, a, b> & used_polys){
+// template <typename Num, bool a, bool b>
+// std::ostream& operator<<(std::ostream& stream, const InnerState<Num, a, b> & used_polys){
 
-    for(unsigned i=0; i<used_polys.max_size(); i++){
-        stream << "[";
-        for(auto point: used_polys.at(i)){
-            double x = (double)point.get_x();
-            double y = (double)point.get_y();
-            stream << "(" << x << "," << y << ") ";
-        }
-        stream << " ]";
-    }
+//     for(unsigned i=0; i<used_polys.max_size(); i++){
+//         stream << "[";
+//         for(auto point: used_polys.at(i)){
+//             double x = (double)point.get_x();
+//             double y = (double)point.get_y();
+//             stream << "(" << x << "," << y << ") ";
+//         }
+//         stream << " ]";
+//     }
 
-    stream << std::endl;
-    return stream;    
-}
+//     stream << std::endl;
+//     return stream;    
+// }
 
 template <typename Num>
 struct SelectObtusest{
     static unsigned int select(const Polygon<Num>& polygon){
         return polygon.get_obtusest_node();
+    }
+};
+
+template <typename Num>
+struct SelectFarthest{
+    static unsigned int select(const Polygon<Num>& polygon){
+        return polygon.get_farthest_node(2,2);
     }
 };
 
@@ -182,21 +189,17 @@ struct GetLast{
 
 template <typename Num, typename Inner, template <typename> class Selector, typename Getter>
 class State{
-
     using Poly = Polygon<Num>;
     using Nod = Node<Num>;
-    // using Ang = Angle<Num>;
     using Poi = Point<Num>;
     std::size_t hash_;
 
 public:
-    // bool allow_reflection;
+    using In = Inner;
     std::unique_ptr<Poly> current_polygon;
     std::unique_ptr<Grid<Num>> grid;
     std::unique_ptr<Inner> used_polys;
     std::vector<unsigned> history;
-    // std::size_t state_hash;
-
 
     State(State const& other):
         hash_{0},
@@ -221,7 +224,7 @@ public:
         }
 
     State():hash_{0},
-            current_polygon(std::make_unique<Poly>(polygons<Num>::frame)), 
+            current_polygon(std::make_unique<Poly>(Inner::frame)), 
             used_polys(std::make_unique<Inner>()),
             history{{}}{
                 calculate_hash();
@@ -276,7 +279,7 @@ public:
     }
 
     unsigned size() const {
-        return used_polys->size();
+        return used_polys->get_size();
     }
 
 
@@ -292,18 +295,12 @@ public:
         unsigned int node_index = Selector<Num>::select(*current_polygon);
         Nod& obtusest_node = current_polygon->ll_node_from_index(node_index)->data;
 
-        
-        // stream << "------------- state ---------------\n" << *this << "\n";
-
         // Find which polygons haven't been used yet
-        for(unsigned i = 0; i < polygons<Num>::num_polygons; i++){
-
-            if(used_polys->is_set(i)) 
-                continue;
+        for(unsigned int i: used_polys->find_available_types()){
 
             for(auto reflected: std::vector<bool>{true, false}){
 
-                Poly poly = polygons<Num>::polyset.at(i);
+                Poly poly = used_polys->polyset.at(i).first;
                 // stream << "considering poly " << poly << " with size " << poly.size_ll << "\n";
 
                 if(not allow_reflection and reflected){
@@ -355,7 +352,7 @@ public:
                             // next_states.push_back({std::move(new_frame), std::move(new_used_polys)});
                             
                             Inner new_used_polys = *used_polys;
-                            new_used_polys.set_poly(i, poly);
+                            new_used_polys.insert(i, poly);
                             std::vector<unsigned> new_history = history;
                             new_history.push_back(next_states.size());
 
@@ -384,7 +381,7 @@ public:
         unsigned int node_index = SelectLeftest<Num>::select(*current_polygon);
         Nod& obtusest_node = current_polygon->ll_node_from_index(node_index)->data;
 
-        if(used_polys->is_set(poly_index))
+        if(used_polys->is_type_available(poly_index))
             return std::nullopt;
 
         Poly poly = polygons<Num>::polyset.at(poly_index);
@@ -417,7 +414,7 @@ public:
                 new_frame.prune_LL({node_frame, node_poly}, Getter(), stream);
 
                 Inner new_used_polys = *used_polys;
-                new_used_polys.set_poly(poly_index, poly);
+                new_used_polys.insert(poly_index, poly);
 
                 State new_state(new_frame, new_used_polys, {});
                 return new_state;

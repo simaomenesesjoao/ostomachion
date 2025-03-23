@@ -147,7 +147,7 @@ public:
     }
 
     std::size_t get_hash(){
-        return (std::size_t)(x*29318397);
+        return (std::size_t)((x + 1e-6)*29318397);
     };
 
 private:

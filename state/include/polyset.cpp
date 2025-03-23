@@ -4,7 +4,7 @@
 #include <functional>
 #include <vector>
 
-template <typename Poly>
+template <typename Poly, template <typename> class Group>
 class PolySet {
 
 
@@ -23,7 +23,7 @@ public:
         return size_;
     }
 
-    virtual unsigned int get_max_size() const = 0;
+    // virtual unsigned int get_max_size() const = 0;
     virtual unsigned int get_num_distinct_polys() const = 0;    
     virtual void calculate_hash() = 0;
 
@@ -35,10 +35,18 @@ public:
     const std::vector<Poly>& get_poly_at(unsigned int i) const {
         return polygons.at(i);
     }
+
+    std::vector<std::vector<std::vector<double>>> as_vector() const {
+        std::vector<std::vector<std::vector<double>>> polygon_vector;
+        for(const auto& polyrow: polygons)
+            for(const auto& poly: polyrow)
+                polygon_vector.push_back(poly.as_vector());
+        return polygon_vector;
+    }
 };
 
-template <typename Poly>
-std::ostream& operator<<(std::ostream& stream, const PolySet<Poly>& polyset){
+template <typename Poly, template <typename> class Group>
+std::ostream& operator<<(std::ostream& stream, const PolySet<Poly, Group>& polyset){
     for(unsigned int i=0; i<polyset.get_num_distinct_polys(); i++){
         auto polyrow = polyset.get_poly_at(i);
         std::cout << "row " << i << " ";
@@ -61,15 +69,13 @@ std::ostream& operator<<(std::ostream& stream, const PolySet<Poly>& polyset){
 // class Ostomachion: public PolySet<Poly> {
 // };
 
-template <typename Poly>
-class Ostomini: public PolySet<Poly> {
+template <typename Poly, template <typename> class Group>
+class Ostomini: public PolySet<Poly, Group> {
 private:
-    static std::vector<std::pair<Poly, unsigned int>> polyset;
-    static Poly frame;
 
 
 
-    bool equals(const PolySet<Poly>& other, std::function<Poly(const Poly&)> transform) const {
+    bool equals(const PolySet<Poly, Group>& other, std::function<Poly(const Poly&)> transform) const {
         // Compare the positions of each set of polygons. Returns true if all
         // of them are identical. Allows a transformation to be applied to the 
         // first set, so that two sets can be identical if they differ by 
@@ -102,55 +108,61 @@ private:
         }
         return true;
     }
-
     
-    static Poly identity(const Poly& poly){
-        return poly;
-    }
-
-    static Poly rotation90(const Poly& poly){
-        Poly poly2 = poly;
-        poly2.rotate({0,1},{2,2});
-        return poly2;
-    }
-
-    static Poly rotation270(const Poly& poly){
-        Poly poly2 = poly;
-        poly2.rotate({0,-1},{2,2});
-        return poly2;
-    }
-
-    static Poly rotation180(const Poly& poly){
-        Poly poly2 = poly;
-        poly2.rotate({-1,0},{2,2});
-        return poly2;
-    }
-
-    static Poly flip_x(const Poly& poly){
-        Poly poly2 = poly;
-        poly2.flip_x();
-        poly2.translate({4,0});
-        return poly2;
-    }
-
-    static Poly flip_y(const Poly& poly){
-        Poly poly2 = poly;
-        poly2.flip_y();
-        poly2.translate({0,4});
-        return poly2;
-    }
-
-    std::vector<std::function<Poly(const Poly&)>> transformations = {identity, rotation90, rotation180, rotation270, flip_x, flip_y};
-    
-
-public:
     static unsigned int max_size;
     static unsigned int num_distinct_polys;
 
-    Ostomini():PolySet<Poly>(polyset.size()){}
+public:
+    static Poly frame;
+    static std::vector<std::pair<Poly, unsigned int>> polyset;
 
-    
-    unsigned int get_max_size() const override {
+    void calculate_hash(){
+        // Calculates a hash that is invariant under rotation and reflection
+        unsigned long long int h = 0;
+
+        // int countf = 0;
+        for(auto& f: Group<Poly>::transformations){
+            // std::cout << "transformation " << countf << "\n";
+            // countf++;
+            // int count = 0;
+            for(auto& polyrow: this->polygons){
+                for(auto& poly: polyrow){
+                    unsigned long long h_ = 3991*f(poly).get_hash();
+                    // Poly poly2 = f(poly);
+                    // std::cout << count << " ";
+                    // for(const auto& node: poly2.as_vector()){
+                    //     std::cout << "(" << node.at(0) << "," << node.at(1) << ") ";
+                    // }
+                    // std::cout << " " << h_ << "\n";
+                    h += h_;
+                    h = h%94619837451;
+                    // count++;
+                }
+            }
+        }
+        this->hash_ = h;
+    }
+    Ostomini():PolySet<Poly, Group>(num_distinct_polys){
+        calculate_hash();
+    }
+
+
+    bool is_type_available(unsigned int i) const {
+        return this->polygons.at(i).size() < polyset.at(i).second;
+    }
+
+    std::vector<unsigned int> find_available_types() const {
+        // returns a vector with the indices of all the polygon types
+        // that are not complete yet
+        std::vector<unsigned int> available_types;
+        for(unsigned i=0; i<num_distinct_polys; i++){
+            if(this->polygons.at(i).size() < polyset.at(i).second)
+            available_types.push_back(i);
+        }
+        return available_types;
+    }
+
+    static unsigned int get_max_size(){
         return max_size;
     }
     
@@ -163,12 +175,14 @@ public:
         assert(poly.size_ll == polyset.at(i).first.size_ll);
         assert(polyrow.size() < polyset.at(i).second);
         polyrow.push_back(poly);
+        calculate_hash();
+        this->size_++;
     }
 
     bool operator==(const Ostomini& other) const {
 
         int count = 0;
-        for(auto& f: transformations){
+        for(auto& f: Group<Poly>::transformations){
             count++;
             if(equals(other, f))
                 return true;
@@ -176,38 +190,60 @@ public:
         return false;
     }
 
-    void calculate_hash(){
-        // Calculates a hash that is invariant under rotation and reflection
-        unsigned long long int h = 0;
-        for(auto& polyrow: this->polygons){
-            for(auto& poly: polyrow){
-                for(auto& f: transformations){
-                    h += 3991*f(poly).get_hash();
-                    h = h%94619837451;
-                }
-            }
-        }
-        this->hash_ = h;
-
+    bool strict_equality(const Ostomini& other) const {
+        return equals(other, [](const Poly& poly){return poly;});
     }
 
 };
 
 
-template <typename Poly> 
-Poly Ostomini<Poly>::frame{{0,0}, {0,4}, {4,4}, {4,0}};
+// template <typename Poly> 
+// Poly Ostomini<Poly>::frame{{{-3,-3}, {-3,3}, {3,3}, {3,-3}}};
 
-template <typename Poly> 
-std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly>::polyset{{
-    {{{{0,0}, {2,4}, {0,4}}}, 2},
-    {{{{0,0}, {1,0}, {1,2}}}, 2},
-    {{{{1,0}, {3,0}, {3,2}, {3,1}}}, 1},
-    {{{{1,2}, {3,2}, {2,4}}}, 1}
+
+template <typename Poly, template <typename> class Group> 
+Poly Ostomini<Poly, Group>::frame{{{-2,-2}, {-2,2}, {2,2}, {2,-2}}};
+
+// template <typename Poly> 
+// Poly Ostomini<Poly>::frame{{{0,0}, {0,4}, {4,4}, {4,0}}};
+
+// template <typename Poly> 
+// std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly>::polyset{{
+//     {{{{0,0}, {2,4}, {0,4}}}, 2},
+//     {{{{0,0}, {1,0}, {1,2}}}, 2},
+//     {{{{1,0}, {3,0}, {3,2}, {1,2}}}, 1},
+//     {{{{1,2}, {3,2}, {2,4}}}, 1}
+// }};
+
+// template <typename Poly>
+// unsigned int Ostomini<Poly>::max_size = 6;
+
+
+// template <typename Poly> 
+// std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly>::polyset{{
+//     {{{{0,0}, {2,0}, {2,1}, {0,1}}}, 8}
+// }};
+
+// template <typename Poly>
+// unsigned int Ostomini<Poly>::max_size = 8;
+
+
+
+
+template <typename Poly, template <typename> class Group> 
+std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly, Group>::polyset{{
+    {{{{0,0}, {1,0}, {1,1}, {0,1}}}, 12},
+    {{{{0,0}, {2,0}, {2,1}, {0,1}}}, 2}
 }};
 
-template <typename Poly>
-unsigned int Ostomini<Poly>::max_size = 6;
-template <typename Poly>
-unsigned int Ostomini<Poly>::num_distinct_polys = polyset.size();
+template <typename Poly, template <typename> class Group>
+unsigned int Ostomini<Poly, Group>::max_size = 14;
 
 
+
+
+
+
+
+template <typename Poly, template <typename> class Group>
+unsigned int Ostomini<Poly, Group>::num_distinct_polys = polyset.size();

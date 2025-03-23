@@ -145,8 +145,6 @@ public:
         }
 
         drawPolygonFrame(frame);
-
-
         SDL_RenderPresent(renderer); // Present the rendered content
 
         // Event loop to handle closing the window
@@ -166,20 +164,3 @@ private:
     SDL_Renderer* renderer = nullptr;
     unsigned width, height, offset;
 };
-
-// int main() {
-//     // Define a polygon (a simple triangle in this case)
-//     std::vector<std::vector<double>> polygon1 = {{1, 1},{3, 1},{2, 3}};
-//     std::vector<std::vector<double>> polygon2 = {{4, 4},{3, 1},{2, 3}};
-//     std::vector<std::vector<double>> polygon3 = {{4, 4},{3, 7},{2, 3}};
-//     std::vector<std::vector<double>> polygon4 = {{4, 4},{3, 7},{9, 3}};
-
-//     // Create the Graphics object and draw the polygon
-//     Graphics graphics;
-//     // graphics.drawPolygon(polygon);
-
-    
-//     graphics.draw_state({polygon1, polygon2, polygon3}, polygon4);
-
-//     return 0;
-// }

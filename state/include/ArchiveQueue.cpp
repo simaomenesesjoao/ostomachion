@@ -79,7 +79,7 @@ public:
             return std::nullopt;
 
         auto state = container.back();
-        if(state.size() == 14)
+        if(state.size() == T::In::get_max_size())
             final_container.push_back(state);
 
         container.pop_back();
@@ -157,7 +157,7 @@ public:
         auto it = container.begin();
         T state = *it;
         
-        if(state.size() == 14)
+        if(state.size() == T::In::get_max_size())
             final_container.push_back(state);
 
 

@@ -381,13 +381,13 @@ public:
             auto& pos = current->data.position;
             h += pos.get_x().get_hash()*4872191 + pos.get_y().get_hash()*991911983;
 
-            h += current->data.angle_start.get_sin().get_hash();
-            h += current->data.angle_end.get_sin().get_hash();
-            h += current->data.angle_opening.get_sin().get_hash();
+            // h += current->data.angle_start.get_sin().get_hash();
+            // h += current->data.angle_end.get_sin().get_hash();
+            // h += current->data.angle_opening.get_sin().get_hash();
             
-            h += current->data.angle_start.get_cos().get_hash();
-            h += current->data.angle_end.get_cos().get_hash();
-            h += current->data.angle_opening.get_cos().get_hash();
+            // h += current->data.angle_start.get_cos().get_hash();
+            // h += current->data.angle_end.get_cos().get_hash();
+            // h += current->data.angle_opening.get_cos().get_hash();
             h = h%230984193;
             current = current->next;
         }
