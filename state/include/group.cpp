@@ -69,6 +69,7 @@ namespace SymmetryGroup {
     template <typename Poly>
     struct D4 {
         static std::vector<std::function<Poly(const Poly&)>> transformations;
+        static std::string name;
     };
 
     template <typename Poly>
@@ -77,11 +78,14 @@ namespace SymmetryGroup {
          poly_rotate270<Poly>, poly_flip_x<Poly>,   poly_flip_y<Poly>,
          poly_flip_D<Poly>,    poly_flip_AD<Poly>};
 
+    template <typename Poly>
+    std::string D4<Poly>::name = "D4";
 
 
     template <typename Poly>
     struct C4 {
         static std::vector<std::function<Poly(const Poly&)>> transformations;
+        static std::string name;
     };
 
     template <typename Poly>
@@ -89,14 +93,19 @@ namespace SymmetryGroup {
         {poly_identity<Poly>,  poly_rotate90<Poly>, 
         poly_rotate180<Poly>, poly_rotate270<Poly>};
 
+    template <typename Poly>
+    std::string C4<Poly>::name = "C4";
     
     template <typename Poly>
     struct Id {
         static std::vector<std::function<Poly(const Poly&)>> transformations;
+        static std::string name;
     };
 
     template <typename Poly>
     std::vector<std::function<Poly(const Poly&)>> Id<Poly>::transformations = {poly_identity<Poly>};
 
+    template <typename Poly>
+    std::string Id<Poly>::name = "Id";
 
 }

@@ -7,10 +7,10 @@
 #include "state.cpp"
 #include "group.cpp"
 #include "ArchiveQueue.cpp"
-// #include "../../solver/src/graphics.cpp"
+#include "../../solver/src/graphics.cpp"
 
 
-template <typename T, typename G>
+template <typename T>
 std::vector<T> find_uniques_brute(const std::vector<T>& container){
 
     std::vector<T> uniques;
@@ -22,7 +22,7 @@ std::vector<T> find_uniques_brute(const std::vector<T>& container){
         for(unsigned j=i+1; j<container.size(); j++){
             auto& state2 = container.at(j);
 
-            if(state2.used_polys->equals_under_symmetry(*state1.used_polys, G::transformations)){
+            if(state2 == state1){
                 unique = false;
                 break;
             }
@@ -43,6 +43,7 @@ template <typename Num,
         template <typename> class Selector,
         template <typename> class Container>
 Analytics runner(const Indices& indices){
+    std::cout << "runner\n";
     using Poly = Polygon<Num>;
     using Inner = Set<Poly, Group>;
     using St = State<Num, Inner, Selector, GetLast>;
@@ -53,11 +54,7 @@ Analytics runner(const Indices& indices){
 
     std::vector<St> next_states{first_state.apply_iterations(indices, stream)};
     Container<St> container;
-    container.analytics.info += std::format("{:>3} {:>6} {:>10}", 
-        Group<Poly>::name, Container<St>::name, Selector<Num>::name);
-
     container.insert(next_states);
-    container.analytics.clock_start();
 
     while(true){
         auto state = container.get_next();
@@ -67,22 +64,19 @@ Analytics runner(const Indices& indices){
         auto next = state->find_next_states(allow_reflection, stream);
         container.insert(next);
     }
-    container.analytics.clock_end();
-    auto uniques = find_uniques_brute<St, SymmetryGroup::D4<Poly>>(container.final_container);
-    container.analytics.total_final = uniques.size();
 
     return container.analytics;
 }
+
 
 template <typename Num, 
     template <typename, template <typename> class> class Set, 
     template <typename> class Group, 
     template <typename> class Selector>
 std::vector<Analytics> helper1(const Indices& indices){
-    auto run1 = runner<Num, Set, Group, Selector, Stack>(indices);
-    auto run2 = runner<Num, Set, Group, Selector, Hash>(indices);
-    auto run3 = runner<Num, Set, Group, Selector, HashLevel>(indices);
-    return {run1, run2, run3};
+    auto run1 = runner<Num, Set, Group, Selector, Hash>(indices);
+    auto run2 = runner<Num, Set, Group, Selector, Stack>(indices);
+    return {run1, run2};
 }
 
 
@@ -119,21 +113,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
     // }
 
     using Num = Float<double>;
-    // using Num = Number<mpz_class, 2, 5, 13, 17>;
     std::vector<std::tuple<unsigned int, unsigned int, bool>> indices;
     indices = {};
 
     auto analytics_matrix = helper3<Num, Ostomini>(indices);
-    // auto an = analytics_matrix.at(0).at(0).at(0).info;
-    // std::cout << an << "\n";
-
-    for(const auto& v2: analytics_matrix){
-        for(const auto& v1: v2){
-            for(const auto& v0: v1){
-                v0.print_single_line();
-            }
-        }
-    }
     
     // Graphics graphics;
     // for(const auto& state: uniques){

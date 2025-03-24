@@ -530,9 +530,9 @@ Number<T, Ints...> Number<T, Ints...>::operator*(U const& x) const{
 
 template <typename T, int... Ints>
 std::size_t Number<T, Ints...>::get_hash(){
-    std::size_t h = 0;
+    int h = 0;
     for(auto& [root, digit]: digits){
-        h += root + digit.get_num()*113 + digit.get_den()*99135941;
+        h += root + digit.get_num().get_si()*113 + digit.get_den().get_si()*99135941;
         h = h%3994111;
     }
 

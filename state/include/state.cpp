@@ -155,24 +155,30 @@
 
 template <typename Num>
 struct SelectObtusest{
+    static std::string name;
     static unsigned int select(const Polygon<Num>& polygon){
         return polygon.get_obtusest_node();
     }
 };
+template <typename Num> std::string SelectObtusest<Num>::name = "Obtusest";
 
 template <typename Num>
 struct SelectFarthest{
+    static std::string name;
     static unsigned int select(const Polygon<Num>& polygon){
-        return polygon.get_farthest_node(2,2);
+        return polygon.get_farthest_node(0,0);
     }
 };
+template <typename Num> std::string SelectFarthest<Num>::name = "Farthest";
 
 template <typename Num>
 struct SelectLeftest{
+    static std::string name;
     static unsigned int select(const Polygon<Num>& polygon){
         return polygon.get_leftest_node();       
     }
 };
+template <typename Num> std::string SelectLeftest<Num>::name = "Leftest";
 
 struct GetFirst{
     static unsigned int get([[maybe_unused]] int max){
@@ -196,6 +202,7 @@ class State{
 
 public:
     using In = Inner;
+    
     std::unique_ptr<Poly> current_polygon;
     std::unique_ptr<Grid<Num>> grid;
     std::unique_ptr<Inner> used_polys;

@@ -73,14 +73,15 @@ template <typename Poly, template <typename> class Group>
 class Ostomini: public PolySet<Poly, Group> {
 private:
 
-
+    
+    static unsigned int max_size;
+    static unsigned int num_distinct_polys;
 
     bool equals(const PolySet<Poly, Group>& other, std::function<Poly(const Poly&)> transform) const {
         // Compare the positions of each set of polygons. Returns true if all
         // of them are identical. Allows a transformation to be applied to the 
         // first set, so that two sets can be identical if they differ by 
         // rotation or reflection
-
 
         if(this->get_size() != other.get_size())
             return false;
@@ -108,11 +109,9 @@ private:
         }
         return true;
     }
-    
-    static unsigned int max_size;
-    static unsigned int num_distinct_polys;
 
 public:
+    using G = Group<Poly>;
     static Poly frame;
     static std::vector<std::pair<Poly, unsigned int>> polyset;
 
@@ -190,6 +189,16 @@ public:
         return false;
     }
 
+
+    bool equals_under_symmetry(const Ostomini& other, std::vector<std::function<Poly(const Poly&)>> transformations) const {
+
+        for(auto& f: transformations){
+            if(equals(other, f))
+                return true;
+        }
+        return false;
+    }
+
     bool strict_equality(const Ostomini& other) const {
         return equals(other, [](const Poly& poly){return poly;});
     }
@@ -207,16 +216,16 @@ Poly Ostomini<Poly, Group>::frame{{{-2,-2}, {-2,2}, {2,2}, {2,-2}}};
 // template <typename Poly> 
 // Poly Ostomini<Poly>::frame{{{0,0}, {0,4}, {4,4}, {4,0}}};
 
-// template <typename Poly> 
-// std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly>::polyset{{
-//     {{{{0,0}, {2,4}, {0,4}}}, 2},
-//     {{{{0,0}, {1,0}, {1,2}}}, 2},
-//     {{{{1,0}, {3,0}, {3,2}, {1,2}}}, 1},
-//     {{{{1,2}, {3,2}, {2,4}}}, 1}
-// }};
+template <typename Poly, template <typename> class Group> 
+std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly, Group>::polyset{{
+    {{{{0,0}, {2,4}, {0,4}}}, 2},
+    {{{{0,0}, {1,0}, {1,2}}}, 2},
+    {{{{1,0}, {3,0}, {3,2}, {1,2}}}, 1},
+    {{{{1,2}, {3,2}, {2,4}}}, 1}
+}};
 
-// template <typename Poly>
-// unsigned int Ostomini<Poly>::max_size = 6;
+template <typename Poly, template <typename> class Group> 
+unsigned int Ostomini<Poly, Group>::max_size = 6;
 
 
 // template <typename Poly> 
@@ -230,14 +239,14 @@ Poly Ostomini<Poly, Group>::frame{{{-2,-2}, {-2,2}, {2,2}, {2,-2}}};
 
 
 
-template <typename Poly, template <typename> class Group> 
-std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly, Group>::polyset{{
-    {{{{0,0}, {1,0}, {1,1}, {0,1}}}, 12},
-    {{{{0,0}, {2,0}, {2,1}, {0,1}}}, 2}
-}};
+// template <typename Poly, template <typename> class Group> 
+// std::vector<std::pair<Poly, unsigned int>> Ostomini<Poly, Group>::polyset{{
+//     {{{{0,0}, {1,0}, {1,1}, {0,1}}}, 12},
+//     {{{{0,0}, {2,0}, {2,1}, {0,1}}}, 2}
+// }};
 
-template <typename Poly, template <typename> class Group>
-unsigned int Ostomini<Poly, Group>::max_size = 14;
+// template <typename Poly, template <typename> class Group>
+// unsigned int Ostomini<Poly, Group>::max_size = 14;
 
 
 
