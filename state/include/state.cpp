@@ -209,12 +209,12 @@ public:
     std::vector<unsigned> history;
 
     State(State const& other):
-        hash_{0},
+        hash_{other.get_hash()},
         current_polygon(std::make_unique<Poly>(*other.current_polygon)),
         grid{std::make_unique<Grid<Num>>(*other.grid)},
         used_polys(std::make_unique<Inner>(*other.used_polys)), 
         history{other.history}{
-            calculate_hash();
+            // std::cout << "copy constructor\n";
         }
 
     // State(Poly&& _poly, std::unique_ptr<Inner>&& _used_polys):
@@ -231,18 +231,18 @@ public:
         }
 
     State():hash_{0},
-            current_polygon(std::make_unique<Poly>(Inner::frame)), 
+            current_polygon(std::make_unique<Poly>(Inner::S::frame)), 
             used_polys(std::make_unique<Inner>()),
             history{{}}{
                 calculate_hash();
             }
 
-    State(State&& other): hash_{0},
+    State(State&& other): hash_{other.get_hash()},
                           current_polygon{std::move(other.current_polygon)},
                           grid{std::move(other.grid)},
                           used_polys{std::move(other.used_polys)},
                           history{std::move(other.history)}{
-                            calculate_hash();
+                            // std::cout << "move constructor\n";
                           }
 
     State& operator=(State&& other){
@@ -307,8 +307,7 @@ public:
 
             for(auto reflected: std::vector<bool>{true, false}){
 
-                Poly poly = used_polys->polyset.at(i).first;
-                // stream << "considering poly " << poly << " with size " << poly.size_ll << "\n";
+                Poly poly = used_polys->get_prepoly_at(i);
 
                 if(not allow_reflection and reflected){
                     continue;
@@ -391,7 +390,7 @@ public:
         if(used_polys->is_type_available(poly_index))
             return std::nullopt;
 
-        Poly poly = polygons<Num>::polyset.at(poly_index);
+        Poly poly = used_polys->get_prepoly_at(poly_index);
 
         if(num_rotations >= poly.size_ll) 
             return std::nullopt;

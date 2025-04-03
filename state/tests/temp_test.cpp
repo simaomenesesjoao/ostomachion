@@ -7,7 +7,6 @@
 #include "state.cpp"
 #include "group.cpp"
 #include "ArchiveQueue.cpp"
-// #include "../../solver/src/graphics.cpp"
 
 
 template <typename T, typename G>
@@ -37,14 +36,28 @@ std::vector<T> find_uniques_brute(const std::vector<T>& container){
 
 using Indices = std::vector<std::tuple<unsigned int, unsigned int, bool>>;
 
+template <typename Container>
+void run(Container& container, bool allow_reflection){
+    std::ofstream stream("/dev/null");
+    
+    while(true){
+        auto maybe_state = container.get_next();
+        if(!maybe_state)
+            break;
+
+        auto next = maybe_state->find_next_states(allow_reflection, stream);
+        container.insert(next);
+    }
+}
+
 template <typename Num, 
-        template <typename, template <typename> class> class Set,
+        template <typename> class PresetPolys, 
         template <typename> class Group, 
         template <typename> class Selector,
         template <typename> class Container>
-Analytics runner(const Indices& indices){
+Analytics runner(const Indices& indices, int num_threads){
     using Poly = Polygon<Num>;
-    using Inner = Set<Poly, Group>;
+    using Inner = PolySet<Poly, Group, PresetPolys>;
     using St = State<Num, Inner, Selector, GetLast>;
 
     St first_state;
@@ -58,89 +71,28 @@ Analytics runner(const Indices& indices){
 
     container.insert(next_states);
     container.analytics.clock_start();
-
-    while(true){
-        auto state = container.get_next();
-        if(!state)
-            break;
-
-        auto next = state->find_next_states(allow_reflection, stream);
-        container.insert(next);
+        
+    std::vector<std::thread> threads;
+    for(int i=0; i<num_threads; i++){
+        threads.push_back(std::thread(run<Container<St>>, std::ref(container), allow_reflection));
     }
+    
+    for(auto& t: threads)
+        t.join();
+
     container.analytics.clock_end();
-    auto uniques = find_uniques_brute<St, SymmetryGroup::D4<Poly>>(container.final_container);
+    auto uniques = find_uniques_brute<St, SymmetryGroup::D4<Poly>>(container.get_solutions());
     container.analytics.total_final = uniques.size();
 
     return container.analytics;
 }
 
-template <typename Num, 
-    template <typename, template <typename> class> class Set, 
-    template <typename> class Group, 
-    template <typename> class Selector>
-std::vector<Analytics> helper1(const Indices& indices){
-    auto run1 = runner<Num, Set, Group, Selector, Stack>(indices);
-    auto run2 = runner<Num, Set, Group, Selector, Hash>(indices);
-    auto run3 = runner<Num, Set, Group, Selector, HashLevel>(indices);
-    return {run1, run2, run3};
-}
-
-
-template <typename Num, 
-    template <typename, template <typename> class> class Set, 
-    template <typename> class Group>
-std::vector<std::vector<Analytics>> helper2(const Indices& indices){
-    auto run1 = helper1<Num, Set, Group, SelectLeftest>(indices);
-    auto run2 = helper1<Num, Set, Group, SelectObtusest>(indices);
-    auto run3 = helper1<Num, Set, Group, SelectFarthest>(indices);
-    return {run1, run2, run3};
-}
-
-
-template <typename Num, template <typename, template <typename> class> class Set>
-std::vector<std::vector<std::vector<Analytics>>> helper3(const Indices& indices){
-    auto run1 = helper2<Num, Set, SymmetryGroup::Id>(indices);
-    auto run2 = helper2<Num, Set, SymmetryGroup::D4>(indices);
-    auto run3 = helper2<Num, Set, SymmetryGroup::C4>(indices);
-    return {run1, run2, run3};
-}
-
-
-
-int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
-
-    // {
-    //     using Num = Float<double>;
-    //     using Poly = Polygon<Num>;
-    //     using Set = Ostomini<Poly, SymmetryGroup::D4>;
-    //     using St = State<Num, Set, SelectLeftest, GetFirst>;
-    //     St state;
-
-    // }
+int main([[maybe_unused]] int argc, char** argv){
 
     using Num = Float<double>;
-    // using Num = Number<mpz_class, 2, 5, 13, 17>;
-    std::vector<std::tuple<unsigned int, unsigned int, bool>> indices;
-    indices = {};
+    int num_threads = atoi(argv[1]);
+    Indices indices = {};
 
-    auto analytics_matrix = helper3<Num, Ostomini>(indices);
-    // auto an = analytics_matrix.at(0).at(0).at(0).info;
-    // std::cout << an << "\n";
-
-    for(const auto& v2: analytics_matrix){
-        for(const auto& v1: v2){
-            for(const auto& v0: v1){
-                v0.print_single_line();
-            }
-        }
-    }
-    
-    // Graphics graphics;
-    // for(const auto& state: uniques){
-    //     std::cout << state.used_polys->get_size() << " ";
-    //     std::cout << state << "\n";
-    //     graphics.draw_state(state.used_polys->as_vector(), state.current_polygon->as_vector());
-    // }
-    
-    
+    auto run1 = runner<Num, Ostomid, SymmetryGroup::Id, SelectLeftest, Stack>(indices, num_threads);
+    run1.print();
 }
