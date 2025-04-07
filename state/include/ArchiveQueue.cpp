@@ -62,6 +62,7 @@ protected:
     std::atomic<int> num_processes;
 
 public:
+    using InnerType = T;
     
     Analytics analytics;
     virtual void insert(std::vector<T>& states) = 0;
@@ -103,7 +104,7 @@ public:
 
         for(auto& state: states){            
 
-            if(state.size() == T::In::get_max_size()){
+            if(state->size() == T::element_type::In::get_max_size()){
 
                 auto p1 = std::chrono::high_resolution_clock::now();
                 final_container.push_back(std::move(state));
@@ -207,7 +208,7 @@ public:
             
             if(is_new_state){
                 count++;
-                if(state.size() == T::In::get_max_size()){
+                if(state.size() == T::element_type::In::get_max_size()){
                     final_container.push_back(std::move(state));
                 } else {
                     container.push_back(std::move(state));
@@ -278,18 +279,23 @@ class HashLevel : public Container<T> {
 private:
     struct HashStruct {
         size_t operator()(const T& x) const {
-            return x.get_hash();
+            return x->get_hash();
         }
     };
-    
-    std::unordered_set<T, HashStruct> container_in, container_out;
+    struct EqualStruct {
+        bool operator()(const T& x, const T& y) const {
+            return *x == *y;
+        }
+    };
+
+    std::unordered_set<T, HashStruct, EqualStruct> container_in, container_out;
     std::list<T> final_container;
 
 public:
     static std::string name;
     
     HashLevel(){};
-    
+
     HashLevel(HashLevel&& other):
         container_in{std::move(other.container_in)},
         container_out{std::move(other.container_out)},
@@ -307,8 +313,8 @@ public:
             if(success){
                 count++;
 
-                if(state.size() == T::In::get_max_size())
-                    final_container.push_back(std::move(state));
+                if(state->size() == T::element_type::In::get_max_size())
+                    final_container.push_back(state);
             }
         }
 

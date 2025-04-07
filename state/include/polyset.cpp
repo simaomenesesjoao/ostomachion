@@ -44,7 +44,6 @@ private:
         return true;
     }
 
-
 public:
     using G = Group<Poly>;
     using S = Set<Poly>;
@@ -81,17 +80,24 @@ public:
         return polygons.at(i);
     }
 
+
+    const std::vector<std::vector<Poly>>& get_all_polys() const {
+        return polygons;
+    }
+
+
     const Poly get_prepoly_at(unsigned int i) const {
         return Set<Poly>::pre_polys.at(i).first;
     }
 
-    // const Poly get_frame() const {
-    //     return Set<Poly>::frame;
-    // }
-
+    const Poly& get_irreducible_section() const {
+        return Set<Poly>::irreducible_section;
+    }
 
     bool is_type_available(unsigned int i) const {
-        return polygons.at(i).size() < Set<Poly>::pre_polys.at(i).second;
+        unsigned int a = polygons.at(i).size();
+        unsigned int b = Set<Poly>::pre_polys.at(i).second;
+        return a < b;
     }
 
     std::vector<unsigned int> find_available_types() const {
@@ -192,18 +198,18 @@ template <typename Poly> unsigned int Ostomini<Poly>::num_distinct_polys{static_
 template <typename Poly> bool Ostomini<Poly>::allow_reflection{true};
 
 
-
-
 template <typename Poly>
 struct Ostomid {
     static unsigned int max_size;
     static unsigned int num_distinct_polys;
     static Poly frame;
+    static Poly irreducible_section;
     static std::vector<std::pair<Poly, unsigned int>> pre_polys;
     static bool allow_reflection;
 };
 
 template <typename Poly> Poly Ostomid<Poly>::frame{{{-6,-6}, {-6,6}, {6,6}, {6,-6}}};
+template <typename Poly> Poly Ostomid<Poly>::irreducible_section{{{-6,-6}, {0,-6}, {0,0}}};
 template <typename Poly> std::vector<std::pair<Poly, unsigned int>> Ostomid<Poly>::pre_polys{{
     {{{{0,0},  {3,0},  {3,6 }}}, 1},
     {{{{3,0},  {6,0},  {6,6 }, {4,8}, {3,6}}}, 1},
@@ -231,11 +237,13 @@ struct Ostomed {
     static unsigned int max_size;
     static unsigned int num_distinct_polys;
     static Poly frame;
+    static Poly irreducible_section;
     static std::vector<std::pair<Poly, unsigned int>> pre_polys;
     static bool allow_reflection;
 };
 
 template <typename Poly> Poly Ostomed<Poly>::frame{{{-6,-6}, {-6,6}, {6,6}, {6,-6}}};
+template <typename Poly> Poly Ostomed<Poly>::irreducible_section{{{-6,-6}, {0,-6}, {0,0}}};
 template <typename Poly> std::vector<std::pair<Poly, unsigned int>> Ostomed<Poly>::pre_polys{{
     {{{{0,0},  {3,0},  {3,6 }}}, 1},
     {{{{3,0},  {6,0},  {6,6 }, {4,8}, {3,6}}}, 1},
@@ -280,11 +288,13 @@ struct Ostomachion {
     static unsigned int max_size;
     static unsigned int num_distinct_polys;
     static Poly frame;
+    static Poly irreducible_section;
     static std::vector<std::pair<Poly, unsigned int>> pre_polys;
     static bool allow_reflection;
 };
 
 template <typename Poly> Poly Ostomachion<Poly>::frame{{{-6,-6}, {-6,6}, {6,6}, {6,-6}}};
+template <typename Poly> Poly Ostomachion<Poly>::irreducible_section{{{-6,-6}, {0,-6}, {0,0}}};
 template <typename Poly> std::vector<std::pair<Poly, unsigned int>> Ostomachion<Poly>::pre_polys{{
     {{{{0,0},  {3,0},  {2,4 }}}, 1},
     {{{{3,0},  {3,6},  {2,4 }}}, 1},

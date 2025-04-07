@@ -14,11 +14,11 @@ template <typename Num>
 class Polygon{
 
 private:
-    using Nod  = Node<Num>;
     using Poin = Point<Num>;
     using Ang  = Angle<Num>;
 
 public:
+    using Nod  = Node<Num>;
     // std::list<Nod> nodes;
     LL_Node<Nod> *head;
     unsigned size_ll;
@@ -266,9 +266,6 @@ public:
         }
         stream << "\n";
         
-        
-
-
         while(update.size()){
             
             if(size_ll == 1){
@@ -277,11 +274,6 @@ public:
                 size_ll = 0;
                 break;
             }
-
-
-            // auto it = update.end() - 1;
-            // if(first){
-            // }
 
             int i = getter.get(update.size());
             auto it = update.begin()+i;
@@ -292,10 +284,6 @@ public:
 
             if(std::find(update.begin(), update.end(), node) != update.end())
                 continue;
-            // auto [itt, successful] = visited.insert(node);
-            // if(!successful){
-            //     continue;
-            // }
 
             Nod& curr = node->data;
             LL_Node<Nod> *prev_node = node->prev;
@@ -612,6 +600,49 @@ public:
         return false;
     }
 
+    bool are_separate_convex(const Polygon& other) const {
+        // Only strictly valid for convex polygons
+
+        // int count = 0;
+        LL_Node<Nod>* current = head;
+        for(unsigned int i=0; i<size_ll; i++){
+            LL_Node<Nod>* next = current->next;
+            const Point<Num>& C = current->data.position;
+            const Point<Num>& N = next->data.position;
+
+            Num dx = N.get_x() - C.get_x();
+            Num dy = N.get_y() - C.get_y();
+            
+            LL_Node<Nod>* other_current = other.head;
+            bool separated = true;
+            for(unsigned int j=0; j<other.size_ll; j++){
+                Point<Num> P = other_current->data.position - C;
+
+                // (dy, -dx) is (dx, dy) rotated 90º clockwise, 
+                // so it faces away from the polygon
+                Num proj = P.get_x()*dy - P.get_y()*dx;
+                // count++;
+                if(proj < 0){
+                    separated = false;
+                    break;
+                }
+
+                other_current = other_current->next;
+            }
+            
+            if(separated)
+                return true;
+
+            current = next;
+        }
+        // std::cout << count << "\n";
+        return false;
+    }
+
+    bool convex_overlaps(const Polygon& other) const {
+        return !(are_separate_convex(other) or other.are_separate_convex(*this));
+    }
+
     bool overlaps(Polygon const& other) const{
 
         // bool cond1 = edge_edge_intersection(other);
@@ -715,6 +746,21 @@ public:
             double y = (double)current->data.position.get_y();
             std::vector<double> point{x,y};
             vector.push_back(point);
+            current = current->next;
+        }
+        
+        return vector;
+    }
+
+
+
+    std::vector<std::pair<double, double>> as_T() const {
+        std::vector<std::pair<double, double>> vector;
+        LL_Node<Nod>* current{head}; 
+        for(unsigned i=0; i<size_ll; i++){
+            double x = (double)current->data.position.get_x();
+            double y = (double)current->data.position.get_y();
+            vector.push_back({x,y});
             current = current->next;
         }
         

@@ -8,151 +8,6 @@
 #include <memory>
 #include <optional>
 
-// template <typename Num, bool enable_hash = true, bool enable_comparison = true>
-// class InnerState{
-//     using Poi = Point<Num>;
-//     using Nod = Node<Num>;
-// public:
-//     InnerState():
-//         state_{std::vector<std::vector<Poi>>(polygons<Num>::num_polygons)}, 
-//         size_{0}{
-//             calculate_hash();
-//         }
-
-//     bool is_set(unsigned i){
-//         return state_.at(i).size() != 0;
-//     }
-
-//     void set_poly(unsigned i, const Polygon<Num> & polygon){
-
-//         LL_Node<Nod> *poly_node = polygon.head;
-//         for(unsigned k = 0; k < polygon.size_ll; k++){
-//             state_.at(i).push_back(poly_node->data.position);
-//             poly_node = poly_node->next;
-//         }
-//         calculate_hash();
-//         size_++;
-//     }
-
-//     void calculate_hash(){
-//         if(!enable_hash){
-//             hash_ = 0;
-//             return;
-//         }
-
-//         long h = 0;
-//         for(unsigned i=0; i<polygons<Num>::num_polygons; i++){
-//             auto& poly = state_.at(i);
-//             for(auto& point: poly){
-//                 double x = (double)point.get_x();
-//                 double y = (double)point.get_y();
-//                 h += (long)(x*94833373);
-//                 h = h%100003;
-//                 h += (long)(y*94373);
-//                 h = h%100003;
-//             }
-//         }
-//         hash_ = h;
-//     }
-
-//     std::size_t get_hash() const {
-//         return hash_;
-//     }
-    
-//     unsigned size() const {
-//         return size_;
-//     }
-
-//     unsigned max_size() const {
-//         return state_.size();
-//     }
-
-//     std::vector<Poi> at(unsigned i) const{
-//         return state_.at(i);
-//     }
-
-
-
-//     template <typename T>
-//     bool are_polys_same(const T& other) const {
-//         if(size_ != other.size())
-//             return false;
-
-//         for(unsigned i=0; i<max_size(); i++){
-//             if(i == 5 or i == 6 or i == 7 or i == 8){
-//                 continue;
-//             }
-
-//             if(at(i) != other.at(i))
-//                 return false;
-            
-//         }
-
-//         auto a_list = std::vector<unsigned>{5, 6}; 
-//         auto b_list = std::vector<unsigned>{8, 7};
-
-//         for(unsigned k=0; k<2; k++){
-//             unsigned a = a_list.at(k);
-//             unsigned b = b_list.at(k);
-//             bool b1 = (at(a) == other.at(a));
-//             bool b2 = (at(b) == other.at(b));
-//             bool b3 = (at(b) == other.at(a));
-//             bool b4 = (at(a) == other.at(b));
-
-//             if(!(b1 and b2) and !(b3 and b4))
-//                 return false;
-//         }
-
-
-//         return true;
-//     }
-
-//     bool operator==(const InnerState& other) const {
-//         if(!enable_comparison)
-//             return false;
-//         return are_polys_same(other);
-//     }
-    
-//     std::vector<std::vector<std::vector<double>>> used_polys_as_vector() const {
-//         std::vector<std::vector<std::vector<double>>> vector;
-//         for(auto& poly: state_){
-//             std::vector<std::vector<double>> pol;
-//             for(auto& point: poly){
-//                 double x = (double)point.get_x();
-//                 double y = (double)point.get_y();
-//                 std::vector<double> P{x,y};
-//                 pol.push_back(P);
-//             }
-//             vector.push_back(pol);
-
-//         }
-//         return vector;
-//     }
-
-// private:
-//     std::vector<std::vector<Poi>> state_;
-//     unsigned size_;
-//     std::size_t hash_;
-// };
-
-
-// template <typename Num, bool a, bool b>
-// std::ostream& operator<<(std::ostream& stream, const InnerState<Num, a, b> & used_polys){
-
-//     for(unsigned i=0; i<used_polys.max_size(); i++){
-//         stream << "[";
-//         for(auto point: used_polys.at(i)){
-//             double x = (double)point.get_x();
-//             double y = (double)point.get_y();
-//             stream << "(" << x << "," << y << ") ";
-//         }
-//         stream << " ]";
-//     }
-
-//     stream << std::endl;
-//     return stream;    
-// }
-
 template <typename Num>
 struct SelectObtusest{
     static std::string name;
@@ -193,6 +48,85 @@ struct GetLast{
     }
 };
 
+
+template <typename Poly>
+class OverlapChecker{
+public:
+    virtual bool operator()(const Poly& poly, const Poly& frame, const std::vector<std::vector<Poly>>& poly_vec) const = 0;
+};
+
+
+template <typename Poly>
+class OverlapConvex: public OverlapChecker<Poly>{
+private:
+    bool overlaps(const Poly& poly, const Poly& frame) const {
+        return frame.overlaps(poly);
+    }
+    bool overlaps(const Poly& poly, const std::vector<std::vector<Poly>>& poly_vec) const {
+        // Also needs to take into acount the boundaries!
+        
+        for(const auto& polyrow: poly_vec){
+            for(const Poly& other_poly: polyrow){
+                if(poly.convex_overlaps(other_poly)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    bool in_bounds(const Poly& poly) const {
+        LL_Node<typename Poly::Nod> *current = poly.head;
+        int min = -6;
+        int max = 6;
+        for(unsigned int i=0; i<poly.size_ll; i++){
+            const auto& P = current->data.position;
+            const auto& x = P.get_x();
+            const auto& y = P.get_y();
+            if(x < min or x > max or y < min or y > max)
+                return false;
+            current = current->next;
+        }
+
+        return true;
+    }
+
+public:
+    bool operator()(const Poly& poly, [[maybe_unused]] const Poly& frame, 
+        [[maybe_unused]] const std::vector<std::vector<Poly>>& poly_vec) const override {
+        // bool r1 = overlaps(poly, frame);
+        // Poly fr{{{-6,6}, {-6,6}, {6,6}, {6,-6}}};
+
+        // bool r2 = ;
+
+
+        // for(const auto& polyrow: poly_vec){
+        //     for(const Poly& other_poly: polyrow){
+        //         if(!r1 and poly.convex_overlaps(other_poly)){
+        //             std::cout << "oops\n";
+        //             poly.convex_overlaps(other_poly);
+        //         }
+        //     }
+        // }
+
+        // bool r4 = 
+        // if(r1 != r4){
+        //     std::cout << "oh no\n";
+        //     return r1;
+        // }
+        return not in_bounds(poly) or overlaps(poly, poly_vec);
+
+
+    }
+};
+
+template <typename Poly>
+class OverlapChain: public OverlapChecker<Poly>{
+
+    bool operator()(const Poly& poly, const Poly& frame, const std::vector<std::vector<Poly>>& poly_vec) const override {
+        return frame.overlaps(poly);
+    }
+};
+
 template <typename Num, typename Inner, template <typename> class Selector, typename Getter>
 class State{
     using Poly = Polygon<Num>;
@@ -207,33 +141,30 @@ public:
     std::unique_ptr<Grid<Num>> grid;
     std::unique_ptr<Inner> used_polys;
     std::vector<unsigned> history;
+    std::shared_ptr<OverlapChecker<Poly>> overlaps;
 
     State(State const& other):
         hash_{other.get_hash()},
         current_polygon(std::make_unique<Poly>(*other.current_polygon)),
         grid{std::make_unique<Grid<Num>>(*other.grid)},
         used_polys(std::make_unique<Inner>(*other.used_polys)), 
-        history{other.history}{
-            // std::cout << "copy constructor\n";
-        }
-
-    // State(Poly&& _poly, std::unique_ptr<Inner>&& _used_polys):
-    //     current_polygon{std::make_unique<Poly>(_poly)}, 
-    //     used_polys{std::move(_used_polys)}{}
+        history{other.history},
+        overlaps{other.overlaps}{}
 
         
-    State(const Poly& _poly, const Inner& _used_polys, const std::vector<unsigned>& hist):
+    State(const Poly& _poly, const Inner& _used_polys, std::shared_ptr<OverlapChecker<Poly>> _overlaps):
         hash_{0},
         current_polygon{std::make_unique<Poly>(_poly)}, 
         used_polys{std::make_unique<Inner>(_used_polys)},
-        history{hist}{
+        overlaps{_overlaps}{
             calculate_hash();
         }
 
-    State():hash_{0},
+    State(std::shared_ptr<OverlapChecker<Poly>> _overlaps):
+            hash_{0},
             current_polygon(std::make_unique<Poly>(Inner::S::frame)), 
             used_polys(std::make_unique<Inner>()),
-            history{{}}{
+            overlaps{_overlaps}{
                 calculate_hash();
             }
 
@@ -241,19 +172,18 @@ public:
                           current_polygon{std::move(other.current_polygon)},
                           grid{std::move(other.grid)},
                           used_polys{std::move(other.used_polys)},
-                          history{std::move(other.history)}{
-                            // std::cout << "move constructor\n";
-                          }
+                          overlaps{other.overlaps}{}
 
     State& operator=(State&& other){
         if(this == &other)
             return *this;
 
+        overlaps = other.overlaps;
+        hash_ = other.get_hash();
         current_polygon = std::move(other.current_polygon);
         grid = std::move(other.grid);
         used_polys = std::move(other.used_polys);
         history = std::move(other.history);
-        calculate_hash();
 
         return *this;
     }
@@ -262,6 +192,7 @@ public:
         if(this == &other)
             return *this;
 
+        overlaps = other.overlaps;
         current_polygon = std::make_unique<Poly>(*(other.current_polygon));
         grid = std::make_unique<Grid<Num>>(*(other.grid));
         used_polys = std::make_unique<Inner>(*(other.used_polys));
@@ -270,6 +201,7 @@ public:
 
         return *this;
     }
+
 
     std::size_t get_hash() const {
         return hash_;
@@ -290,15 +222,13 @@ public:
     }
 
 
-
-    std::vector<State> find_next_states(bool allow_reflection, std::ostream& stream = std::cout) const{
-        // Find the node with smallest internal angle
+    std::vector<std::shared_ptr<State>> find_next_states(bool allow_reflection, std::ostream& stream = std::cout) const{
         
-        std::vector<State> next_states;
+        
+        std::vector<std::shared_ptr<State>> next_states;
         if(current_polygon->head == nullptr)
             return next_states;
         
-        //unsigned obtusest_node_index = current_polygon->get_obtusest_index();
         unsigned int node_index = Selector<Num>::select(*current_polygon);
         Nod& obtusest_node = current_polygon->ll_node_from_index(node_index)->data;
 
@@ -326,11 +256,13 @@ public:
                         poly.translate(obtusest_node.position - proposed_node.position);
                         poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, 
                                     obtusest_node.position);
+                        
+                        // if(not current_polygon->overlaps(poly))){
+                        if(not overlaps->operator()(poly, *current_polygon, used_polys->get_all_polys())){
 
-                        if(not current_polygon->overlaps(poly)){
-                            // stream << "#################### Found new non-overlap\n";
-                            // stream << "still considering poly " << poly << " with size " << poly.size_ll << "\n";
-
+                            if(i==0 and !poly.convex_overlaps(used_polys->get_irreducible_section())){                            
+                                continue;
+                            }
                             // Posso ter um merge que não canibalize o outro polígono - rvalue refs
                             Poly new_frame{*current_polygon}; 
                             Poly new_poly{poly};
@@ -338,48 +270,27 @@ public:
                             LL_Node<Nod> *node_frame = new_frame.ll_node_from_index(node_index);
                             LL_Node<Nod> *node_poly = new_poly.ll_node_from_index(j);
 
-                            // stream << "before merge\n";
-                            // stream << "node frame: " << node_frame->data << "\n";
-                            // stream << "poly: " << new_poly << "\n";
-                            // stream << "node poly: " << node_poly->data << "\n";
-                            // stream << "new frame: " << new_frame << "\n";
                             new_frame.merge(node_frame, new_poly, node_poly);
-                            // stream << "before prune\n" << new_frame << "\n";
-                            // stream << "update nodes: " << node_frame->data << " " << node_poly->data << "\n";
                             new_frame.prune_LL({node_frame, node_poly}, Getter(), stream);
-                            // stream << "after prune\n" << new_frame << "\n";
-                            
-                            
-                            // std::unique_ptr<Inner> new_used_polys = std::make_unique<Inner>(*used_polys);
-                            // new_used_polys->set_poly(i, poly);
-                            
-                            // State new_state{std::move(new_frame), std::move(new_used_polys)};
-                            // next_states.push_back(std::move(new_state));
-                            // next_states.push_back({std::move(new_frame), std::move(new_used_polys)});
                             
                             Inner new_used_polys = *used_polys;
                             new_used_polys.insert(i, poly);
-                            std::vector<unsigned> new_history = history;
-                            new_history.push_back(next_states.size());
-
-                            State new_state(new_frame, new_used_polys, new_history);
-                            // stream << "next state: " << new_state << "\n";
-                            next_states.push_back(new_state);
+                            
+                            next_states.push_back(std::make_shared<State>(new_frame, new_used_polys, overlaps));
 
                         }
                     }   
                 }
             }
-        }                           
-        // stream << "produced " << next_states.size() << " next states\n";
-        // stream << "--------------------- end -----------------\n";
+        }
+
         return next_states;
     }
 
 
-    std::optional<State> iterate(
+    std::optional<std::shared_ptr<State>> iterate(
             unsigned int poly_index, unsigned int num_rotations, 
-            bool reflected, std::ostream& stream = std::cout) const{
+            bool reflected, std::ostream& stream = std::cout) const{    
         
         if(current_polygon->head == nullptr)
             return std::nullopt;
@@ -387,7 +298,7 @@ public:
         unsigned int node_index = SelectLeftest<Num>::select(*current_polygon);
         Nod& obtusest_node = current_polygon->ll_node_from_index(node_index)->data;
 
-        if(used_polys->is_type_available(poly_index))
+        if(!used_polys->is_type_available(poly_index))
             return std::nullopt;
 
         Poly poly = used_polys->get_prepoly_at(poly_index);
@@ -403,10 +314,12 @@ public:
             current = current->next;
             
         Nod& proposed_node = current->data;
+        
         if(angles_compatible(proposed_node.angle_opening, obtusest_node.angle_opening)){
             poly.translate(obtusest_node.position - proposed_node.position);
             poly.rotate(obtusest_node.angle_start - proposed_node.angle_end, 
                         obtusest_node.position);
+
 
             if(not current_polygon->overlaps(poly)){
                 
@@ -422,8 +335,7 @@ public:
                 Inner new_used_polys = *used_polys;
                 new_used_polys.insert(poly_index, poly);
 
-                State new_state(new_frame, new_used_polys, {});
-                return new_state;
+                return std::make_shared<State>(new_frame, new_used_polys, overlaps);
 
             }
         }   
@@ -433,17 +345,17 @@ public:
     }
 
 
-    State apply_iterations
+    std::shared_ptr<State> apply_iterations
         (std::vector<std::tuple<unsigned int, unsigned int, bool>> indices, 
         std::ostream& stream){
         
-        State state;
+        std::shared_ptr<State> state = std::make_shared<State>(overlaps);
 
         for(auto& index: indices){
             unsigned int poly_index = std::get<0>(index);
             unsigned int num_rotations = std::get<1>(index);
             bool reflect = std::get<2>(index);
-            std::optional<State> new_state = state.iterate(poly_index, num_rotations, reflect, stream);
+            std::optional<std::shared_ptr<State>> new_state = state->iterate(poly_index, num_rotations, reflect, stream);
             assert(new_state);
             state = *new_state;
         }
