@@ -9,7 +9,8 @@
 #include "ArchiveQueue.cpp"
 
 std::pair<std::vector<State>, Analytics> get_combinations(
-    const Input& input, const CalcSettings& settings, 
+    const Input& input, 
+    const CalcSettings& settings, 
     const AnalyticsSettings& analytics_settings){
 
     State<type> first_state(input.frame, input.polygon_list);
@@ -19,9 +20,13 @@ std::pair<std::vector<State>, Analytics> get_combinations(
     container.insert(first_state);
 
     std::vector<std::thread> threads([&container](){
-        const State& state = container.pop();
-        std::vector<State> next_states = find_next_states(state, thread_register);
-        container.insert(next_states);
+        while(true){
+            const State& state = container.pop();
+            if(!state)
+                break;
+            std::vector<State> next_states = find_next_states(state, thread_register);
+            container.insert(next_states);
+        }
     }, settings.num_threads);
 
     const Analytics& analytics = container.get_analytics();
@@ -33,6 +38,11 @@ std::pair<std::vector<State>, Analytics> get_combinations(
 
 int main([[maybe_unused]] int argc, char** argv){
     
+    // Define input
+    frame = PolyInt({points});
+    polygon_list = {RestrictedPolygon{{1,1}, containment_frame, transformations}, ...};
+    Input = PredefinedInputs::Ostomachion;
+
     // Outer-level function: set input, receive number of combinations
     Input input(frame, polygon_list, initializer=opt);
     CalcSettings settings(numeric_type, overlapper, container_type, node_selector, num_threads);
