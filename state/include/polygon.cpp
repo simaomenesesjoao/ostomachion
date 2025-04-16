@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <vector>
 #include <functional>
 #include <iostream>
 
@@ -52,4 +53,19 @@ namespace Polygon{
             return std::make_unique<Poly<double>>(original);
         };
     };
+
+        
+    std::function<bool(const Polygon::IPoly&, const Polygon::IPoly&)> overlapper_factory(const std::string& name){
+        
+        if(name == "edge"){
+            return [](const Polygon::IPoly& poly1, const Polygon::IPoly& poly2){ 
+                return poly1->edges_overlap(*poly2);
+            };
+        } else if (name == "no-op"){
+            return [](const Polygon::IPoly& poly1, const Polygon::IPoly& poly2){ 
+                return true;
+            };
+        }
+    }
+
 }

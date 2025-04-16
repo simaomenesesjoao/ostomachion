@@ -1,6 +1,9 @@
 #pragma once
-#include "polygon.cpp"
 #include <optional>
+#include <vector>
+#include <string>
+#include <functional>
+#include "polygon.cpp"
 
 struct CalcSettings{
     std::string numeric_type, poly_type, overlapper, container_type, node_selector;

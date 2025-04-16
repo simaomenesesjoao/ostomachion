@@ -1,7 +1,9 @@
 #include <thread>
+#include <vector>
 #include <gmpxx.h>
 #include <fstream>
 
+#include "points_vectors.cpp"
 #include "polygon.cpp"
 //#include "customFloat.cpp"
 #include "state.cpp"
@@ -15,9 +17,9 @@ std::vector<std::shared_ptr<State>> find_next_states(
     if(!state.is_valid() or state.is_complete())
         return {};
     
-    const auto& frame = state.get_frame();
+    auto frame = state.get_frame(); // weak pointer
     unsigned int node_index = node_selector(frame);
-    Nod& insertion_node = node_from_index(node_index)->data;
+    auto& insertion_node = node_from_index(node_index)->data;
 
     std::vector<std::shared_ptr<State>> next_states;
     for(const auto& restricted_poly: state.get_remaining_poly_pool()){

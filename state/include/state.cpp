@@ -1,4 +1,5 @@
 #include <memory>
+#include <vector>
 #include "polygon.cpp"
 #include "settings.hpp"
 
@@ -23,6 +24,11 @@ public:
     bool finalized(){
         return false;
     };
+
+    const std::weak_ptr<Polygon::IPoly> get_frame() const {
+        return _frame;
+    }
+
 
 private:
     std::unique_ptr<Polygon::IPoly> _frame;
