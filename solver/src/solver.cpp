@@ -12,14 +12,14 @@
 #include "settings.hpp"
 
 std::vector<std::shared_ptr<State>> find_next_states(
-    const State& state, void* overlaps, void* node_selector){
+    const State& state, Overlapper overlaps, Selector node_selector){
     
     if(!state.is_valid() or state.is_complete())
         return {};
     
-    auto frame = state.get_frame(); // weak pointer
+    auto& frame = state.get_frame(); // weak pointer
     unsigned int node_index = node_selector(frame);
-    auto& insertion_node = node_from_index(node_index)->data;
+    auto& insertion_node = frame->node_from_index(node_index)->data;
 
     std::vector<std::shared_ptr<State>> next_states;
     for(const auto& restricted_poly: state.get_remaining_poly_pool()){

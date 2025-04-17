@@ -5,8 +5,13 @@
 #include <functional>
 #include "polygon.cpp"
 
+using Overlapper = std::function<bool(std::shared_ptr<Polygon::IPoly>, std::shared_ptr<Polygon::IPoly>)>;
+using Selector = std::function<unsigned int(std::shared_ptr<Polygon::IPoly>)>;
+
 struct CalcSettings{
-    std::string numeric_type, poly_type, overlapper, container_type, node_selector;
+    std::string numeric_type, poly_type, container_type;
+    Overlapper overlapper;
+    Selector node_selector;
     unsigned int num_threads;
 };
 

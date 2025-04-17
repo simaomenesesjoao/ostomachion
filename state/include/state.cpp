@@ -25,13 +25,13 @@ public:
         return false;
     };
 
-    const std::weak_ptr<Polygon::IPoly> get_frame() const {
+    const std::shared_ptr<Polygon::IPoly> get_frame() const {
         return _frame;
     }
 
 
 private:
-    std::unique_ptr<Polygon::IPoly> _frame;
+    std::shared_ptr<Polygon::IPoly> _frame;
     std::shared_ptr<std::vector<Polygon::RestrictedPoly>> _poly_pool;
     std::vector<std::unique_ptr<Polygon::IPoly>> _current_polys;
 };
