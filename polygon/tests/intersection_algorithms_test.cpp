@@ -1,8 +1,7 @@
-#include "intersection_algorithms.cpp"
-#include "polygon.cpp"
-
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
+#include "intersection_algorithms.cpp"
+#include "polygon.cpp"
 
 TEST_CASE("edges_intersect", "[custom]"){
     using P = Point<Number<int, 2, 3>>;
@@ -39,18 +38,18 @@ TEST_CASE("point_on_edge", "[custom]"){
 }
 
 TEST_CASE("edge_intersects_vertex", "[custom]"){
-    Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
-    REQUIRE(is_inner_vertex({-1,-1}, {1,1}, poly.head) == false);
-    REQUIRE(is_inner_vertex({-1,1}, {1,-1}, poly.head) == false);
-    REQUIRE(is_inner_vertex({1,-1}, {-1,1}, poly.head) == true);
+    Polygon::LLPoly<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
+    REQUIRE(is_inner_vertex({-1,-1}, {1,1}, poly.get_head()) == false);
+    REQUIRE(is_inner_vertex({-1,1}, {1,-1}, poly.get_head()) == false);
+    REQUIRE(is_inner_vertex({1,-1}, {-1,1}, poly.get_head()) == true);
 }
 
 
 TEST_CASE("edge_splits_vertex", "[custom]"){
-    Polygon<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
-    REQUIRE(edge_splits_vertex({-1,-1}, {1,1}, poly.head) == true);
-    REQUIRE(edge_splits_vertex({-1,1}, {1,-1}, poly.head) == false);
-    REQUIRE(edge_splits_vertex({1,-1}, {-1,1}, poly.head) == false);
+    Polygon::LLPoly<Number<int, 2, 3>> poly({{0,0}, {5,0}, {5,5}, {0,5}});
+    REQUIRE(edge_splits_vertex({-1,-1}, {1,1}, poly.get_head()) == true);
+    REQUIRE(edge_splits_vertex({-1,1}, {1,-1}, poly.get_head()) == false);
+    REQUIRE(edge_splits_vertex({1,-1}, {-1,1}, poly.get_head()) == false);
     
 }
 
@@ -63,7 +62,7 @@ TEST_CASE("shoelace area formula", "[custom]"){
 
 
 TEST_CASE("nodes_compatible", "[custom]"){
-    Node<Number<int, 2, 3, 5>> M({0,0}), N({0,0}), P({0,0}), A({0,0}), B({0,0});
+    Vertex<Number<int, 2, 3, 5>> M({0,0}), N({0,0}), P({0,0}), A({0,0}), B({0,0});
 
     // /_
     A.update_start({1,1});

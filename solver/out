@@ -1,0 +1,1934 @@
+converting poly pool:
+BarePoly pool:
+restricted poly variations:
+poly: (0,-2)(2,2)(0,2)
+poly: (2,2)(0,2)(0,-2)
+poly: (0,2)(0,-2)(2,2)
+poly: (0,2)(-2,2)(0,-2)
+poly: (-2,2)(0,-2)(0,2)
+poly: (0,-2)(0,2)(-2,2)
+restricted poly variations:
+poly: (-2,-2)(0,-2)(0,2)(-2,2)
+poly: (0,-2)(0,2)(-2,2)(-2,-2)
+before conversion:
+(0,-2)(2,2)(0,2)after conversion:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+finished ind conv
+before conversion:
+(2,2)(0,2)(0,-2)after conversion:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+finished ind conv
+before conversion:
+(0,2)(0,-2)(2,2)after conversion:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+finished ind conv
+before conversion:
+(0,2)(-2,2)(0,-2)after conversion:
+Polygon
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 296.565 -0 63.435
+(x,y)=(0,-2) 90 116.565 26.5651
+finished ind conv
+before conversion:
+(-2,2)(0,-2)(0,2)after conversion:
+Polygon
+(x,y)=(-2,2) 296.565 -0 63.435
+(x,y)=(0,-2) 90 116.565 26.5651
+(x,y)=(0,2) 180 270 90
+finished ind conv
+before conversion:
+(0,-2)(0,2)(-2,2)after conversion:
+Polygon
+(x,y)=(0,-2) 90 116.565 26.5651
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 296.565 -0 63.435
+finished ind conv
+before conversion:
+(-2,-2)(0,-2)(0,2)(-2,2)after conversion:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+finished ind conv
+before conversion:
+(0,-2)(0,2)(-2,2)(-2,-2)after conversion:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+finished ind conv
+after conversion:
+restricted poly variations:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+
+restricted poly variations:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+
+done
+factoring Stack
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 90 -0 270
+(x,y)=(-2,2) 0 270 270
+current polygons:
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 1 3
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 26.5651 90 63.435
+(x,y)=(-0.211146,-1.10557) 116.565 206.565 90
+(x,y)=(-2,2.47214) 270 296.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Restriction is allowed
+Doesn't overlap
+sizes: 1 3
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(-0.211146,1.57771) 153.435 243.435 90
+(x,y)=(-2,2.47214) 270 333.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+Restriction is allowed
+Doesn't overlap
+sizes: 1 3
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 26.5651 90 63.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 1 3
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 1 3
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 1 3
+New states:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 63.435 -0 296.565
+(x,y)=(0,2) -0 243.435 243.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) 90 333.435 243.435
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 116.565 -0 243.435
+(x,y)=(-2,2) 0 296.565 296.565
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 26.5651 -0 333.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 90 -0 270
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 26.5651 90 63.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 270 -0 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 90 -0 270
+(x,y)=(0,2) -0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,0) 180 90 270
+(x,y)=(-2,0) 90 0 270
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 0)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,0) 180 90 270
+(x,y)=(-2,0) 90 0 270
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 63.435 90 26.5651
+(x,y)=(0,4) 180 243.435 63.435
+(x,y)=(-2,4) 270 0 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(-0.211146,0.894427) 116.565 206.565 90
+(x,y)=(-2,4.47214) 270 296.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 270 333.435 63.435
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 63.435 90 26.5651
+(x,y)=(-0.211146,3.57771) 153.435 243.435 90
+(x,y)=(-2,4.47214) 270 333.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(0,0) 116.565 180 63.435
+(x,y)=(-2,4) 270 296.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(2,2) 180 206.565 26.5651
+(x,y)=(-2,2) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+New states:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,0) 153.435 90 296.565
+(x,y)=(-2,2) 0 333.435 333.435
+current polygons:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 270 333.435 63.435
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,0) 180 90 270
+(x,y)=(-2,0) 26.5651 -0 333.435
+(x,y)=(2,2) 270 206.565 296.565
+current polygons:
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(2,2) 180 206.565 26.5651
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 0)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,0) 180 90 270
+(x,y)=(-2,0) 26.5651 -0 333.435
+(x,y)=(2,2) 270 206.565 296.565
+current polygons:
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(2,2) 180 206.565 26.5651
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 26.5651 26.5651
+(x,y)=(2.47214,0) 116.565 180 63.435
+(x,y)=(1.57771,1.78885) 206.565 296.565 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 26.5651 26.5651
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 206.565 270 63.435
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(2,2) 180 206.565 26.5651
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,0) 0 26.5651 26.5651
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 206.565 270 63.435
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,0) 153.435 90 296.565
+(x,y)=(-2,2) 0 333.435 333.435
+current polygons:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 270 333.435 63.435
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,2) 333.435 0 26.5651
+(x,y)=(2,0) 90 153.435 63.435
+(x,y)=(2,2) 180 270 90
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,2) 333.435 0 26.5651
+(x,y)=(1.57771,0.211146) 63.435 153.435 90
+(x,y)=(2.47214,2) 180 243.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 270 333.435 63.435
+Polygon
+(x,y)=(-2,2) 333.435 0 26.5651
+(x,y)=(2,0) 90 153.435 63.435
+(x,y)=(2,2) 180 270 90
+Polygon
+(x,y)=(-2,-2) -0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,0) 180 270 90
+(x,y)=(-2,0) 270 0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(0 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 90 -0 270
+(x,y)=(0,2) -0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 26.5651 90 63.435
+(x,y)=(1.78885,-1.10557) 116.565 206.565 90
+(x,y)=(0,2.47214) 270 296.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 0 90 90
+(x,y)=(4,-2) 153.435 180 26.5651
+(x,y)=(0,0) 270 333.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(1.78885,1.57771) 153.435 243.435 90
+(x,y)=(0,2.47214) 270 333.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 0 90 90
+(x,y)=(2,-2) 116.565 180 63.435
+(x,y)=(0,2) 270 296.565 26.5651
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 26.5651 90 63.435
+(x,y)=(4,0) 180 206.565 26.5651
+(x,y)=(0,0) 270 -0 90
+Restriction is allowed
+New states:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 63.435 -0 296.565
+(x,y)=(2,2) 270 243.435 333.435
+current polygons:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 116.565 90 333.435
+(x,y)=(0,2) -0 296.565 296.565
+current polygons:
+Polygon
+(x,y)=(0,-2) 0 90 90
+(x,y)=(2,-2) 116.565 180 63.435
+(x,y)=(0,2) 270 296.565 26.5651
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(0 2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 116.565 90 333.435
+(x,y)=(0,2) -0 296.565 296.565
+current polygons:
+Polygon
+(x,y)=(0,-2) 0 90 90
+(x,y)=(2,-2) 116.565 180 63.435
+(x,y)=(0,2) 270 296.565 26.5651
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,2) 333.435 0 26.5651
+(x,y)=(4,0) 90 153.435 63.435
+(x,y)=(4,2) 180 270 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,2) 296.565 0 63.435
+(x,y)=(0.894427,0.211146) 26.5651 116.565 90
+(x,y)=(4.47214,2) 180 206.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,2) 333.435 0 26.5651
+(x,y)=(3.57771,0.211146) 63.435 153.435 90
+(x,y)=(4.47214,2) 180 243.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,2) 296.565 0 63.435
+(x,y)=(2,-2) 90 116.565 26.5651
+(x,y)=(2,2) 180 270 90
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(0,-2) 0 90 90
+(x,y)=(2,-2) 116.565 180 63.435
+(x,y)=(0,2) 270 296.565 26.5651
+Polygon
+(x,y)=(0,2) 296.565 0 63.435
+(x,y)=(2,-2) 90 116.565 26.5651
+(x,y)=(2,2) 180 270 90
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(0 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 63.435 -0 296.565
+(x,y)=(2,2) 270 243.435 333.435
+current polygons:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 36.8699 63.435 26.5651
+(x,y)=(3.57771,0.683282) 153.435 216.87 63.435
+(x,y)=(1.78885,1.57771) 243.435 333.435 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) -0 63.435 63.435
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,2) 243.435 270 26.5651
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 36.8699 63.435 26.5651
+(x,y)=(3.2,0.4) 126.87 216.87 90
+(x,y)=(2,2) 243.435 306.87 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 0 63.435 63.435
+(x,y)=(4.47214,-2) 153.435 180 26.5651
+(x,y)=(0.894427,-0.211146) 243.435 333.435 90
+Restriction is allowed
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+Polygon
+(x,y)=(0,-2) -0 63.435 63.435
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,2) 243.435 270 26.5651
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 26.5651 -0 333.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 90 -0 270
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 26.5651 90 63.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 0 26.5651 26.5651
+(x,y)=(2.47214,-2) 116.565 180 63.435
+(x,y)=(1.57771,-0.211146) 206.565 296.565 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 0 26.5651 26.5651
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,4.44089e-16) 206.565 270 63.435
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,4.44089e-16) 180 90 270
+(x,y)=(-2,0) 90 -0 270
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 26.5651 90 63.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 0 26.5651 26.5651
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,4.44089e-16) 206.565 270 63.435
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 0)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,4.44089e-16) 180 90 270
+(x,y)=(-2,0) 90 -0 270
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 26.5651 90 63.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 0 26.5651 26.5651
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,4.44089e-16) 206.565 270 63.435
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(0,0) 90 180 90
+(x,y)=(0,4) 180 270 90
+(x,y)=(-2,4) 270 0 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(-2,2) 270 0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(-2,-2) 26.5651 90 63.435
+(x,y)=(2,0) 180 206.565 26.5651
+(x,y)=(-2,0) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 0 26.5651 26.5651
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,4.44089e-16) 206.565 270 63.435
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(-2,2) 270 0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 116.565 -0 243.435
+(x,y)=(-2,2) 0 296.565 296.565
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,2) 333.435 0 26.5651
+(x,y)=(2,0) 90 153.435 63.435
+(x,y)=(2,2) 180 270 90
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-1.10557,0.211146) 26.5651 116.565 90
+(x,y)=(2.47214,2) 180 206.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,2) 333.435 0 26.5651
+(x,y)=(1.57771,0.211146) 63.435 153.435 90
+(x,y)=(2.47214,2) 180 243.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(0,-2) 90 116.565 26.5651
+(x,y)=(0,2) 180 270 90
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 116.565 -0 243.435
+(x,y)=(-2,2) 333.435 296.565 323.13
+(x,y)=(2,0) 270 153.435 243.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+Polygon
+(x,y)=(-2,2) 333.435 0 26.5651
+(x,y)=(2,0) 90 153.435 63.435
+(x,y)=(2,2) 180 270 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 90 -0 270
+(x,y)=(0,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(0,-2) 90 116.565 26.5651
+(x,y)=(0,2) 180 270 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(0 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 90 -0 270
+(x,y)=(0,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(0,-2) 90 116.565 26.5651
+(x,y)=(0,2) 180 270 90
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) 0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(0,2) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(0,-2) -0 90 90
+(x,y)=(4,-2) 90 180 90
+(x,y)=(4,0) 180 270 90
+(x,y)=(0,0) 270 0 90
+Restriction is allowed
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(0,-2) 90 116.565 26.5651
+(x,y)=(0,2) 180 270 90
+Polygon
+(x,y)=(0,-2) 0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(0,2) 270 -0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 180 90 270
+(x,y)=(0,-2) 116.565 -0 243.435
+(x,y)=(-2,2) 333.435 296.565 323.13
+(x,y)=(2,0) 270 153.435 243.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 116.565 180 63.435
+(x,y)=(-2,2) 270 296.565 26.5651
+Polygon
+(x,y)=(-2,2) 333.435 0 26.5651
+(x,y)=(2,0) 90 153.435 63.435
+(x,y)=(2,2) 180 270 90
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 0)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) 90 333.435 243.435
+(x,y)=(-2,2) 0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 63.435 90 26.5651
+(x,y)=(0,4) 180 243.435 63.435
+(x,y)=(-2,4) 270 -0 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(-0.211146,0.894427) 116.565 206.565 90
+(x,y)=(-2,4.47214) 270 296.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 270 333.435 63.435
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 63.435 90 26.5651
+(x,y)=(-0.211146,3.57771) 153.435 243.435 90
+(x,y)=(-2,4.47214) 270 333.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(0,0) 116.565 180 63.435
+(x,y)=(-2,4) 270 296.565 26.5651
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(2,2) 180 206.565 26.5651
+(x,y)=(-2,2) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(0,0) 90 180 90
+(x,y)=(0,4) 180 270 90
+(x,y)=(-2,4) 270 -0 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) -0 90 90
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(-2,2) 270 0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+New states:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) 0 333.435 333.435
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 0 333.435 333.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 270 333.435 63.435
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) 26.5651 333.435 306.87
+(x,y)=(2,2) 270 206.565 296.565
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(2,2) 180 206.565 26.5651
+(x,y)=(-2,2) 270 -0 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) -0 333.435 333.435
+(x,y)=(2,0) 270 180 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Polygon
+(x,y)=(-2,0) -0 90 90
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(-2,2) 270 0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 0)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) -0 333.435 333.435
+(x,y)=(2,0) 270 180 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Polygon
+(x,y)=(-2,0) -0 90 90
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(-2,2) 270 0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 333.435 0 26.5651
+(x,y)=(2,-2) 90 153.435 63.435
+(x,y)=(2,0) 180 270 90
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,0) 333.435 0 26.5651
+(x,y)=(1.57771,-1.78885) 63.435 153.435 90
+(x,y)=(2.47214,0) 180 243.435 63.435
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Polygon
+(x,y)=(-2,0) 333.435 0 26.5651
+(x,y)=(2,-2) 90 153.435 63.435
+(x,y)=(2,0) 180 270 90
+Polygon
+(x,y)=(-2,0) -0 90 90
+(x,y)=(2,0) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(-2,2) 270 0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 0)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) 26.5651 333.435 306.87
+(x,y)=(2,2) 270 206.565 296.565
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Polygon
+(x,y)=(-2,0) 26.5651 90 63.435
+(x,y)=(2,2) 180 206.565 26.5651
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 0)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 153.435 90 296.565
+(x,y)=(-2,0) 0 333.435 333.435
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 0 333.435 333.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(2,-2) 153.435 180 26.5651
+(x,y)=(-2,0) 270 333.435 63.435
+Polygon
+(x,y)=(-2,0) 0 90 90
+(x,y)=(2,0) 153.435 180 26.5651
+(x,y)=(-2,2) 270 333.435 63.435
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 63.435 -0 296.565
+(x,y)=(0,2) -0 243.435 243.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 36.8699 63.435 26.5651
+(x,y)=(1.57771,0.683282) 153.435 216.87 63.435
+(x,y)=(-0.211146,1.57771) 243.435 333.435 90
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(2,2) 180 243.435 63.435
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) -0 63.435 63.435
+(x,y)=(4.44089e-16,-2) 90 180 90
+(x,y)=(4.44089e-16,2) 243.435 270 26.5651
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(0,2) 270 -0 90
+(x,y)=(0,-2) 63.435 90 26.5651
+(x,y)=(2,2) 180 243.435 63.435
+considering:
+Polygon
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 36.8699 63.435 26.5651
+(x,y)=(1.2,0.4) 126.87 216.87 90
+(x,y)=(4.44089e-16,2) 243.435 306.87 63.435
+Restriction is allowed
+Doesn't overlap
+sizes: 2 3
+considering:
+Polygon
+(x,y)=(-0,2) 180 270 90
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+considering:
+Polygon
+(x,y)=(-2,2) 296.565 0 63.435
+(x,y)=(-0,-2) 90 116.565 26.5651
+(x,y)=(-0,2) 180 270 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(-2,-2) 0 63.435 63.435
+(x,y)=(2.47214,-2) 153.435 180 26.5651
+(x,y)=(-1.10557,-0.211146) 243.435 333.435 90
+Restriction is allowed
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 36.8699 -0 323.13
+(x,y)=(1.57771,0.683282) 153.435 216.87 63.435
+(x,y)=(-0.211146,1.57771) 63.435 333.435 270
+(x,y)=(0,2) -0 243.435 243.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 36.8699 63.435 26.5651
+(x,y)=(1.57771,0.683282) 153.435 216.87 63.435
+(x,y)=(-0.211146,1.57771) 243.435 333.435 90
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(4.44089e-16,-2) 90 -0 270
+(x,y)=(4.44089e-16,2) -0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) -0 63.435 63.435
+(x,y)=(4.44089e-16,-2) 90 180 90
+(x,y)=(4.44089e-16,2) 243.435 270 26.5651
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 36.8699 -0 323.13
+(x,y)=(1.2,0.4) 126.87 216.87 90
+(x,y)=(4.44089e-16,2) -0 306.87 306.87
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 36.8699 63.435 26.5651
+(x,y)=(1.2,0.4) 126.87 216.87 90
+(x,y)=(4.44089e-16,2) 243.435 306.87 63.435
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+not final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 36.8699 -0 323.13
+(x,y)=(1.2,0.4) 126.87 216.87 90
+(x,y)=(4.44089e-16,2) -0 306.87 306.87
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 36.8699 63.435 26.5651
+(x,y)=(1.2,0.4) 126.87 216.87 90
+(x,y)=(4.44089e-16,2) 243.435 306.87 63.435
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(4.44089e-16 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(4.44089e-16,-2) 90 -0 270
+(x,y)=(4.44089e-16,2) -0 270 270
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) -0 63.435 63.435
+(x,y)=(4.44089e-16,-2) 90 180 90
+(x,y)=(4.44089e-16,2) 243.435 270 26.5651
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(4.44089e-16,-2) 0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(4.44089e-16,2) 270 -0 90
+Restriction is allowed
+Doesn't overlap
+sizes: 3 3
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+angles are compatible. Moved poly is:
+Polygon
+(x,y)=(4.44089e-16,-2) -0 90 90
+(x,y)=(4,-2) 90 180 90
+(x,y)=(4,4.44089e-16) 180 270 90
+(x,y)=(4.44089e-16,4.44089e-16) 270 0 90
+Restriction is allowed
+New states:
+---- Printing state. Frame:
+Polygon
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) -0 63.435 63.435
+(x,y)=(4.44089e-16,-2) 90 180 90
+(x,y)=(4.44089e-16,2) 243.435 270 26.5651
+Polygon
+(x,y)=(4.44089e-16,-2) 0 90 90
+(x,y)=(2,-2) 90 180 90
+(x,y)=(2,2) 180 270 90
+(x,y)=(4.44089e-16,2) 270 -0 90
+Left find_next_state
+
+
+Entered container insert
+entered finalized(). State:1
+Added to final
+entered finalized(). State:0
+Entered find_next_state. Vertex: (x,y)=(-2 -2)
+Original state:
+---- Printing state. Frame:
+Polygon
+(x,y)=(2,2) 270 180 270
+(x,y)=(2,-2) 180 90 270
+(x,y)=(-2,-2) 36.8699 -0 323.13
+(x,y)=(1.57771,0.683282) 153.435 216.87 63.435
+(x,y)=(-0.211146,1.57771) 63.435 333.435 270
+(x,y)=(0,2) -0 243.435 243.435
+current polygons:
+Polygon
+(x,y)=(-2,-2) 63.435 90 26.5651
+(x,y)=(0,2) 180 243.435 63.435
+(x,y)=(-2,2) 270 -0 90
+Polygon
+(x,y)=(-2,-2) 36.8699 63.435 26.5651
+(x,y)=(1.57771,0.683282) 153.435 216.87 63.435
+(x,y)=(-0.211146,1.57771) 243.435 333.435 90
+considering:
+Polygon
+(x,y)=(-2,-2) 0 90 90
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+considering:
+Polygon
+(x,y)=(0,-2) 90 180 90
+(x,y)=(0,2) 180 270 90
+(x,y)=(-2,2) 270 -0 90
+(x,y)=(-2,-2) 0 90 90
+New states:
+Left find_next_state
+
+
+Entered container insert
+8

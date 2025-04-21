@@ -1,10 +1,9 @@
 #pragma once
-
-// #include "points_vectors.hpp"
-#include "points_vectors.cpp"
-#include "shoelace.hpp"
 #include <utility>
 #include <cassert>
+#include "points_vectors.cpp" // SIMAO: remover
+#include "vertex.cpp"
+#include "shoelace.hpp"
 
 template <typename Num>
 bool edges_intersect(Point<Num> const& P1, Point<Num> const& P2, 
@@ -12,15 +11,9 @@ bool edges_intersect(Point<Num> const& P1, Point<Num> const& P2,
     using V = Point<Num>;
     
     V q{Q2-Q1}, p{P2-P1}, v{P1-Q1};
-    // std::cout << "arguments for edges_intersect: " << std::endl;
-    // std::cout << P1 << std::endl;
-    // std::cout << P2 << std::endl;
-    // std::cout << Q1 << std::endl;
-    // std::cout << Q2 << std::endl;
 
     // Check if the edges are parallel
     if(q.get_x()*p.get_y() == q.get_y()*p.get_x()){
-        // std::cout << "parallel" << std::endl;
         return false;
     }
     
@@ -31,11 +24,6 @@ bool edges_intersect(Point<Num> const& P1, Point<Num> const& P2,
     // q t - p s = v , s and t between 0 and 1
     // - perp_q . p s = perp_q . v
     // perp_p . q t = perp_p . v
-
-    // std::cout << "perp_p.dot(v): " << perp_p.dot(v) << std::endl;
-    // std::cout << "perp_q.dot(v): " << perp_q.dot(v) << std::endl;
-    // std::cout << "perp_q.dot(p): " << perp_q.dot(p) << std::endl;
-    // std::cout << "perp_p.dot(q): " << perp_p.dot(q) << std::endl;
 
     // Num s = -perp_q.dot(v)/perp_q.dot(p);
     // Num t =  perp_p.dot(v)/perp_p.dot(q);
@@ -55,13 +43,7 @@ bool edges_intersect(Point<Num> const& P1, Point<Num> const& P2,
         t_den = -t_den;
     }
 
-    // std::cout << (float)s_num << " " << (float)s_den << " ";
-    // std::cout << (float)t_num << " " << (float)t_den << std::endl;
-
-    // std::cout << "s,t: " << s_num << " " << s_den << " " << t_num << " " << t_den << std::endl;
-
     return s_num > 0 and s_num < s_den and t_num > 0 and t_num < t_den;
-
 }
 
 
@@ -75,11 +57,6 @@ bool point_on_edge(Point<Num> const& P, Point<Num> const& Q,
     Num dq = q.dot(V-P);
     
     return dq > 0 and dq < q.dot(q) and q.cross(V-P) == 0;
-
-    // if(dq <= 0 or dq >= q.dot(q))
-    //     return false;
-
-    // return q.cross(V-P)==0;
 }
 
 
@@ -93,29 +70,20 @@ bool edge1_includes_edge2(Point<Num> const& A, Point<Num> const& B,
 
 template <typename Num>
 bool is_inner_vertex(Point<Num> const& P, Point<Num> const& Q, 
-                            LL_Node<Node<Num>> *pointer_V){
+                            Vertex<Num> *pointer_V){
     // Check whether the edges connecting V open to the outside
     // of the polygon which contains P and Q
 
     assert(pointer_V != nullptr);
     assert(pointer_V->next != nullptr and pointer_V->prev != nullptr);
 
-    Point<Num> const& V = pointer_V->data.position;
-    Point<Num> const& Vn = pointer_V->next->data.position;
-    Point<Num> const& Vp = pointer_V->prev->data.position;
+    Point<Num> const& V = pointer_V->position;
+    Point<Num> const& Vn = pointer_V->next->position;
+    Point<Num> const& Vp = pointer_V->prev->position;
     Point<Num> q{Q-P};
 
     // If V isn't between P and Q, this algorithm doesn't make sense
     // assert(point_on_edge(P, Q, V));
-    
-
-    // std::cout << "current, prev, next" << std::endl;
-    // std::cout << "V: "  << V  << std::endl;
-    // std::cout << "Vp: " << Vp << std::endl;
-    // std::cout << "Vn: " << Vn << std::endl;
-
-    // std::cout << "cross next: " << q.cross(Vn-V) << std::endl;
-    // std::cout << "cross prev: " << q.cross(Vp-V) << std::endl << std::endl;
     
     return q.cross(Vn-V) <= 0 and q.cross(Vp-V) <= 0;
 
@@ -124,7 +92,7 @@ bool is_inner_vertex(Point<Num> const& P, Point<Num> const& Q,
 
 template <typename Num>
 bool edge_splits_vertex(Point<Num> const& P, Point<Num> const& Q, 
-                            LL_Node<Node<Num>> *pointer_V){
+                            Vertex<Num> *pointer_V){
     // Checks whether an edge goes right through a vertex in such a way 
     // that the two edges coming out of that vertex are in opposite 
     // sides of this edge
@@ -134,22 +102,14 @@ bool edge_splits_vertex(Point<Num> const& P, Point<Num> const& Q,
     assert(pointer_V != nullptr);
     assert(pointer_V->next != nullptr and pointer_V->prev != nullptr);
 
-    Point<Num> const& V = pointer_V->data.position;
-    Point<Num> const& Vn = pointer_V->next->data.position;
-    Point<Num> const& Vp = pointer_V->prev->data.position;
+    Point<Num> const& V = pointer_V->position;
+    Point<Num> const& Vn = pointer_V->next->position;
+    Point<Num> const& Vp = pointer_V->prev->position;
     Point<Num> q{Q-P};
 
     // If V isn't between P and Q, this algorithm doesn't make sense
     assert(point_on_edge(P, Q, V));
     
-
-    // std::cout << "current, prev, next" << std::endl;
-    // std::cout << "V: "  << V  << std::endl;
-    // std::cout << "Vp: " << Vp << std::endl;
-    // std::cout << "Vn: " << Vn << std::endl;
-
-    // std::cout << "cross next: " << q.cross(Vn-V) << std::endl;
-    // std::cout << "cross prev: " << q.cross(Vp-V) << std::endl << std::endl;
     Num x1 = q.cross(Vn-V);
     Num x2 = q.cross(Vp-V);
 
@@ -161,8 +121,8 @@ bool edge_splits_vertex(Point<Num> const& P, Point<Num> const& Q,
 
 
 template <typename Num>
-bool coincident_edges_diverge(Point<Num> const& P, Point<Num> const& Q, 
-                    LL_Node<Node<Num>> *A, LL_Node<Node<Num>> *B){
+bool coincident_edges_diverge(const Point<Num>& P, const Point<Num>& Q, 
+                    Vertex<Num> *A, Vertex<Num> *B){
     // Check if A and B open to different sides. If they do, then the line P-Q
     // is traversing the polygon from in to out
     //     |                \       /     
@@ -171,7 +131,7 @@ bool coincident_edges_diverge(Point<Num> const& P, Point<Num> const& Q,
     //        /
     //       /
 
-    assert(edge1_includes_edge2(P, Q, A->data.position, B->data.position));
+    assert(edge1_includes_edge2(P, Q, A->position, B->position));
     assert(A->next == B or B->next == A);
 
     // The previous lines ensure that A and B lie on the same line as PQ, and that they are neighbours.
@@ -183,44 +143,33 @@ bool coincident_edges_diverge(Point<Num> const& P, Point<Num> const& Q,
 
 
 template <typename Num>
-bool nodes_compatible(Node<Num> const& node1, Node<Num> const& node2){
+bool nodes_compatible(const Vertex<Num>& node1, const Vertex<Num>& node2){
     
     Point<Num> S1{node1.angle_start.get_cos(), node1.angle_start.get_sin()};
     Point<Num> E1{node1.angle_end.get_cos(),   node1.angle_end.get_sin()};
     Point<Num> S2{node2.angle_start.get_cos(), node2.angle_start.get_sin()};
     Point<Num> E2{node2.angle_end.get_cos(),   node2.angle_end.get_sin()};
 
-    // std::cout << "S1" << S1 << std::endl;
-    // std::cout << "E1" << E1 << std::endl;
-    // std::cout << "S2" << S2 << std::endl;
-    // std::cout << "E2" << E2 << std::endl;
 
     if(S1 == S2 and E1 == E2){
-        // std::cout << "2 coincident" << std::endl;
         return false;
     }
         
 
     if(S1 == E2 and S2 == E1){
-        // std::cout << "2 coincident" << std::endl;
         return true;
     }
 
     if(S1 == S2 or S1 == E2 or E1 == S2 or E1 == E2){
-        // std::cout << "3 coincident" << std::endl;
         return shoelace_area<Num>({S1,E1,S2,E2}) > 0; // > 0 means polygon is anticlockwise
     }
 
-
     // Case 3: All points are distinct
     if(edges_intersect(S1, E2, S2, E1) or edges_intersect(S1, E1, S2, E2)){
-        // std::cout << "node: edges intersect" << std::endl;
         return false;
 
     }
         
-    // std::cout << "all edges are different" << std::endl;
-
     return shoelace_area<Num>({S1,E1,S2,E2}) > 0;
 }
 

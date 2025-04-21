@@ -1,8 +1,9 @@
 #pragma once
-
 #include <iostream>
 #include "points_vectors.hpp"
 #include "shoelace.hpp"
+
+// SIMAO: separar em angles e points
 
 template <typename Num>
 Angle<Num>::Angle(int x, int y){
@@ -277,85 +278,3 @@ Num Point<Num>::cross(Point<Num> const& other) const{
 
 
 
-
-
-
-
-
-
-
-
-template <typename Num>
-class Node{
-    using Ang = Angle<Num>;
-    using Poin = Point<Num>;
-
-public:
-    Node(Poin const& P): position{P}, end_init{false}, start_init{false}{};
-
-
-    void update_opening(){
-        // assert(end_init == true and start_init == true);
-        if(end_init and start_init)
-            angle_opening = angle_end - angle_start;
-    }
-
-    void update_end(Ang const& A){
-        angle_end = A;
-        end_init = true;
-        update_opening();
-    }
-
-    void update_start(Ang const& A){
-        angle_start = A;
-        start_init = true;
-        update_opening();
-    }
-
-    void print(){
-        Poin pos = position;
-        Num x = pos.get_x();
-        Num y = pos.get_y();
-        Ang ang_i = angle_start;
-        Ang ang_f = angle_end;
-        Ang ang = angle_opening;
-        std::cout << "(x,y)=(" << (float)x << "," << (float)y << ") " 
-                    << (float)ang_i << " " << (float)ang_f << " " << (float)ang << std::endl;
-
-    }
-
-    
-    Poin position;
-    // bool larger_than_180;
-
-    template <typename N>
-    friend std::ostream& operator<<(std::ostream& os, Node<N> const& node);
-
-    Ang angle_start, angle_end, angle_opening;
-// private:
-    bool end_init, start_init;
-};
-
-
-template <typename Num>
-std::ostream & operator<<(std::ostream& stream, Node<Num> const& node){
-    stream <<    "( " << node.position << ", " 
-                      << node.angle_start << ", "
-                      << node.angle_end << ", "
-                      << node.angle_opening << ")";
-    return stream;
-}
-
-
-
-template <typename T>
-struct LL_Node{
-    T data;
-    LL_Node *prev, *next;
-
-    LL_Node(T node): data(node){
-        prev = nullptr;
-        next = nullptr;
-    }
-
-};

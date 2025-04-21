@@ -71,6 +71,7 @@ namespace Container{
         virtual std::optional<T> pop() = 0;
         virtual std::vector<T> get_data() = 0;
         virtual void clear() = 0;
+        virtual void print() const = 0;
 
         IContainer(): num_processes{1}, analytics{}{}
 
@@ -96,8 +97,16 @@ namespace Container{
         Stack(Stack&& other):
             container{std::move(other.container)},
             final_container{std::move(other.final_container)}{}
+
+        void print() const override {
+            std::cout << "Printing container\n";
+            for(const auto& state: container){
+                state->print();
+            }
+        }
     
         void insert(const std::vector<T>& states) override {
+            // std::cout << "Entered container insert\n";
             
             auto s1 = std::chrono::high_resolution_clock::now();
             std::lock_guard<std::mutex> lock(this->mtx);
@@ -107,6 +116,7 @@ namespace Container{
             for(auto& state: states){            
     
                 if(state->finalized()){
+                    // std::cout << "Added to final\n";
     
                     auto p1 = std::chrono::high_resolution_clock::now();
                     final_container.push_back(state);
@@ -114,6 +124,7 @@ namespace Container{
                     this->analytics.d1 += p2-p1;
                     this->analytics.count1++;
                 } else {
+                    // std::cout << "not final\n";
                     auto p1 = std::chrono::high_resolution_clock::now();
                     container.push_back(state);
                     auto p2 = std::chrono::high_resolution_clock::now();
@@ -182,7 +193,10 @@ namespace Container{
     template <typename T>
     std::unique_ptr<IContainer<T>> factory(const std::string& name){
         if(name == "Stack"){
+            // std::cout << "factoring Stack\n";
             return std::make_unique<Stack<T>>();
+        } else {
+            assert(false);
         }
     }
 }

@@ -1,17 +1,72 @@
-#include <thread>
-#include "polygon.cpp"
 #include "solver.cpp"
 #include "settings.hpp"
 
-int main([[maybe_unused]] int argc, char** argv){
+
+// std::string demangle(const char* name) {
+//     int status = 0;
+//     char* demangled = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+//     std::string result = (status == 0 && demangled) ? demangled : name;
+//     free(demangled);
+//     return result;
+// }
+
+// void print_stacktrace() {
+//     void* buffer[100];
+//     int size = backtrace(buffer, 100);                     // Get stack addresses
+//     char** symbols = backtrace_symbols(buffer, size);      // Get function names (mangled)
+
+//     std::cerr << "Stack trace:\n";
+    
+//     for (int i = 0; i < size; ++i) {
+//         // Demangle the symbol names and print them
+//         std::cerr << demangle(symbols[i]) << "\n";
+//     }
+    
+//     free(symbols);
+// }
+
+// void resolve_addr(const void* addr) {
+//     std::stringstream cmd;
+//     cmd << "addr2line -f -e ./main " << addr;
+//     FILE* fp = popen(cmd.str().c_str(), "r");
+//     if (!fp) {
+//         std::cerr << "Failed to resolve address with addr2line" << std::endl;
+//         return;
+//     }
+    
+//     char buffer[256];
+//     while (fgets(buffer, sizeof(buffer), fp)) {
+//         std::cerr << buffer;
+//     }
+//     fclose(fp);
+// }
+
+// void crash_handler(int sig) {
+//     std::cerr << "Caught signal " << sig << "\n";
+//     print_stacktrace();
+//     exit(1);
+// }
+
+
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
+    // signal(SIGSEGV, crash_handler); // handle segmentation fault
     
     // Outer-level function: set input, receive number of combinations
-    auto input = Input::get_premade_input("Ostomini");
+    auto input = Input::get_premade_input("Ostomachion");
     if(not input){
         std::cout << "Input not valid\n";
+        exit(1);
+
+
+
     }
 
-    CalcSettings calc_settings("Double", "LLPoly", "Overlapper", "Stack", "Leftest", 10);
+    // exit(0);
+
+
+    CalcSettings calc_settings("Double", "LLPoly", 
+        "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 10);
     AnalyticsSettings analytics_settings;
 
     auto [states, analytics] = get_combinations(*input, calc_settings, analytics_settings);
