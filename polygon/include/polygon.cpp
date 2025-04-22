@@ -9,6 +9,58 @@
 
 namespace Polygon{
 
+
+    template <typename Poly>
+    Poly identity(const Poly& poly){
+        return poly;
+    };
+
+    template <typename Poly>
+    Poly rotate_90(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.rotate({0,1},{0,0});
+        return poly2;
+    };
+
+    template <typename Poly>
+    Poly rotate_270(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.rotate({0,-1},{0,0});
+        return poly2;
+    };
+
+    template <typename Poly>
+    Poly rotate_180(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.rotate({-1,0},{0,0});
+        return poly2;
+    };
+
+    template <typename Poly>
+    Poly flip_x(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.flip_x();
+        return poly2;
+    };
+
+    template <typename Poly>
+    Poly flip_y(const Poly& poly){
+        Poly poly2 = poly;
+        poly2.flip_y();
+        return poly2;
+    };
+
+    template <typename Poly>
+    Poly flip_D(const Poly& poly){
+        return rotate_90(flip_x(poly));
+    };
+
+    template <typename Poly>
+    Poly flip_AD(const Poly& poly){
+        return rotate_270(flip_x(poly));
+    };
+
+
     enum class Transformations {Id, Rot, Flip, RotFlip, R90};
 
     template <typename Num>

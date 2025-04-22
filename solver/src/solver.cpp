@@ -4,8 +4,8 @@
 #include <gmpxx.h>
 #include <fstream>
 
-#include "../../polygon/include/polygon.cpp"
-#include "state.cpp"
+#include "polygon.cpp"
+#include "state.hpp"
 //#include "group.cpp"
 #include "container.hpp"
 #include "settings.hpp"
