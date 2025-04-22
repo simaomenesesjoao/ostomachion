@@ -1,0 +1,15 @@
+{
+    "configurations": [
+      {
+        "name": "Linux",
+        "compileCommands": "${workspaceFolder}/solver/build/compile_commands.json"
+        // "includePath": [
+        //     "${workspaceFolder}/polygon/include",
+        //     "${workspaceFolder}/numeric/include",
+        //     "${workspaceFolder}/state/include"
+        // ]
+      }
+    ],
+    "version": 4
+  }
+  

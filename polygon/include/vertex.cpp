@@ -2,9 +2,6 @@
 #include "points_vectors.cpp"
 
 
-
-
-
 template <typename Num>
 class Vertex{
     using Ang = Angle<Num>;

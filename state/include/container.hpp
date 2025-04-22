@@ -48,8 +48,8 @@ struct Analytics {
     }
 
     void print_single_line() const {
-        std::cout << std::format("Analytics {} - max: {:<5} total: {:<6} final: {:<6} duration: {:.2f}\n", 
-                info, max_items, total_items, total_final, duration.count());
+        // std::cout << std::format("Analytics {} - max: {:<5} total: {:<6} final: {:<6} duration: {:.2f}\n", 
+        //         info, max_items, total_items, total_final, duration.count());
     }
 };
 

@@ -6,7 +6,6 @@
 
 #include "polygon.cpp"
 #include "state.hpp"
-//#include "group.cpp"
 #include "container.hpp"
 #include "settings.hpp"
 
