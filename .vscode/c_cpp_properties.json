@@ -2,12 +2,15 @@
     "configurations": [
       {
         "name": "Linux",
-        "compileCommands": "${workspaceFolder}/solver/build/compile_commands.json"
-        // "includePath": [
-        //     "${workspaceFolder}/polygon/include",
-        //     "${workspaceFolder}/numeric/include",
-        //     "${workspaceFolder}/state/include"
-        // ]
+        "compileCommands": "${workspaceFolder}/solver/build/compile_commands.json",
+        "intelliSenseMode": "linux-gcc-x64",
+        "configurationProvider": "ms-vscode.cmake-tools",
+        "includePath": [
+            "${workspaceFolder}/numeric/include",
+            "${workspaceFolder}/polygon/include",
+            "${workspaceFolder}/state/include",
+            "${workspaceFolder}/solver/include"
+        ]
       }
     ],
     "version": 4

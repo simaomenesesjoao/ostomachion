@@ -53,26 +53,27 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
     // signal(SIGSEGV, crash_handler); // handle segmentation fault
     
     // Outer-level function: set input, receive number of combinations
-    auto input = Input::get_premade_input("Ostomachion");
+    auto input = Input::get_premade_input("Ostomid");
     if(not input){
         std::cout << "Input not valid\n";
         exit(1);
-
-
-
     }
 
     // exit(0);
 
 
     CalcSettings calc_settings("Double", "LLPoly", 
-        "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 10);
+        "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 1);
     AnalyticsSettings analytics_settings;
 
     auto [states, analytics] = get_combinations(*input, calc_settings, analytics_settings);
     
-
     std::cout << states.size() << "\n";
+
+    // for(const auto& s: states){
+    //     s->print_output();
+    // }
+    
     // analytics.display();
 
     // save_to_png(combinations);

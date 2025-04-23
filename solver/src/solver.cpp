@@ -59,7 +59,9 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
     for(auto& thread: threads)
         thread.join();
 
+    std::cout << "total states: " << container->get_data().size() << "\n";
     auto uniques = find_uniques_brute(container->get_data(), settings.transformation);
+    std::cout << "total unique: " << uniques.size() << "\n";
 
     return {uniques, container->get_analytics()};
 }

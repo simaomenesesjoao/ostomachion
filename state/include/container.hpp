@@ -189,14 +189,230 @@ namespace Container{
     std::string Stack<T>::name = "Stack";
 
 
+
+    template <typename T>
+    class Hash : public IContainer<T> {
+    private:
+        struct HashStruct {
+            size_t operator()(const T& x) const {
+                return x.get_hash();
+            }
+        };
+        
+        std::unordered_set<T, HashStruct> visited;
+        std::list<T> container;
+        std::list<T> final_container;
+
+    public:
+        static std::string name;
+        
+        Hash(){};
+        Hash(Hash&& other):
+            container{std::move(other.container)},
+            final_container{std::move(other.final_container)}{}
+
+        void insert(std::vector<T>& states) override {
+            auto s1 = std::chrono::high_resolution_clock::now();
+            std::lock_guard<std::mutex> lock(this->mtx);
+            auto s2 = std::chrono::high_resolution_clock::now();
+            this->analytics.lock_insert += s2 - s1;
+
+            int count = 0;
+            for(auto& state: states){
+                auto [it, is_new_state] = visited.insert(state);
+                
+                if(is_new_state){
+                    count++;
+                    if(state.size() == T::element_type::In::get_max_size()){
+                        final_container.push_back(std::move(state));
+                    } else {
+                        container.push_back(std::move(state));
+                    }
+                }
+            }
+
+            this->num_processes--;
+            this->cv.notify_all();
+
+            this->analytics.total_items += count;
+            this->analytics.max_items = std::max(this->analytics.max_items, size());
+
+            auto s3 = std::chrono::high_resolution_clock::now();
+            this->analytics.duration_insert += s3 - s2;
+        }
+
+        unsigned long size() const {
+            return container.size() + visited.size();
+        }
+
+        std::optional<T> get_next() override {
+            auto s1 = std::chrono::high_resolution_clock::now();
+            std::unique_lock<std::mutex> lock(this->mtx);
+            
+            while(true){
+                if(container.size() == 0 and this->num_processes != 0)
+                    this->cv.wait(lock);
+                else
+                    break;
+            }
+            auto s2 = std::chrono::high_resolution_clock::now();
+            this->analytics.lock_next += s2 - s1;
+            
+            if(container.size() == 0 and this->num_processes == 0)
+                return std::nullopt;
+
+            auto it = container.begin();
+            auto state = std::move(*it);
+            container.erase(it);
+
+            this->num_processes++;
+            lock.unlock();
+            auto s3 = std::chrono::high_resolution_clock::now();
+            this->analytics.duration_next += s3 - s2;
+            return state;
+        }
+
+        std::vector<T> get_solutions() override{
+            return std::vector<T>(final_container.begin(), final_container.end());
+        }
+
+        void clear() override {
+            container.clear();
+        }
+
+
+    };
+
+    template <typename T>
+    std::string Hash<T>::name = "Hash";
+
+
+
+
+
+
+    template <typename T>
+    class HashLevel : public IContainer<T> {
+    private:
+        struct HashStruct {
+            size_t operator()(const T& x) const {
+                return x->get_hash();
+            }
+        };
+        struct EqualStruct {
+            bool operator()(const T& x, const T& y) const {
+                return *x == *y;
+            }
+        };
+
+        std::unordered_set<T, HashStruct, EqualStruct> container_in, container_out;
+        std::list<T> final_container;
+
+    public:
+        static std::string name;
+        
+        HashLevel(){};
+
+        HashLevel(HashLevel&& other):
+            container_in{std::move(other.container_in)},
+            container_out{std::move(other.container_out)},
+            final_container{std::move(other.final_container)}{}
+
+        void insert(std::vector<T>& states) override {
+            auto s1 = std::chrono::high_resolution_clock::now();
+            std::lock_guard<std::mutex> lock(this->mtx);
+            auto s2 = std::chrono::high_resolution_clock::now();
+            this->analytics.lock_insert += s2 - s1;
+
+            int count = 0;
+            for(auto& state: states){
+                auto [it, success] = container_out.insert(state);
+                if(success){
+                    count++;
+
+                    if(state->size() == T::element_type::In::get_max_size())
+                        final_container.push_back(state);
+                }
+            }
+
+            this->num_processes--;
+            this->cv.notify_all();
+
+            this->analytics.total_items += count;
+            this->analytics.max_items = std::max(this->analytics.max_items, container_in.size() + container_out.size());
+
+            auto s3 = std::chrono::high_resolution_clock::now();
+            this->analytics.duration_insert += s3 - s2;
+        }
+
+        unsigned long size() const {
+            return container_in.size() + container_out.size();
+        }
+
+        std::optional<T> get_next() override {
+            auto s1 = std::chrono::high_resolution_clock::now();
+            std::unique_lock<std::mutex> lock(this->mtx);
+
+
+            while(true){
+                if(container_in.size() == 0 and container_out.size() == 0 and this->num_processes != 0)
+                    this->cv.wait(lock);
+                else
+                    break;
+            }
+
+            auto s2 = std::chrono::high_resolution_clock::now();
+            this->analytics.lock_next += s2 - s1;
+            
+            
+            if(container_in.size() == 0 and container_out.size() == 0 and this->num_processes == 0)
+                return std::nullopt;
+
+
+            if(container_in.size() == 0){
+                container_in = std::move(container_out);
+                container_out.clear();
+            }
+
+            auto it = container_in.begin();
+            auto state = std::move(*it);
+            container_in.erase(it);
+            
+            auto s3 = std::chrono::high_resolution_clock::now();
+            this->num_processes++;
+            lock.unlock();
+            this->analytics.duration_next += s3 - s2;
+
+            return state;
+        }
+
+        std::vector<T> get_solutions() override{
+            return std::vector<T>(final_container.begin(), final_container.end());
+        }
+
+        void clear() override {
+            container_in.clear();
+            container_out.clear();
+        }
+
+
+    };
+
+    template <typename T>
+    std::string HashLevel<T>::name = "HashL";
+
+
     
     template <typename T>
     std::unique_ptr<IContainer<T>> factory(const std::string& name){
         if(name == "Stack"){
-            // std::cout << "factoring Stack\n";
             return std::make_unique<Stack<T>>();
+        // } else if(name == "Hash"){
+        //     return std::make_unique<Hash<T>>();
+        // } else if(name == "HashLevel"){
+        //     return std::make_unique<HashLevel<T>>();
         } else {
-            assert(false);
+            return nullptr;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace State{
         virtual std::vector<std::shared_ptr<IState>> find_next_states() const = 0;
         virtual bool finalized() const = 0;
         virtual void print() const = 0;
+        virtual void print_output() const = 0;
         virtual ~IState() = default;
         virtual bool equals(std::shared_ptr<IState>, Polygon::Transformations) const = 0;
     };
@@ -40,6 +41,7 @@ namespace State{
         bool is_valid() const;
         bool finalized() const override;
         void print() const override;
+        void print_output() const override;
 
     private:
         Poly _frame;
@@ -77,10 +79,10 @@ namespace State{
         const CalcSettings& settings):
             _frame{starting_frame}, 
             _poly_pool{std::make_shared<Polygon::Pool<Poly>>(poly_pool.convert<Poly>())}, 
-            _current_polys(_poly_pool->pool.size()){
-                _overlapper = Polygon::overlapper_factory<Poly>(settings.overlapper);
-                _selector = Polygon::selector_factory<Poly>(settings.node_selector);
-            };
+            _current_polys(_poly_pool->pool.size()),
+            _overlapper{Polygon::overlapper_factory<Poly>(settings.overlapper)},
+            _selector{Polygon::selector_factory<Poly>(settings.node_selector)},
+            _size{0}{};
 
     template <typename Poly>
     State<Poly>::State(const State& state):
@@ -174,7 +176,9 @@ namespace State{
 
     template <typename Poly>
     std::vector<std::shared_ptr<IState>> State<Poly>::find_next_states() const {
-        
+        if(!is_valid() and finalized())
+            std::cout << "impossible\n";
+
         if(!is_valid() or finalized())
             return {};
 
@@ -225,6 +229,27 @@ namespace State{
             for(const auto& poly: polyrow)
                 poly.print();
         }
+    }
+
+
+    template <typename Poly>
+    void State<Poly>::print_output() const {
+        
+        for(const auto& polyrow: _current_polys){
+            for(const auto& poly: polyrow){
+                auto v = poly.get_head();
+                std::cout << "[";
+                for(unsigned int i=0; i<poly.size(); i++){
+                    auto x = v->position.get_x();
+                    auto y = v->position.get_y();
+                    v = v->next;
+
+                    std::cout << "(" << x << "," << y << ")";
+                }
+                std::cout << "]";
+            }
+        }
+        std::cout << "\n";
     }
 
 
