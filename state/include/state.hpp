@@ -5,12 +5,13 @@
 #include "polygon.cpp"
 #include "settings.hpp"
 #include "customFloat.cpp"
+#include "analytics.hpp"
 
 namespace State{
     
     class IState {
     public:
-        virtual std::vector<std::shared_ptr<IState>> find_next_states() const = 0;
+        virtual std::vector<std::shared_ptr<IState>> find_next_states(TimingBranch&) const = 0;
         virtual bool finalized() const = 0;
         virtual void print() const = 0;
         virtual void print_output() const = 0;
@@ -35,7 +36,7 @@ namespace State{
         bool equals(std::shared_ptr<IState> other, Polygon::Transformations transf) const override;
         bool equals_under_transform(const State& other, std::function<Poly(const Poly&)> f) const;
         std::vector<std::pair<unsigned int, const Polygon::RestrictedPoly<Poly>*>> get_remaining_poly_pool() const;
-        std::vector<std::shared_ptr<IState>> find_next_states() const override;
+        std::vector<std::shared_ptr<IState>> find_next_states(TimingBranch&) const override;
         void insert_polygon(unsigned int node_index, unsigned int poly_index, Poly&& poly);
 
         bool is_valid() const;
@@ -47,7 +48,7 @@ namespace State{
         Poly _frame;
         const std::shared_ptr<Polygon::Pool<Poly>> _poly_pool;
         std::vector<std::vector<Poly>> _current_polys;
-        std::function<bool(const Poly&, const Poly&)> _overlapper;
+        std::function<bool(const Poly&, const Poly&, TimingBranch&)> _overlapper;
         std::function<unsigned int(const Poly&)> _selector;
         unsigned int _size;
     };
@@ -175,7 +176,9 @@ namespace State{
     }
 
     template <typename Poly>
-    std::vector<std::shared_ptr<IState>> State<Poly>::find_next_states() const {
+    std::vector<std::shared_ptr<IState>> State<Poly>::find_next_states(TimingBranch& timing) const {
+        timing.start();
+
         if(!is_valid() and finalized())
             std::cout << "impossible\n";
 
@@ -194,10 +197,10 @@ namespace State{
                     auto new_poly = transformed_poly.copy_into(insertion_vertex);
 
                     const auto& restriction = restricted_poly->get_restriction();
-                    if(restriction.is_valid() and !_overlapper(new_poly, restriction))
+                    if(restriction.is_valid() and !_overlapper(new_poly, restriction, timing.builder->branch("overlap1")))
                         continue;
 
-                    if(!_overlapper(new_poly, _frame)){
+                    if(!_overlapper(new_poly, _frame, timing.builder->branch("overlap2"))){
                         std::shared_ptr<State> new_state = std::make_shared<State>(*this);
                         new_state->insert_polygon(node_index, poly_index, std::move(new_poly));
                         next_states.push_back(new_state);
@@ -206,7 +209,7 @@ namespace State{
                 }
             }
         }
-        
+        timing.end();
         return next_states;
     }
 

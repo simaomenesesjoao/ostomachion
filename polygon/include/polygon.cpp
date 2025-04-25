@@ -6,6 +6,7 @@
 #include <iostream>
 #include "BarePoly.cpp"
 #include "LLPoly.cpp"
+#include "analytics.hpp"
 
 namespace Polygon{
 
@@ -245,18 +246,24 @@ namespace Polygon{
 
         
     template <typename Poly>
-    std::function<bool(const Poly&, const Poly&)> overlapper_factory(const std::string& name){
+    std::function<bool(const Poly&, const Poly&, TimingBranch&)> overlapper_factory(const std::string& name){
         
         if(name == "edge"){
-            return [](const Poly& poly1, const Poly& poly2){ 
-                return poly1.edge_edge_intersection(poly2);
+            return [](const Poly& poly1, const Poly& poly2, TimingBranch& timing){ 
+                timing.start();
+                bool intersects = poly1.edge_edge_intersection(poly2);
+                timing.end();
+                return intersects;
             };
         } else if(name == "complete"){
-            return [](const Poly& poly1, const Poly& poly2){ 
-                return poly1.overlaps(poly2);
+            return [](const Poly& poly1, const Poly& poly2, TimingBranch& timing){ 
+                timing.start();
+                bool overlaps = poly1.overlaps(poly2);
+                timing.end();
+                return overlaps;
             };
         } else if(name == "no-op"){
-            return [](const Poly&, const Poly&){ 
+            return [](const Poly&, const Poly&, TimingBranch& timing){ 
                 return true;
             };
         } else {

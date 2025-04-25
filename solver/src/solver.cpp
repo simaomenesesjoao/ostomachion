@@ -8,6 +8,7 @@
 #include "state.hpp"
 #include "container.hpp"
 #include "settings.hpp"
+#include "analytics.hpp"
 
 std::vector<std::shared_ptr<State::IState>> find_uniques_brute(
                 const std::vector<std::shared_ptr<State::IState>>& states, 
@@ -29,6 +30,8 @@ std::vector<std::shared_ptr<State::IState>> find_uniques_brute(
     return uniques;
 }
 
+
+
 std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinations(
     const Input::Input& input,
     const CalcSettings& settings,
@@ -44,15 +47,19 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
     std::vector<std::thread> threads;
     for(unsigned int i=0; i<settings.num_threads; i++){
         threads.emplace_back([&container, &settings](){
+            AnalyticsThread analytics;
+            
             while(true){
                 auto state = container->pop();
                 if(!state)
                     break;
-                auto next_states = (*state)->find_next_states();
+                auto next_states = (*state)->find_next_states(analytics.branch("find_next_states"));
                 // SIMAO: container não tem nada que saber se o estado está 
                 // finalizado ou não. essa lógica pode ser passada para aqui
                 container->insert(next_states);
             }
+            analytics.summary();
+            
         });
     }
 

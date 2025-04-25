@@ -20,6 +20,7 @@ target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../numeric/in
 target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../polygon/include)
 target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../state/include)
 target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../solver/include)
+target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../profiling)
 
 # install(TARGETS interactive DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 # install(TARGETS solver DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
