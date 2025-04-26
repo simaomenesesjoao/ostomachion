@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-O3 -g -Wall -Wextra -fno-inline")
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
 
 # set(CMAKE_CXX_FLAGS "-O0 -g -rdynamic -Wall -Wextra -fno-inline")
 

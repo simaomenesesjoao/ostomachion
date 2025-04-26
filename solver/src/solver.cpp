@@ -45,26 +45,40 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
     container->insert({first_state});
 
     std::vector<std::thread> threads;
+    std::vector<AnalyticsThread> analytics;
+    
+
     for(unsigned int i=0; i<settings.num_threads; i++){
-        threads.emplace_back([&container, &settings](){
-            AnalyticsThread analytics;
+        analytics.emplace_back(AnalyticsThread());
+    }
+
+    for(unsigned int i=0; i<settings.num_threads; i++){
+        
+        threads.emplace_back([i, &analytics, &container, &settings](){
+            AnalyticsThread& analytics_thread = analytics.at(i);
             
             while(true){
                 auto state = container->pop();
                 if(!state)
                     break;
-                auto next_states = (*state)->find_next_states(analytics.branch("find_next_states"));
+                auto next_states = (*state)->find_next_states(analytics_thread.branch("find_next_states"));
                 // SIMAO: container não tem nada que saber se o estado está 
                 // finalizado ou não. essa lógica pode ser passada para aqui
                 container->insert(next_states);
             }
-            analytics.summary();
             
         });
     }
 
     for(auto& thread: threads)
         thread.join();
+
+
+    for(unsigned int i = 1; i < settings.num_threads; i++)
+        analytics.at(0).join(analytics.at(i));
+
+    analytics.at(0).summary();
+
 
     std::cout << "total states: " << container->get_data().size() << "\n";
     auto uniques = find_uniques_brute(container->get_data(), settings.transformation);

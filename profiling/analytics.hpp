@@ -26,6 +26,11 @@ public:
         duration{0},
         builder{pointer}{};
 
+    void join(const TimingBranch& other){
+        counter += other.counter;
+        duration += other.duration;
+    }
+
     void start(){
         t = std::chrono::high_resolution_clock::now();
     };
@@ -63,8 +68,12 @@ public:
         for(const auto& [name, obj]: branches){
             std::cout << name << " " << obj.get_counter() << " " << obj.get_duration() << "\n";            
         }
+    }
 
-
+    void join(const AnalyticsThread& other) {
+        for(const auto& [name, obj]: other.branches){
+            branches[name].join(obj);
+        }
     }
 
 

@@ -263,7 +263,7 @@ namespace Polygon{
                 return overlaps;
             };
         } else if(name == "no-op"){
-            return [](const Poly&, const Poly&, TimingBranch& timing){ 
+            return [](const Poly&, const Poly&, [[maybe_unused]] TimingBranch& timing){ 
                 return true;
             };
         } else {

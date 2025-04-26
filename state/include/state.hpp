@@ -192,21 +192,39 @@ namespace State{
         for(auto [poly_index, restricted_poly]: get_remaining_poly_pool()){
             for(const auto& transformed_poly: restricted_poly->get_variations()){
 
-                if(angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening)){
+                TimingBranch& timing2 = timing.builder->branch("checking if angles compatible");
+                timing2.start();
+                bool compatible = angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening);
+                timing2.end();
+
+
+                if(compatible){
+                    TimingBranch& timing3 = timing.builder->branch("run if angles compatible");
+                    timing3.start();
                     // SIMAO: if this next line becomes a memory bottleneck, I should implement thread-registers
+
                     auto new_poly = transformed_poly.copy_into(insertion_vertex);
 
                     const auto& restriction = restricted_poly->get_restriction();
-                    if(restriction.is_valid() and !_overlapper(new_poly, restriction, timing.builder->branch("overlap1")))
+                    if(restriction.is_valid() and !_overlapper(new_poly, restriction, timing.builder->branch("overlap restriction")))
                         continue;
 
-                    if(!_overlapper(new_poly, _frame, timing.builder->branch("overlap2"))){
+                    if(!_overlapper(new_poly, _frame, timing.builder->branch("overlap frame"))){
+                        TimingBranch& timing1 = timing.builder->branch("state construction");
+                        timing1.start();
                         std::shared_ptr<State> new_state = std::make_shared<State>(*this);
+                        timing1.end();
+
+                        TimingBranch& timing4 = timing.builder->branch("insertion");
+                        timing4.start();
                         new_state->insert_polygon(node_index, poly_index, std::move(new_poly));
                         next_states.push_back(new_state);
+                        timing4.end();
                     }
+                    timing3.end();
 
                 }
+
             }
         }
         timing.end();
