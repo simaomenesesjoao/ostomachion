@@ -20,6 +20,7 @@ namespace Polygon {
 
         V *head;
         unsigned int size_ll;
+        bool area_positive;
 
     public:
         using VertexType = V;

@@ -65,14 +65,6 @@ namespace Polygon{
 
     enum class Transformations {Id, Rot, Flip, RotFlip, R90};
 
-    template <typename Num>
-    class ContigPoly {
-    public:
-        ContigPoly(const BarePoly& poly){};
-    };
-
-
-
     template <typename Poly>
     class RestrictedPoly {
         void apply_transformation(){

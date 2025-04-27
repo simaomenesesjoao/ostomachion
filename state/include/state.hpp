@@ -37,8 +37,9 @@ namespace State{
         bool equals_under_transform(const State& other, std::function<Poly(const Poly&)> f) const;
         std::vector<std::pair<unsigned int, const Polygon::RestrictedPoly<Poly>*>> get_remaining_poly_pool() const;
         std::vector<std::shared_ptr<IState>> find_next_states(TimingBranch&) const override;
-        void insert_polygon(unsigned int node_index, unsigned int poly_index, Poly&& poly);
+        void insert_polygon(unsigned int, unsigned short, unsigned short, Poly&&);
 
+        void iterate(const std::vector<std::pair<ushort, ushort>>&);
         bool is_valid() const;
         bool finalized() const override;
         void print() const override;
@@ -47,12 +48,17 @@ namespace State{
     private:
         Poly _frame;
         std::shared_ptr<Polygon::Pool<Poly>> _poly_pool;
-        std::vector<std::vector<Poly>> _current_polys;
+        std::vector<short> _num_polys;
+        std::vector<std::pair<short, short>> _history;
         std::function<bool(const Poly&, const Poly&, TimingBranch&)> _overlapper;
         std::function<unsigned int(const Poly&)> _selector;
         unsigned int _size;
     };
     
+    template <typename Poly>
+    void State<Poly>::iterate(const std::vector<std::pair<ushort, ushort>>& history){
+        
+    }
 
     template <typename Poly>
     bool State<Poly>::all_polys_match(const std::vector<Poly>& polyrow1, 
@@ -79,26 +85,18 @@ namespace State{
         const Polygon::Pool<Polygon::BarePoly>& poly_pool, 
         const CalcSettings& settings):
             _frame{starting_frame}, 
-            _poly_pool{std::make_shared<Polygon::Pool<Poly>>(poly_pool.convert<Poly>())}, 
-            _current_polys(_poly_pool->pool.size()),
+            _poly_pool{std::make_shared<Polygon::Pool<Poly>>(poly_pool.convert<Poly>())},
+            _num_polys(_poly_pool->pool.size()),
             _overlapper{Polygon::overlapper_factory<Poly>(settings.overlapper)},
             _selector{Polygon::selector_factory<Poly>(settings.node_selector)},
             _size{0}{};
 
     template <typename Poly>
     State<Poly>::State(const State& state):
-    // :
-    //     _size{state._size}{
-    //         _poly_pool = state._poly_pool; // 1-> 10: negligible change
-    //         _frame = state._frame; //1 -> 10: 1.4 -> 3.8 (0.2 error)
-    //         _current_polys = state._current_polys; //1 -> 9: 1.4 -> 2.6 (0.2 error)
-    //         _selector = state._selector;
-    //         _overlapper = state._overlapper;
-            
-    //     };
         _frame{state._frame},
-        _poly_pool{state._poly_pool}, 
-        _current_polys{state._current_polys},
+        _poly_pool{state._poly_pool},
+        _num_polys{state._num_polys},
+        _history{state._history},
         _overlapper{state._overlapper}, 
         _selector{state._selector},
         _size{state._size}{};
@@ -147,13 +145,15 @@ namespace State{
         if(_frame.is_valid() and other.is_valid() and !(other._frame == _frame))
             return false;
 
-        for(unsigned int i=0; i<_current_polys.size(); i++){
-            const auto& polyrow = _current_polys.at(i);
-            const auto& other_polyrow = other._current_polys.at(i);
-            if(!all_polys_match(polyrow, other_polyrow, f)){
-                return false;
-            }
-        }
+
+        // SIMAO: arranjar isto
+        // for(unsigned int i=0; i<_current_polys.size(); i++){
+        //     const auto& polyrow = _current_polys.at(i);
+        //     const auto& other_polyrow = other._current_polys.at(i);
+        //     if(!all_polys_match(polyrow, other_polyrow, f)){
+        //         return false;
+        //     }
+        // }
         return true;
     }
 
@@ -162,7 +162,7 @@ namespace State{
         std::vector<std::pair<unsigned int, const Polygon::RestrictedPoly<Poly>*>> remaining;
 
         for(unsigned int i=0; i<_poly_pool->pool.size(); i++){
-            if(_current_polys.at(i).size() < _poly_pool->pool.at(i).get_amount()){
+            if(_num_polys.at(i) < _poly_pool->pool.at(i).get_amount()){
                 remaining.push_back({i, &_poly_pool->pool.at(i)});
             }
         }
@@ -170,10 +170,13 @@ namespace State{
     }
 
     template <typename Poly>
-    void State<Poly>::insert_polygon(unsigned int node_index, unsigned int poly_index, Poly&& poly){
+    void State<Poly>::insert_polygon(unsigned int node_index, 
+        unsigned short poly_index, unsigned short variation_index, Poly&& poly){
 
-        _current_polys.at(poly_index).push_back(poly);
+        _num_polys.at(poly_index)++;
+        _history.push_back(std::pair<ushort, ushort>(poly_index, variation_index));
         _size++;
+
 
         auto insertion_vertex = _frame.vertex_from_index(node_index);
         auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
@@ -199,7 +202,9 @@ namespace State{
         
         std::vector<std::shared_ptr<IState>> next_states;
         for(auto [poly_index, restricted_poly]: get_remaining_poly_pool()){
+            short variation_index = 0;
             for(const auto& transformed_poly: restricted_poly->get_variations()){
+                
 
                 TimingBranch& timing2 = timing.builder->branch("checking if angles compatible");
                 timing2.start();
@@ -226,13 +231,14 @@ namespace State{
 
                         TimingBranch& timing4 = timing.builder->branch("insertion");
                         timing4.start();
-                        new_state->insert_polygon(node_index, poly_index, std::move(new_poly));
+                        new_state->insert_polygon(node_index, poly_index, variation_index, std::move(new_poly));
                         next_states.push_back(new_state);
                         timing4.end();
                     }
                     timing3.end();
 
                 }
+                variation_index++;
 
             }
         }
@@ -252,34 +258,36 @@ namespace State{
     
     template <typename Poly>
     void State<Poly>::print() const {
-        std::cout << "---- Printing state. Frame:\n";
-        _frame.print();
-        std::cout << "current polygons:\n";
-        for(const auto& polyrow: _current_polys){
-            for(const auto& poly: polyrow)
-                poly.print();
-        }
+        std::cout << "no-op\n";
+        // std::cout << "---- Printing state. Frame:\n";
+        // _frame.print();
+        // std::cout << "current polygons:\n";
+        // for(const auto& polyrow: _current_polys){
+        //     for(const auto& poly: polyrow)
+        //         poly.print();
+        // }
     }
 
 
     template <typename Poly>
     void State<Poly>::print_output() const {
+        std::cout << "no-op\n";
         
-        for(const auto& polyrow: _current_polys){
-            for(const auto& poly: polyrow){
-                auto v = poly.get_head();
-                std::cout << "[";
-                for(unsigned int i=0; i<poly.size(); i++){
-                    auto x = v->position.get_x();
-                    auto y = v->position.get_y();
-                    v = v->next;
+        // for(const auto& polyrow: _current_polys){
+        //     for(const auto& poly: polyrow){
+        //         auto v = poly.get_head();
+        //         std::cout << "[";
+        //         for(unsigned int i=0; i<poly.size(); i++){
+        //             auto x = v->position.get_x();
+        //             auto y = v->position.get_y();
+        //             v = v->next;
 
-                    std::cout << "(" << x << "," << y << ")";
-                }
-                std::cout << "]";
-            }
-        }
-        std::cout << "\n";
+        //             std::cout << "(" << x << "," << y << ")";
+        //         }
+        //         std::cout << "]";
+        //     }
+        // }
+        // std::cout << "\n";
     }
 
 
