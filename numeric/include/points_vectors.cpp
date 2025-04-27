@@ -10,7 +10,7 @@ Angle<Num>::Angle(int x, int y){
     int norm2 = x*x + y*y;
     cos = Num{x, norm2, norm2};
     sin = Num{y, norm2, norm2};
-    angle_double = (double)(*this);
+    // angle_double = (double)(*this); SIMAO: remover isto
 }
 
 template <typename Num>

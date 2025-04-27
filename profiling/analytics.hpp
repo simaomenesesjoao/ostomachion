@@ -1,7 +1,9 @@
 #pragma once
 #include <chrono>
 #include <string>
+#include <iomanip>
 #include <unordered_map>
+#include <sstream>
 
 class AnalyticsThread;
 
@@ -61,13 +63,28 @@ public:
             branches.insert({name, new_branch});
             return branches[name];
         }
-        
-
     }
+    
+
+
     void summary() const {
+
+        std::size_t max_str_size{0}, max_count{0};
+
         for(const auto& [name, obj]: branches){
-            std::cout << name << " " << obj.get_counter() << " " << obj.get_duration() << "\n";            
+            max_str_size = std::max(max_str_size, name.size());
+            max_count = std::max(max_count, obj.get_counter());
         }
+
+
+        std::ostringstream oss;
+        for(const auto& [name, obj]: branches){
+            //std::cout << name << " " << obj.get_counter() << " " << obj.get_duration() << "\n";
+            oss << std::setw(max_str_size+2) << std::left << name;
+            oss << std::setw(10) << std::left << obj.get_counter();
+            oss << std::setw(15) << std::left << obj.get_duration() << "\n";
+        }
+        std::cout << oss.str();
     }
 
     void join(const AnalyticsThread& other) {

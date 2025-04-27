@@ -6,6 +6,7 @@
 #include <iostream>
 #include "BarePoly.cpp"
 #include "LLPoly.cpp"
+#include "ContigPoly.cpp"
 #include "analytics.hpp"
 
 namespace Polygon{
@@ -186,21 +187,6 @@ namespace Polygon{
 
         template <typename OtherPoly>
         Polygon::Pool<OtherPoly> convert() const {
-            // std::cout << "converting poly pool:\n";
-
-            // std::cout << "BarePoly pool:\n";
-
-            // for(const auto& rp: pool){
-            //     std::cout << "restricted poly variations:\n";
-            //     for(const auto& poly: rp.get_variations()){
-            //         std::cout << "poly: ";
-            //         for(const auto& vertex: poly.point_list){
-            //             std::cout << "(" << vertex.at(0) << "," << vertex.at(1) << ")";
-            //         }
-            //         std::cout << "\n";
-            //     }
-            // }
-
             
             Polygon::Pool<OtherPoly> converted_pool;
             converted_pool.size = size;
@@ -208,16 +194,7 @@ namespace Polygon{
 
                 std::vector<OtherPoly> variations;
                 for(const auto& var: restricted_poly.get_variations()){
-
-                    // std::cout << "before conversion:\n";
-                    // for(const auto& vertex: var.point_list){
-                    //     std::cout << "(" << vertex.at(0) << "," << vertex.at(1) << ")";
-                    // }
-                    
                     variations.push_back(OtherPoly(var));
-                    // std::cout << "after conversion:\n";
-                    // OtherPoly(var).print();
-                    // std::cout << "finished ind conv\n";
                 }
 
                 OtherPoly restriction(restricted_poly.get_restriction());
@@ -229,17 +206,6 @@ namespace Polygon{
                 converted_pool.pool.push_back(converted_rpoly);
 
             }
-
-            // std::cout << "after conversion:\n";
-            // for(const auto& rp: converted_pool.pool){
-            //     std::cout << "restricted poly variations:\n";
-            //     for(const auto& poly: rp.get_variations()){
-            //         poly.print();
-            //         std::cout << "\n";
-            //     }
-            // }
-            // std::cout << "done\n";
-
             return converted_pool;
         }
     };

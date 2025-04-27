@@ -175,7 +175,7 @@ bool nodes_compatible(const Vertex<Num>& node1, const Vertex<Num>& node2){
 
 
 template <typename Num>
-bool angles_compatible(Angle<Num> const& a, Angle<Num> const& b){
+bool angles_compatible_v1(Angle<Num> const& a, Angle<Num> const& b){
     bool a_larger_180 = a.is_larger_than_180();
     bool b_larger_180 = b.is_larger_than_180();
     if(a_larger_180 and b_larger_180)
@@ -189,4 +189,23 @@ bool angles_compatible(Angle<Num> const& a, Angle<Num> const& b){
     return c.is_larger_than_180() or c.is_zero();
 
 
+}
+
+
+
+template <typename Num>
+bool angles_compatible(Angle<Num> const& a, Angle<Num> const& b){
+    // Checks if a+b <= 360. It's implemented by checking if
+    // a <= complement(b). The complement is obtained by 
+    // inverting the sine
+
+    bool semiplane_a = a.get_sin() > 0 ? 0 : 1;
+    bool semiplane_b = b.get_sin() < 0 ? 0 : 1;
+
+    if(semiplane_a != semiplane_b)
+        return semiplane_a < semiplane_b;
+    else if(semiplane_a == 0)
+        return !(a.get_cos() < b.get_cos());
+    else
+        return !(a.get_cos() > b.get_cos());
 }

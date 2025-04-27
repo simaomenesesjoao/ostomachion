@@ -46,7 +46,7 @@ namespace State{
 
     private:
         Poly _frame;
-        const std::shared_ptr<Polygon::Pool<Poly>> _poly_pool;
+        std::shared_ptr<Polygon::Pool<Poly>> _poly_pool;
         std::vector<std::vector<Poly>> _current_polys;
         std::function<bool(const Poly&, const Poly&, TimingBranch&)> _overlapper;
         std::function<unsigned int(const Poly&)> _selector;
@@ -87,6 +87,15 @@ namespace State{
 
     template <typename Poly>
     State<Poly>::State(const State& state):
+    // :
+    //     _size{state._size}{
+    //         _poly_pool = state._poly_pool; // 1-> 10: negligible change
+    //         _frame = state._frame; //1 -> 10: 1.4 -> 3.8 (0.2 error)
+    //         _current_polys = state._current_polys; //1 -> 9: 1.4 -> 2.6 (0.2 error)
+    //         _selector = state._selector;
+    //         _overlapper = state._overlapper;
+            
+    //     };
         _frame{state._frame},
         _poly_pool{state._poly_pool}, 
         _current_polys{state._current_polys},

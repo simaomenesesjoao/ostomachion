@@ -53,7 +53,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
     // signal(SIGSEGV, crash_handler); // handle segmentation fault
     
     // Outer-level function: set input, receive number of combinations
-    auto input = Input::get_premade_input("Ostomed");
+    auto input = Input::get_premade_input("Ostomid");
     if(not input){
         std::cout << "Input not valid\n";
         exit(1);
