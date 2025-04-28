@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <iostream>
+#include <algorithm>
 #include <unordered_set>
 #include <cassert>
 #include "points_vectors.cpp" // SIMAO: remover
@@ -18,18 +19,20 @@ namespace Polygon {
         using Ang = Angle<Num>;
         using V = Vertex<Num>;
 
-        V *head;
-        unsigned int size_ll;
+        V* head;
+        std::vector<V> vertices;
         bool area_positive;
 
     public:
         using VertexType = V;
 
-        ContigPoly():head{nullptr}, size_ll{0}{};
+        ContigPoly():head{nullptr}, vertices{}, area_positive{false}{
+            vertices.reserve(10);
+        };
 
         ContigPoly(const BarePoly& poly):ContigPoly{poly.point_list}{};
 
-        ContigPoly(const std::vector<std::vector<int>>& points): head{nullptr}, size_ll{0}, area_positive{false}{
+        ContigPoly(const std::vector<std::vector<int>>& points): head{nullptr}, vertices{}, area_positive{false}{
             // Turn the list of points into nodes, set them as the vertices of 
             // the polygon and calculate the angles between them
 
@@ -39,135 +42,81 @@ namespace Polygon {
 
             std::vector<int> last_point = points.back();
             int prev_x{last_point.at(0)}, prev_y{last_point.at(1)};
-            V *current{};
 
             for(auto& point: points){
                 
                 int x{point.at(0)}, y{point.at(1)};
                 Ang angle(x-prev_x, y-prev_y);
                 
-                V *ll_node = new V(Poin{prev_x,prev_y});
-                ll_node->update_start(angle);
-
-                if(size_ll == 0){
-                    head = ll_node;
-                    current = head;
-                } else {
-                    current->next = ll_node;
-                    ll_node->prev = current;
-                    current = ll_node;
-                }
-                size_ll++;
+                V vertex = V(Poin{prev_x,prev_y});
+                vertex.update_start(angle);
+                vertices.push_back(vertex);
 
                 prev_x = x;
                 prev_y = y;
             }
+            
+            V prev = vertices.back();
 
-            assert(current != nullptr);
-
-            current->next = head;
-            head->prev = current;
-            head = head->next;
-
-            current = head;
-            V *prev = head->prev;
-            for(unsigned i=0; i<size_ll; i++){
-                current->update_end(-prev->angle_start);
-                current->update_opening();
-                prev = current;
-                current = current->next;
+            for(auto& vertex: vertices){
+                vertex.update_end(-prev.angle_start);
+                vertex.update_opening();
+                prev = vertex;
             }
 
             area_positive = (get_area() > 0);
+            head = &vertices.at(0); // SIMAO: garantir que head é actualizado depois de merge e prune
             
         }
 
 
-        void build_this(const ContigPoly& other_poly){
-
-            area_positive = other_poly.area_positive;
-            if(other_poly.size_ll == 0){
-                size_ll = 0;
-                head = nullptr;
-                return;
+        ContigPoly(ContigPoly const& other_poly):
+            head{nullptr},
+            area_positive{other_poly.area_positive},
+            vertices{other_poly.vertices}{
+                if(vertices.size() > 0)
+                    head = &vertices.at(0);
             }
-
-            head = new V(*(other_poly.head));
-            V *node = head;        
-            V *other_node = other_poly.head->next;
-
-            for(unsigned i=1; i<other_poly.size_ll; i++){
-                node->next = new V(*other_node);
-                node->next->prev = node;
-
-                other_node = other_node->next;
-                node = node->next;
-
-            }
-            size_ll = other_poly.size_ll;
-            node->next = head;
-            head->prev = node;
-        }
-
-        void delete_this(){
-            V *current, *next;
-            current = head;
-            for(unsigned i = 0; i < size_ll; i++){
-                next = current->next;
-                delete current;
-                current = next;
-            }
-        }
-
-        ContigPoly(ContigPoly const& other_poly){
-            build_this(other_poly);
-        }
-
-        ~ContigPoly(){
-            delete_this();
-        }
-
 
 
         ContigPoly& operator=(ContigPoly const& other){
             if(&other == this)
                 return *this;
 
-            delete_this();
-            build_this(other);
+            head = nullptr;
+            area_positive = other_poly.area_positive;
+            vertices = other_poly.vertices;
+            if(vertices.size() > 0)
+                head = &vertices.at(0);
+
             return *this;
         }
 
         Num get_area(){
             std::vector<std::pair<Num, Num>> points;
-            V *current = head;
-            for(unsigned i=0; i<size_ll; i++){
-                Num const& x = current->position.get_x();
-                Num const& y = current->position.get_y();
-                points.push_back({x,y});
-                current = current->next;
+            
+            for(const auto& vertex: vertices){
+                points.push_back({vertex.position.get_x(),vertex.position.get_y()});
             }
 
             return shoelace_area<Num>(points);
         }
 
         void translate(Poin const& dr){
-            V *vertex = head;
-            for(unsigned i=0; i<size_ll; i++){
-                vertex->position = vertex->position + dr;
-                vertex = vertex->next;
+            
+            for(auto& vertex: vertices){
+                vertex.position = vertex.position + dr;
             }
+
         }
 
         void rotate(Ang const& angle, Poin const& rot_center){
             // Rotate the polygon by angle around the rotation center
 
-            V *vertex = head;
-            for(unsigned i=0; i<size_ll; i++){
-                vertex->angle_end = vertex->angle_end + angle;
-                vertex->angle_start = vertex->angle_start + angle;
-                vertex->position = rot_center + (vertex->position - rot_center).rotate(angle);
-                vertex = vertex->next;
+            for(auto& vertex: vertices){
+                vertex.angle_end = vertex.angle_end + angle;
+                vertex.angle_start = vertex.angle_start + angle;
+                vertex.position = rot_center + (vertex.position - rot_center).rotate(angle);
             }
         }
 
@@ -175,8 +124,8 @@ namespace Polygon {
             // Copies the polygon into the specified vertex position
 
             ContigPoly poly2(*this);
-            poly2.translate(vertex.position - head->position);
-            poly2.rotate(vertex.angle_start - head->angle_end, vertex.position);
+            poly2.translate(vertex.position - head.position);
+            poly2.rotate(vertex.angle_start - head.angle_end, vertex.position);
             return poly2;
         }
 
@@ -185,21 +134,14 @@ namespace Polygon {
         void flip_x(){
             // Flip the polygon along x, but preserve orientation. In practice, 
             // this means changing the sign of every quantity which depends on x
-            V *current{head}, *temp;
-
-            for(unsigned i=0; i<size_ll; i++){
-                temp = current->next;
-                current->next = current->prev;
-                current->prev = temp;
-                current->position = {-current->position.get_x(), current->position.get_y()};
-
-                auto start = current->angle_start;
-                auto end = current->angle_end;
-                current->angle_start = Ang{-end.get_cos(), end.get_sin()};
-                current->angle_end = Ang{-start.get_cos(), start.get_sin()};
-                
-                current = temp;
+            for(auto& vertex: vertices){
+                vertex.position = {-vertex.position.get_x(), vertex.position.get_y()};
+                auto start = vertex.angle_start;
+                auto end = vertex.angle_end;
+                vertex.angle_start = Ang{-end.get_cos(), end.get_sin()};
+                vertex.angle_end = Ang{-start.get_cos(), start.get_sin()};
             }
+            std::reverse(vertices.begin(), vertices.end());
             
         }
 
@@ -207,28 +149,38 @@ namespace Polygon {
             head = head->next;
         }
 
-
         void flip_y(){
             // Flip the polygon along y, but preserve orientation. In practice, 
             // this means changing the sign of every quantity which depends on y
-            V *current{head}, *temp;
+            for(auto& vertex: vertices){
+                vertex.position = {vertex.position.get_x(), -vertex.position.get_y()};
+                auto start = vertex.angle_start;
+                auto end = vertex.angle_end;
+                vertex.angle_start = Ang{end.get_cos(), -end.get_sin()};
+                vertex.angle_end = Ang{start.get_cos(), -start.get_sin()};
+            }
+            std::reverse(vertices.begin(), vertices.end());
+        }
 
-            for(unsigned i=0; i<size_ll; i++){
-                temp = current->next;
-                current->next = current->prev;
-                current->prev = temp;
-                current->position = {current->position.get_x(), -current->position.get_y()};
+        unsigned int index_from_pointer(V* pointer){
 
-                auto start = current->angle_start;
-                auto end = current->angle_end;
-                current->angle_start = Ang{end.get_cos(), -end.get_sin()};
-                current->angle_end = Ang{start.get_cos(), -start.get_sin()};
-                
-                current = temp;
-            }   
+            for(unsigned int i = 0; i < vertices.size(); i++)
+                if(&vertex.at(i) == pointer)
+                    return i;
+
+            assert(false); // SIMAO: implementar exceptions
         }
 
         void merge(V *this_node, ContigPoly & other_poly, V *other_node){
+            unsigned int this_index = index_from_pointer(this_node);
+            unsigned int other_index = other_poly.index_from_pointer(other_node);
+
+            std::vector<V> new_vertices;
+            for(unsigned int i = 0; i < this_index; i++){
+                new_vertices.push_back(vertices.at(i));
+            }
+            vertices.insert(other_poly.begin() + this_index, other_poly.begin() + other_index, other_poly.end());
+            vertices.insert(other_poly.begin() + this_index, other_poly.begin() + other_index, other_poly.end());
 
             // Connect the two linked lists
             V *temp = other_node->prev;
