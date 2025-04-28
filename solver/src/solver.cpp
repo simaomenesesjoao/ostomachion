@@ -81,6 +81,11 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
 
 
     std::cout << "total states: " << container->get_data().size() << "\n";
+    for(auto& state: container->get_data()){
+        state->activate_history(input.frame, *PolyPoolPtr, settings);
+        // state->print();
+    }
+
     auto uniques = find_uniques_brute(container->get_data(), settings.transformation);
     std::cout << "total unique: " << uniques.size() << "\n";
 

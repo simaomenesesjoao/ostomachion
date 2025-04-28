@@ -17,6 +17,9 @@ namespace State{
         virtual void print_output() const = 0;
         virtual ~IState() = default;
         virtual bool equals(std::shared_ptr<IState>, Polygon::Transformations) const = 0;
+        virtual void activate_history(const Polygon::BarePoly& starting_frame, 
+            const Polygon::Pool<Polygon::BarePoly>& poly_pool, 
+            const CalcSettings& settings) = 0;
     };
 
     template <typename Poly>
@@ -27,6 +30,9 @@ namespace State{
             const CalcSettings& settings);
 
         State(const State& state);
+        State& operator=(const State& state) = default;
+
+        // std::vector<std::vector<Poly>>& get_used_polys();
 
         bool all_polys_match(const std::vector<Poly>& polyrow1, 
                              const std::vector<Poly>& polyrow2, 
@@ -40,6 +46,7 @@ namespace State{
         void insert_polygon(unsigned int, unsigned short, unsigned short, Poly&&);
 
         void iterate(const std::vector<std::pair<ushort, ushort>>&);
+        void activate_history(const Polygon::BarePoly&, const Polygon::Pool<Polygon::BarePoly>&, const CalcSettings& settings) override;
         bool is_valid() const;
         bool finalized() const override;
         void print() const override;
@@ -48,17 +55,19 @@ namespace State{
     private:
         Poly _frame;
         std::shared_ptr<Polygon::Pool<Poly>> _poly_pool;
-        std::vector<short> _num_polys;
-        std::vector<std::pair<short, short>> _history;
+        std::vector<std::vector<Poly>> _current_polys;
+        std::vector<unsigned short> _num_polys;
+        std::vector<std::pair<unsigned short, unsigned short>> _history;
         std::function<bool(const Poly&, const Poly&, TimingBranch&)> _overlapper;
         std::function<unsigned int(const Poly&)> _selector;
         unsigned int _size;
     };
+
+    // template <typename Poly>
+    // std::vector<std::vector<Poly>>& State<Poly>::get_used_polys() {
+    //     return _current_polys;
+    // }
     
-    template <typename Poly>
-    void State<Poly>::iterate(const std::vector<std::pair<ushort, ushort>>& history){
-        
-    }
 
     template <typename Poly>
     bool State<Poly>::all_polys_match(const std::vector<Poly>& polyrow1, 
@@ -86,7 +95,9 @@ namespace State{
         const CalcSettings& settings):
             _frame{starting_frame}, 
             _poly_pool{std::make_shared<Polygon::Pool<Poly>>(poly_pool.convert<Poly>())},
+            _current_polys(std::vector<std::vector<Poly>>(_poly_pool->pool.size())),
             _num_polys(_poly_pool->pool.size()),
+            _history{},
             _overlapper{Polygon::overlapper_factory<Poly>(settings.overlapper)},
             _selector{Polygon::selector_factory<Poly>(settings.node_selector)},
             _size{0}{};
@@ -95,6 +106,7 @@ namespace State{
     State<Poly>::State(const State& state):
         _frame{state._frame},
         _poly_pool{state._poly_pool},
+        _current_polys{state._current_polys},
         _num_polys{state._num_polys},
         _history{state._history},
         _overlapper{state._overlapper}, 
@@ -147,13 +159,13 @@ namespace State{
 
 
         // SIMAO: arranjar isto
-        // for(unsigned int i=0; i<_current_polys.size(); i++){
-        //     const auto& polyrow = _current_polys.at(i);
-        //     const auto& other_polyrow = other._current_polys.at(i);
-        //     if(!all_polys_match(polyrow, other_polyrow, f)){
-        //         return false;
-        //     }
-        // }
+        for(unsigned int i=0; i<_current_polys.size(); i++){
+            const auto& polyrow = _current_polys.at(i);
+            const auto& other_polyrow = other._current_polys.at(i);
+            if(!all_polys_match(polyrow, other_polyrow, f)){
+                return false;
+            }
+        }
         return true;
     }
 
@@ -174,9 +186,8 @@ namespace State{
         unsigned short poly_index, unsigned short variation_index, Poly&& poly){
 
         _num_polys.at(poly_index)++;
-        _history.push_back(std::pair<ushort, ushort>(poly_index, variation_index));
+        _history.push_back(std::pair<unsigned short, unsigned short>(poly_index, variation_index));
         _size++;
-
 
         auto insertion_vertex = _frame.vertex_from_index(node_index);
         auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
@@ -186,6 +197,69 @@ namespace State{
         _frame.prune_LL({insertion_vertex, head}, getter);
         
     }
+
+    template <typename Poly>
+    void State<Poly>::activate_history(const Polygon::BarePoly& starting_frame, 
+                                        const Polygon::Pool<Polygon::BarePoly>& poly_pool, 
+                                        const CalcSettings& settings){
+        auto history = _history;
+        *this = State<Poly>(starting_frame, poly_pool, settings); // reset
+        iterate(history);
+    }
+    
+    template <typename Poly>
+    void State<Poly>::iterate(const std::vector<std::pair<unsigned short, unsigned short>>& history){
+        AnalyticsThread analytics;
+        // std::cout << "--------------------------------------------- entered iterate -----------------------------\n";
+        // std::cout << "frame before merge:\n";
+        // _frame.print();
+
+        _current_polys = std::vector<std::vector<Poly>>(_poly_pool->pool.size());
+
+        for(const auto& [poly_index, variation_index]: history){
+            // std::cout << "poly and variation index: " << poly_index << " " << variation_index << "\n";
+
+            unsigned short node_index = _selector(_frame);
+            const auto& insertion_vertex = *(_frame.vertex_from_index(node_index));
+            const auto& restricted_poly = _poly_pool->pool.at(poly_index);
+            const auto& restriction = restricted_poly.get_restriction();
+            const auto& transformed_poly = restricted_poly.get_variations().at(variation_index);
+            
+            if(!angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening)){
+                std::cout << "angles not compatible\n";
+                assert(false);
+            }
+            
+
+            Poly new_poly = transformed_poly.copy_into(insertion_vertex);
+
+
+            if(restriction.is_valid() and !_overlapper(new_poly, restriction, analytics.branch("a"))){
+                std::cout << "### error ### problem with restriction\n";
+                restriction.print();
+                new_poly.print();
+                assert(false);
+            }
+                
+            if(_overlapper(new_poly, _frame, analytics.branch("a"))){
+                std::cout << "problem with overlap\n";
+                new_poly.print();
+                assert(false);
+            }
+
+            _current_polys.at(poly_index).push_back(new_poly);
+            // new_poly.print();
+            // unsigned int count = 0;
+            // for(auto& polyrow: _current_polys)
+            //     count += polyrow.size();
+            // std::cout << "size: " << count << "\n";
+            insert_polygon(node_index, poly_index, variation_index, std::move(new_poly));
+            // std::cout << "frame after merge:\n";
+            // _frame.print();
+        }
+        
+    }
+
 
     template <typename Poly>
     std::vector<std::shared_ptr<IState>> State<Poly>::find_next_states(TimingBranch& timing) const {
@@ -202,9 +276,9 @@ namespace State{
         
         std::vector<std::shared_ptr<IState>> next_states;
         for(auto [poly_index, restricted_poly]: get_remaining_poly_pool()){
-            short variation_index = 0;
+            short variation_index = -1;
             for(const auto& transformed_poly: restricted_poly->get_variations()){
-                
+                variation_index++;
 
                 TimingBranch& timing2 = timing.builder->branch("checking if angles compatible");
                 timing2.start();
@@ -238,7 +312,6 @@ namespace State{
                     timing3.end();
 
                 }
-                variation_index++;
 
             }
         }
@@ -248,7 +321,7 @@ namespace State{
 
     template <typename Poly>
     bool State<Poly>::is_valid() const {
-        return _frame.is_valid(); // SIMAO: verificar   
+        return _frame.is_valid();   
     }
 
     template <typename Poly>
@@ -258,36 +331,35 @@ namespace State{
     
     template <typename Poly>
     void State<Poly>::print() const {
-        std::cout << "no-op\n";
-        // std::cout << "---- Printing state. Frame:\n";
-        // _frame.print();
-        // std::cout << "current polygons:\n";
-        // for(const auto& polyrow: _current_polys){
-        //     for(const auto& poly: polyrow)
-        //         poly.print();
-        // }
+        
+        std::cout << "---- Printing state. Frame:\n";
+        _frame.print();
+        std::cout << "current polygons:\n";
+        for(const auto& polyrow: _current_polys){
+            for(const auto& poly: polyrow)
+                poly.print();
+        }
     }
 
 
     template <typename Poly>
     void State<Poly>::print_output() const {
-        std::cout << "no-op\n";
         
-        // for(const auto& polyrow: _current_polys){
-        //     for(const auto& poly: polyrow){
-        //         auto v = poly.get_head();
-        //         std::cout << "[";
-        //         for(unsigned int i=0; i<poly.size(); i++){
-        //             auto x = v->position.get_x();
-        //             auto y = v->position.get_y();
-        //             v = v->next;
+        for(const auto& polyrow: _current_polys){
+            for(const auto& poly: polyrow){
+                auto v = poly.get_head();
+                std::cout << "[";
+                for(unsigned int i=0; i<poly.size(); i++){
+                    auto x = v->position.get_x();
+                    auto y = v->position.get_y();
+                    v = v->next;
 
-        //             std::cout << "(" << x << "," << y << ")";
-        //         }
-        //         std::cout << "]";
-        //     }
-        // }
-        // std::cout << "\n";
+                    std::cout << "(" << x << "," << y << ")";
+                }
+                std::cout << "]";
+            }
+        }
+        std::cout << "\n";
     }
 
 
