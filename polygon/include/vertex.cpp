@@ -33,7 +33,7 @@ public:
         update_opening();
     }
 
-    void print(){
+    void print() const {
         Poin pos = position;
         std::cout << "(x,y)=(" << (float)pos.get_x() << "," << (float)pos.get_y() << ") " 
                     << (float)angle_start << " " << (float)angle_end << " " << (float)angle_opening << std::endl;

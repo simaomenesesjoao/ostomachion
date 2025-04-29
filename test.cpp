@@ -22,8 +22,25 @@ int main(){
 
 {
     using Num = Float<double>;
-    std::vector<std::vector<int>> points{{1,2},{2,3},{3,1}};
-    Polygon::ContigPoly<Num> poly(points);
-    
+    using P = std::vector<std::vector<int>>;
+
+    std::cout << "FlipX\n";
+    Polygon::ContigPoly<Num> poly(P({{1,2},{2,3},{3,1}}));
+    poly.print();
+    poly.flip_x();
+    poly.print();
+
+    std::cout << "ContigPoly\n";
+    Polygon::ContigPoly<Num> poly1(P({{1,2},{2,3},{3,1}}));
+    Polygon::ContigPoly<Num> poly2(P({{1,2},{2,3},{3,-1}}));
+    poly1.merge(poly1.get_head(), poly2, poly2.get_head());
+    poly1.print();
+
+    std::cout << "LLPoly\n";
+    Polygon::LLPoly<Num> poly3(P({{1,2},{2,3},{3,1}}));
+    Polygon::LLPoly<Num> poly4(P({{1,2},{2,3},{3,-1}}));
+    poly3.merge(poly3.get_head(), poly4, poly4.get_head());
+    poly3.print();
 }
+
 }
