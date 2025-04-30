@@ -416,59 +416,62 @@ namespace Polygon {
             }
         }
 
-    //     bool is_point_inside(Poin const& P, Poin const& Q = {100,101}) const{
-    //         // Checks whether point P is inside the polygon. 
-    //         // Returns false if it lies on the border or on a vertex
-    //         // Check if the point P is part of a vertex or edge
+        bool is_point_inside(Poin const& P, Poin const& Q = {100,101}) const{
+            // Checks whether point P is inside the polygon. 
+            // Returns false if it lies on the border or on a vertex
+            // Check if the point P is part of a vertex or edge
 
-    //         {           
-    //             V *current = head;
-    //             for(unsigned i = 0; i < size_ll; i++){
-    //                 if(P == current->position)
-    //                     return false;
+            // {           
+            //     V *prev_vertex = &*vertices.back();
+            //     for(unsigned i = 0; i < vertices.size(); i++){
+            //         V* vertex = &vertices.at(i);
+            //         if(P == vertex->position)
+            //             return false;
 
-    //                 if(point_on_edge(current->position, current->prev->position, P))
-    //                     return false;
+            //         if(point_on_edge(vertex->position, prev_vertex->position, P))
+            //             return false;
 
-    //                 current = current->next;
-    //             }
-    //         }        
+            //         prev_vertex = vertex;
+            //     }
+            // }        
             
+            unsigned int N = vertices.size();
             
-    //         V *current = head;
-    //         int num_intersections{0};
-    //         for(unsigned i = 0; i < size_ll; i++){
+            V const *prev_vertex = &vertices.back();
+            unsigned int num_intersections = 0;
+            for(unsigned i = 0; i < vertices.size(); i++){
+                V *vertex = &vertices.at(i);
 
-    //             if(edges_intersect(P, Q, current->position, current->prev->position)){
-    //                 num_intersections++;
-    //             } 
+                if(edges_intersect(P, Q, vertex->position, prev_vertex->position)){
+                    num_intersections++;
+                } 
                     
-    //             if(point_on_edge(P, Q, current->position)){
+                if(point_on_edge(P, Q, vertex->position)){
 
-    //                 if(edge_splits_vertex(P, Q, current)){
-    //                     num_intersections++;
-    //                 }
+                    if(edge_splits_vertex(P, Q, vertex)){
+                        num_intersections++;
+                    }
 
-    //             }
+                }
 
 
-    //             if(edge1_includes_edge2(P, Q, current->position, current->prev->position)){
-    //                 if(coincident_edges_diverge(P, Q, current, current->prev)){
-    //                     num_intersections++;
-    //                 }
-    //             }
+                if(edge1_includes_edge2(P, Q, vertex->position, prev_vertex->position)){
+                    if(coincident_edges_diverge(P, Q, vertex, prev_vertex)){
+                        num_intersections++;
+                    }
+                }
                 
-    //             current = current->next;            
-    //         }
+                prev_vertex = vertex;            
+            }
 
-    //         // The number of intersections will be odd if it's clockwise
-    //         // clockwise = negative area
-    //         if(num_intersections%2 == area_positive)
-    //             return true;
+            // The number of intersections will be odd if it's clockwise
+            // clockwise = negative area
+            if(num_intersections%2 == area_positive)
+                return true;
 
-    //         return false;
+            return false;
 
-    //     }
+        }
 
     //     bool edge_edge_intersection(const ContigPoly& other) const {
     //         V *current{head};

@@ -74,43 +74,66 @@ int main(){
 
 
 
+// {
+//     using Num = Float<double>;
+//     using P = std::vector<std::vector<int>>;
+//     using V = Vertex<Num>;
+
+//     auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
+
+    
+//     std::cout << "Testing PruneLL\n";
+
+//     Polygon::ContigPoly<Num> poly1(P({{1,2},{2,3},{3,1}}));
+//     Polygon::ContigPoly<Num> poly2(P({{1,2},{3,1},{2,3}}));
+
+
+
+//     std::cout << "ContigPoly\n";
+//     V *head1 = poly1.get_head();
+//     V *head2 = poly2.get_head();
+//     auto modified = poly1.merge(head1, poly2, head2);
+//     poly1.prune_LL(modified, getter);
+//     std::cout << "pruned ContigLPoly\n";
+//     poly1.print();
+
+//     assert(poly1.get_head() == nullptr);
+//     assert(poly1.get_vertices().size() == 0);
+
+//     std::cout << "LLPoly\n";
+//     Polygon::LLPoly<Num> poly3(P({{1,2},{2,3},{3,1}}));
+//     Polygon::LLPoly<Num> poly4(P({{1,2},{3,1},{2,3}}));
+//     V *head3 = poly3.get_head();
+//     V *head4 = poly4.get_head();
+//     auto modified2 = poly3.merge(head3, poly4, head4);
+//     poly3.prune_LL(modified2, getter);
+//     std::cout << "pruned LLPoly\n";
+//     poly3.print();
+
+//     assert(poly3.get_head() == nullptr);
+// }
+
 {
+    
+    // using Num = Number<int, 2, 5, 13, 17>;
+    //using Poly = Polygon::LLPoly<Num>;
     using Num = Float<double>;
-    using P = std::vector<std::vector<int>>;
-    using V = Vertex<Num>;
-
-    auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
-
+    using Poly = Polygon::ContigPoly<Num>;
     
-    std::cout << "Testing PruneLL\n";
+    Poly poly({{0,0}, {12,0}, {12,12}, {6,6}, {0,12}}); // Anti-clockwise polygon
+    Poly poly2({{0,12}, {6,6}, {12,12}, {12,0}, {0,0}}); // Clockwise polygon
 
-    Polygon::ContigPoly<Num> poly1(P({{1,2},{2,3},{3,1}}));
-    Polygon::ContigPoly<Num> poly2(P({{1,2},{3,1},{2,3}}));
+    assert(poly.is_point_inside({10,2 }) == true);  // inside
+    assert(poly.is_point_inside({12,10}) == false); // on the border
+    assert(poly.is_point_inside({13,10}) == false); // outside
 
+    assert(poly2.is_point_inside({10,2 }) == false);  // inside
+    assert(poly2.is_point_inside({12,10}) == false); // on the border
+    assert(poly2.is_point_inside({13,10}) == true); // outside
 
-
-    std::cout << "ContigPoly\n";
-    V *head1 = poly1.get_head();
-    V *head2 = poly2.get_head();
-    auto modified = poly1.merge(head1, poly2, head2);
-    poly1.prune_LL(modified, getter);
-    std::cout << "pruned ContigLPoly\n";
-    poly1.print();
-
-    assert(poly1.get_head() == nullptr);
-    assert(poly1.get_vertices().size() == 0);
-
-    std::cout << "LLPoly\n";
-    Polygon::LLPoly<Num> poly3(P({{1,2},{2,3},{3,1}}));
-    Polygon::LLPoly<Num> poly4(P({{1,2},{3,1},{2,3}}));
-    V *head3 = poly3.get_head();
-    V *head4 = poly4.get_head();
-    auto modified2 = poly3.merge(head3, poly4, head4);
-    poly3.prune_LL(modified2, getter);
-    std::cout << "pruned LLPoly\n";
-    poly3.print();
-    
-    assert(poly3.get_head() == nullptr);
+    assert(poly.is_point_inside({1,1}, {-1,-1}) == true);  // inside, cross vertex
+    assert(poly.is_point_inside({5,5}, {13,13}) == true);  // inside, coincident edge
+    assert(poly.is_point_inside({-1,0}, {13,0}) == false); // outside, coincident edge
 }
 
 
