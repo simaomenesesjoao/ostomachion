@@ -252,7 +252,7 @@ namespace Polygon {
 
             this_node->update_opening();
             other_node->update_opening();
-            
+
             return {this_node, other_node};
         }
 
@@ -464,6 +464,8 @@ namespace Polygon {
 
         }
 
+        void connect_LL(){}
+
         bool edge_edge_intersection(const LLPoly& other) const {
             V *current{head};
 
@@ -618,7 +620,7 @@ namespace Polygon {
                 or points_inside(other) or other.points_inside(*this);
         }
 
-        V* vertex_from_index(unsigned int index) const {
+        V* vertex_from_index(unsigned int index) {
             V *current = head;
             for(unsigned i=0; i<index; i++){
                 current = current->next;

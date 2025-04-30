@@ -70,7 +70,7 @@ bool edge1_includes_edge2(Point<Num> const& A, Point<Num> const& B,
 
 template <typename Num>
 bool is_inner_vertex(Point<Num> const& P, Point<Num> const& Q, 
-                            Vertex<Num> *pointer_V){
+                            const Vertex<Num> *pointer_V){
     // Check whether the edges connecting V open to the outside
     // of the polygon which contains P and Q
 
@@ -92,7 +92,7 @@ bool is_inner_vertex(Point<Num> const& P, Point<Num> const& Q,
 
 template <typename Num>
 bool edge_splits_vertex(Point<Num> const& P, Point<Num> const& Q, 
-                            Vertex<Num> *pointer_V){
+                            const Vertex<Num> *pointer_V){
     // Checks whether an edge goes right through a vertex in such a way 
     // that the two edges coming out of that vertex are in opposite 
     // sides of this edge
@@ -122,7 +122,7 @@ bool edge_splits_vertex(Point<Num> const& P, Point<Num> const& Q,
 
 template <typename Num>
 bool coincident_edges_diverge(const Point<Num>& P, const Point<Num>& Q, 
-                    Vertex<Num> *A, Vertex<Num> *B){
+                    const Vertex<Num> *A, const Vertex<Num> *B){
     // Check if A and B open to different sides. If they do, then the line P-Q
     // is traversing the polygon from in to out
     //     |                \       /     

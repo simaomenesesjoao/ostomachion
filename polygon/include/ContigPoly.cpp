@@ -22,17 +22,18 @@ namespace Polygon {
         V* head;
         std::vector<V> vertices;
         bool area_positive;
+        bool LL_active;
 
     public:
         using VertexType = V;
 
-        ContigPoly():head{nullptr}, vertices{}, area_positive{false}{
+        ContigPoly():head{nullptr}, vertices{}, area_positive{false}, LL_active{false}{
             vertices.reserve(10);
         };
 
         ContigPoly(const BarePoly& poly):ContigPoly{poly.point_list}{};
 
-        ContigPoly(const std::vector<std::vector<int>>& points): head{nullptr}, vertices{}, area_positive{false}{
+        ContigPoly(const std::vector<std::vector<int>>& points): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}{
             // Turn the list of points into nodes, set them as the vertices of 
             // the polygon and calculate the angles between them
 
@@ -56,12 +57,12 @@ namespace Polygon {
                 prev_y = y;
             }
             
-            V prev = vertices.back();
+            V* prev = &vertices.back();
 
             for(auto& vertex: vertices){
-                vertex.update_end(-prev.angle_start);
+                vertex.update_end(-prev->angle_start);
                 vertex.update_opening();
-                prev = vertex;
+                prev = &vertex;
             }
 
             area_positive = (get_area() > 0);
@@ -230,7 +231,9 @@ namespace Polygon {
         }
 
         void connect_LL(){
-            // Iterates over the vertices and connects them in a linked-list
+            // Iterates over the vertices and connects them in a linked-list. This is required
+            // before running any algorithm that uses linked-lists
+
             unsigned int size_ll = vertices.size();
             V* last = &vertices.at(size_ll-1);
 
@@ -240,6 +243,7 @@ namespace Polygon {
                 last->next = current;
                 last = current;
             }    
+            LL_active = true;
         }
 
         void prune_LL(std::vector<V*> update, std::function<unsigned int(unsigned int)> getter){
@@ -250,7 +254,8 @@ namespace Polygon {
 
             // set the linked list from vector
             unsigned int size_ll = vertices.size();
-            connect_LL();        
+            connect_LL();
+            
 
             std::vector<unsigned short> marked_for_removal;
 
@@ -381,7 +386,7 @@ namespace Polygon {
             unsigned int size_ll = vertices.size();
             for(unsigned int i = 0; i < size_ll; i++){
 
-                if(vertices.at(i) == other_poly.vertices.at(0)){
+                if(vertices.at(i).position == other_poly.vertices.at(0).position){
                     index = i;
                     break;
                 }
@@ -416,52 +421,51 @@ namespace Polygon {
             }
         }
 
-        bool is_point_inside(Poin const& P, Poin const& Q = {100,101}) const{
+        bool is_point_inside(Poin const& P, Poin const& Q = {100,101}) const {
             // Checks whether point P is inside the polygon. 
             // Returns false if it lies on the border or on a vertex
             // Check if the point P is part of a vertex or edge
 
-            // {           
-            //     V *prev_vertex = &*vertices.back();
-            //     for(unsigned i = 0; i < vertices.size(); i++){
-            //         V* vertex = &vertices.at(i);
-            //         if(P == vertex->position)
-            //             return false;
-
-            //         if(point_on_edge(vertex->position, prev_vertex->position, P))
-            //             return false;
-
-            //         prev_vertex = vertex;
-            //     }
-            // }        
+            unsigned int size_ll = vertices.size();
             
-            unsigned int N = vertices.size();
-            
-            V const *prev_vertex = &vertices.back();
-            unsigned int num_intersections = 0;
-            for(unsigned i = 0; i < vertices.size(); i++){
-                V *vertex = &vertices.at(i);
+            {           
+                V *current = head;
+                for(unsigned i = 0; i < size_ll; i++){
+                    if(P == current->position)
+                        return false;
 
-                if(edges_intersect(P, Q, vertex->position, prev_vertex->position)){
+                    if(point_on_edge(current->position, current->prev->position, P))
+                        return false;
+
+                    current = current->next;
+                }
+            }        
+            
+            
+            V *current = head;
+            int num_intersections{0};
+            for(unsigned i = 0; i < size_ll; i++){
+
+                if(edges_intersect(P, Q, current->position, current->prev->position)){
                     num_intersections++;
                 } 
                     
-                if(point_on_edge(P, Q, vertex->position)){
+                if(point_on_edge(P, Q, current->position)){
 
-                    if(edge_splits_vertex(P, Q, vertex)){
+                    if(edge_splits_vertex(P, Q, current)){
                         num_intersections++;
                     }
 
                 }
 
 
-                if(edge1_includes_edge2(P, Q, vertex->position, prev_vertex->position)){
-                    if(coincident_edges_diverge(P, Q, vertex, prev_vertex)){
+                if(edge1_includes_edge2(P, Q, current->position, current->prev->position)){
+                    if(coincident_edges_diverge(P, Q, current, current->prev)){
                         num_intersections++;
                     }
                 }
                 
-                prev_vertex = vertex;            
+                current = current->next;            
             }
 
             // The number of intersections will be odd if it's clockwise
@@ -471,94 +475,103 @@ namespace Polygon {
 
             return false;
 
+
         }
 
-    //     bool edge_edge_intersection(const ContigPoly& other) const {
-    //         V *current{head};
+        bool edge_edge_intersection(const ContigPoly& other) const {
+            V *current{head};
+            unsigned int size_ll = vertices.size();
+            unsigned int other_size_ll = other.vertices.size();
 
-    //         // Check for edge-edge intersections
-    //         for(unsigned i=0; i<size_ll; i++){
-    //             Poin& A = current->position;
-    //             Poin& B = current->prev->position;
-    //             V *other_current{other.head};
+            // Check for edge-edge intersections
+            for(unsigned i=0; i<size_ll; i++){
+                Poin& A = current->position;
+                Poin& B = current->prev->position;
+                V *other_current{other.head};
 
-    //             for(unsigned j=0; j<other.size_ll; j++){
-    //                 Poin& C = other_current->position;
-    //                 Poin& D = other_current->prev->position;
+                for(unsigned j=0; j<other_size_ll; j++){
+                    Poin& C = other_current->position;
+                    Poin& D = other_current->prev->position;
 
-    //                 if(edges_intersect(A,B,C,D)){
-    //                     return true;
-    //                 }
+                    if(edges_intersect(A,B,C,D)){
+                        return true;
+                    }
 
-    //                 other_current = other_current->next;
-    //             }
+                    other_current = other_current->next;
+                }
 
-    //             current = current->next;
-    //         }
+                current = current->next;
+            }
 
-    //         return false;
-    //     }
+            return false;
+        }
 
-    //     bool edge_node_intersection(const ContigPoly& other) const{
-    //         // Check if an edge of 'this' polygon intersects a vertex of the 'other'
+        bool edge_node_intersection(const ContigPoly& other) const{
+            // Check if an edge of 'this' polygon intersects a vertex of the 'other'
 
-    //         V *current{head};
-    //         for(unsigned i=0; i<size_ll; i++){
+            unsigned int size_ll = vertices.size();
+            unsigned int other_size_ll = other.vertices.size();
 
-    //             Poin const& P = current->position;
-    //             Poin const& Q = current->prev->position;
+            V *current{head};
+            for(unsigned i=0; i<size_ll; i++){
 
-    //             V *other_current{other.head};
-    //             for(unsigned j=0; j<other.size_ll; j++){
+                Poin const& P = current->position;
+                Poin const& Q = current->prev->position;
 
-    //                 if(point_on_edge(P, Q, other_current->position)){
-    //                     if(is_inner_vertex(P, Q, other_current)){                            
-    //                         return true;
-    //                     }
-    //                 }
-    //                 other_current = other_current->next;
-    //             }
-    //             current = current->next;
-    //         }
+                V *other_current{other.head};
+                for(unsigned j=0; j<other_size_ll; j++){
 
-    //         return false;
-    //     }
+                    if(point_on_edge(P, Q, other_current->position)){
+                        if(is_inner_vertex(P, Q, other_current)){                            
+                            return true;
+                        }
+                    }
+                    other_current = other_current->next;
+                }
+                current = current->next;
+            }
 
-    //     bool node_node_intersection(const ContigPoly& other) const{
+            return false;
+        }
 
-    //         V *A{head};
-    //         for(unsigned i=0; i<size_ll; i++){
+        bool node_node_intersection(const ContigPoly& other) const{
+
+            unsigned int size_ll = vertices.size();
+            unsigned int other_size_ll = other.vertices.size();
+            V *A{head};
+            for(unsigned i=0; i<size_ll; i++){
                 
-    //             V *B{other.head};
-    //             for(unsigned j=0; j<other.size_ll; j++){
+                V *B{other.head};
+                for(unsigned j=0; j<other_size_ll; j++){
                     
-    //                 if(A->position == B->position){
-    //                     if(not nodes_compatible(*A, *B)){
-    //                         return true;
-    //                     }
-    //                 }
-    //                 B = B->next;
-    //             }
-    //             A = A->next;
-    //         }
+                    if(A->position == B->position){
+                        if(not nodes_compatible(*A, *B)){
+                            return true;
+                        }
+                    }
+                    B = B->next;
+                }
+                A = A->next;
+            }
 
-    //         return false;
-    //     }
+            return false;
+        }
 
-    //     bool points_inside(const ContigPoly& other) const {
-    //         // Checks if any vertex from polygon 'other' is inside this polygon
+        bool points_inside(const ContigPoly& other) const {
+            // Checks if any vertex from polygon 'other' is inside this polygon
 
-    //         V *current{other.head};
-    //         for(unsigned i=0; i<size_ll; i++){
-    //             if(is_point_inside(current->position)){
-    //                 return true;
-    //             }
+            unsigned int size_ll = vertices.size();
+            V *current{other.head};
+            for(unsigned i=0; i<size_ll; i++){
+                if(is_point_inside(current->position)){
+                    return true;
+                }
 
-    //             current = current->next;
-    //         }
+                current = current->next;
+            }
 
-    //         return false;
-    //     }
+            return false;
+        }
 
     //     bool are_separate_convex(const ContigPoly& other) const {
     //         // Only strictly valid for convex polygons
@@ -602,74 +615,74 @@ namespace Polygon {
     //         return !(are_separate_convex(other) or other.are_separate_convex(*this));
     //     }
 
-    //     bool overlaps(const ContigPoly& other) const{
-    //         if(head==nullptr or other.head == nullptr)
-    //             return false;
+        bool overlaps(const ContigPoly& other) const{
+            if(head==nullptr or other.head == nullptr)
+                return false;
 
-    //         // bool cond1 = edge_edge_intersection(other);
-    //         // bool cond2 = node_node_intersection(other);
-    //         // bool cond3 = edge_node_intersection(other);
-    //         // bool cond4 = other.edge_node_intersection(*this);
-    //         // bool cond5 = points_inside(other);
-    //         // bool cond6 = other.points_inside(*this);
+            // bool cond1 = edge_edge_intersection(other);
+            // bool cond2 = node_node_intersection(other);
+            // bool cond3 = edge_node_intersection(other);
+            // bool cond4 = other.edge_node_intersection(*this);
+            // bool cond5 = points_inside(other);
+            // bool cond6 = other.points_inside(*this);
 
-    //         // std::cout << "____\nedge edge: "  << cond1 << std::endl;
-    //         // std::cout << "node node: "  << cond2 << std::endl;
-    //         // std::cout << "edge node: "  << cond3 << std::endl;
-    //         // std::cout << "node edge: "  << cond4 << std::endl;
-    //         // std::cout << "points in1: " << cond5 << std::endl;
-    //         // std::cout << "points in2: " << cond6 << std::endl;
-    //         // return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
+            // std::cout << "____\nedge edge: "  << cond1 << std::endl;
+            // std::cout << "node node: "  << cond2 << std::endl;
+            // std::cout << "edge node: "  << cond3 << std::endl;
+            // std::cout << "node edge: "  << cond4 << std::endl;
+            // std::cout << "points in1: " << cond5 << std::endl;
+            // std::cout << "points in2: " << cond6 << std::endl;
+            // return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
 
-    //         // return edge_edge_intersection(other);
-    //         return edge_edge_intersection(other) or node_node_intersection(other) 
-    //         or edge_node_intersection(other) or other.edge_node_intersection(*this) 
-    //             or points_inside(other) or other.points_inside(*this);
-    //     }
+            // return edge_edge_intersection(other);
+            return edge_edge_intersection(other) or node_node_intersection(other) 
+            or edge_node_intersection(other) or other.edge_node_intersection(*this) 
+                or points_inside(other) or other.points_inside(*this);
+        }
 
-    //     V* vertex_from_index(unsigned int index) const {
-    //         V *current = head;
-    //         for(unsigned i=0; i<index; i++){
-    //             current = current->next;
-    //         }
-    //         return current;
-    //     }
+        V* vertex_from_index(unsigned int index) {
+            return &vertices.at(index);
+        }
 
-    //     unsigned int get_obtusest_node() const {
-    //         // Get the node with the largest internal opening
-    //         V *current = head;
-    //         V *largest = head;
-    //         unsigned index_largest = 0;
-    //         for(unsigned i = 0; i < size_ll; i++){
-    //             if(largest->angle_opening < current->angle_opening){
-    //                 largest = current;
-    //                 index_largest = i;
-    //             }
-    //             current = current->next;
-    //         }
-    //         return index_largest;
-    //     }
-
-    //     unsigned get_leftest_node() const {
-    //         // Get the left-most node, then bottom-most
-    //         V *current = head;
-    //         V *leftest = head;
-    //         unsigned index_leftest = 0;
-    //         for(unsigned i = 0; i < size_ll; i++){
-    //             if(current->position.get_x() < leftest->position.get_x() or 
-    //                 (current->position.get_x() == leftest->position.get_x() and 
-    //                 current->position.get_y() < leftest->position.get_y())){
-
-    //                     leftest = current;
-    //                     index_leftest = i;
-    //             }
-
-    //             current = current->next;
-    //         }
-    //         return index_leftest;
+        unsigned int get_obtusest_node() const {
+            // Get the node with the largest internal opening
             
-    //     }
+            const V *largest = head;
+            unsigned index_largest = 0;
+            unsigned int size_ll = vertices.size();
 
+            for(unsigned i = 0; i < size_ll; i++){
+                const V* current = &vertices.at(i);
+                if(largest->angle_opening < current->angle_opening){
+                    largest = current;
+                    index_largest = i;
+                }
+            }
+            return index_largest;
+        }
+
+        unsigned get_leftest_node() const {
+            // Get the left-most node, then bottom-most
+            unsigned int size_ll = vertices.size();
+            V *current = head;
+            V *leftest = head;
+            unsigned index_leftest = 0;
+            for(unsigned i = 0; i < size_ll; i++){
+                if(current->position.get_x() < leftest->position.get_x() or 
+                    (current->position.get_x() == leftest->position.get_x() and 
+                    current->position.get_y() < leftest->position.get_y())){
+
+                        leftest = current;
+                        index_leftest = i;
+                }
+
+                current = current->next;
+            }
+            return index_leftest;
+            
+        }
+
+        // SIMAO: pequeno refactor para aproveitar código de LLPoly aqui. Para agora está tudo repetido
         
     //     unsigned int get_farthest_node(int center_x, int center_y) const {
     //         // Get the node farthest from the center. If several nodes have the same distance
@@ -702,9 +715,9 @@ namespace Polygon {
             return head;
         }
 
-    //     unsigned int size() const {
-    //         return size_ll;
-    //     }
+        unsigned int size() const {
+            return vertices.size();
+        }
 
     //     std::vector<std::vector<double>> as_vector() const {
     //         std::vector<std::vector<double>> vector;
