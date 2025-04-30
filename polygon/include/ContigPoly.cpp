@@ -229,13 +229,8 @@ namespace Polygon {
 
         }
 
-        void prune_LL(std::vector<V*> update, std::function<unsigned int(unsigned int)> getter){
-            // Remove points from the LL which are coincident or have
-            // an opening angle of 0. This is repeated until no more points
-            // can be removed. It may happen that all points are removed, in
-            // which case the head becomes a nullptr
-
-            // set the linked list from vector
+        void connect_LL(){
+            // Iterates over the vertices and connects them in a linked-list
             unsigned int size_ll = vertices.size();
             V* last = &vertices.at(size_ll-1);
 
@@ -244,15 +239,30 @@ namespace Polygon {
                 current->prev = last;
                 last->next = current;
                 last = current;
-            }            
+            }    
+        }
+
+        void prune_LL(std::vector<V*> update, std::function<unsigned int(unsigned int)> getter){
+            // Remove points from the LL which are coincident or have
+            // an opening angle of 0. This is repeated until no more points
+            // can be removed. It may happen that all points are removed, in
+            // which case the head becomes a nullptr
+
+            // set the linked list from vector
+            unsigned int size_ll = vertices.size();
+            connect_LL();        
 
             std::vector<unsigned short> marked_for_removal;
 
             while(update.size()){
                 
                 if(size_ll == 1){
+                    // std::cout << "-Mrking for removal " << index_from_pointer(head) << " ";
+                    // head->print();
+                    
+                    
+                    marked_for_removal.push_back(index_from_pointer(head));
                     head = nullptr;
-                    marked_for_removal.push_back(0);
                     size_ll = 0;
                     break;
                 }
@@ -289,8 +299,6 @@ namespace Polygon {
                     Poin vec_next = current->position - next->position;
                     Num dist_next2 = vec_next.get_x()*vec_next.get_x() + vec_next.get_y()*vec_next.get_y();
 
-                    std::cout << "3" << std::flush;
-
                     if(dist_prev2 < dist_next2){
                         prev->angle_start = -prev->angle_start;
                         prev->update_opening();
@@ -314,6 +322,9 @@ namespace Polygon {
                     }
 
                     marked_for_removal.push_back(index_from_pointer(current));
+                    // std::cout << "marking for removal " << index_from_pointer(current) << " ";
+                    // current->print();
+
                     size_ll--;
                     update.push_back(next);
                     update.push_back(prev);
@@ -326,10 +337,13 @@ namespace Polygon {
             for (unsigned short index = 0; index < vertices.size(); index++) {
                 if (!(std::find(marked_for_removal.begin(), marked_for_removal.end(), index) != marked_for_removal.end())) {
                     new_vertices.push_back(vertices.at(index));
+                    
                 }
             }
             vertices = new_vertices;
-            head = &vertices.at(0);
+            head = nullptr;
+            if(vertices.size() > 0)
+                head = &vertices.at(0);
 
         }
 
@@ -340,9 +354,9 @@ namespace Polygon {
     //         return false;
     //     }
 
-    //     bool is_valid() const {
-    //         return head != nullptr;
-    //     }
+        bool is_valid() const {
+            return head != nullptr;
+        }
 
     //     std::size_t get_hash() const {
     //         std::size_t h = 0;
@@ -357,41 +371,43 @@ namespace Polygon {
     //         return h;
     //     }
 
-    //     bool operator==(ContigPoly const& other_poly) const{
-    //         V *list1{this->head}, *list2{other_poly.head};
+        bool operator==(ContigPoly const& other_poly) const{            
 
-    //         if(size_ll != other_poly.size_ll)
-    //             return false;
+            if(vertices.size() != other_poly.vertices.size())
+                return false;
 
-    //         // The polygons might be identical even though the heads are different
-    //         for(unsigned i=0; i<size_ll; i++){
+            // The polygons might be identical even though the heads are different
+            unsigned int index = 0;
+            unsigned int size_ll = vertices.size();
+            for(unsigned int i = 0; i < size_ll; i++){
 
-    //             if(list1->position == list2->position)
-    //                 break;
+                if(vertices.at(i) == other_poly.vertices.at(0)){
+                    index = i;
+                    break;
+                }
+            }
 
-    //             list2 = list2->next;
-    //         }
 
+            for(unsigned int i = 0; i < size_ll; i++){
+                const V& v1 = vertices.at((index+i)%size_ll);
+                const V& v2 = other_poly.vertices.at(i);
 
-    //         for(unsigned i=0; i<size_ll; i++){
-    //             if(!(list1->position == list2->position))
-    //                 return false;
+                if(!(v1.position == v2.position))
+                    return false;
 
-    //             if(list1->angle_end != list2->angle_end)
-    //                 return false;
+                if(v1.angle_end != v2.angle_end)
+                    return false;
 
-    //             if(list1->angle_start != list2->angle_start)
-    //                 return false;
+                if(v1.angle_start != v2.angle_start)
+                    return false;
 
-    //             if(list1->angle_opening != list2->angle_opening)
-    //                 return false;
+                if(v1.angle_opening != v2.angle_opening)
+                    return false;
 
-    //             list1 = list1->next;
-    //             list2 = list2->next;
-    //         }
+            }
 
-    //         return true;
-    //     }
+            return true;
+        }
 
         void print() const{
             std::cout << "Polygon\n";

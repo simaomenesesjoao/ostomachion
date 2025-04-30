@@ -265,6 +265,9 @@ namespace Polygon {
             while(update.size()){
                 
                 if(size_ll == 1){
+                    // std::cout << "-Mrking for removal ";
+                    // head->print();
+                    
                     delete head;
                     head = nullptr;
                     size_ll = 0;
@@ -325,7 +328,11 @@ namespace Polygon {
                         head = current->next;
                     }
 
+                    // std::cout << "marking for removal ";
+                    // current->print();
+                    
                     delete current;
+
                     size_ll--;
                     update.push_back(next);
                     update.push_back(prev);
