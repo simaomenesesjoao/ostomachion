@@ -228,7 +228,7 @@ namespace Polygon {
             }   
         }
 
-        void merge(V *this_node, LLPoly & other_poly, V *other_node){
+        std::vector<V*> merge(V *this_node, LLPoly & other_poly, V *other_node){
 
             // Connect the two linked lists
             V *temp = other_node->prev;
@@ -252,6 +252,8 @@ namespace Polygon {
 
             this_node->update_opening();
             other_node->update_opening();
+            
+            return {this_node, other_node};
         }
 
         void prune_LL(std::vector<V*> update, std::function<unsigned int(unsigned int)> getter){

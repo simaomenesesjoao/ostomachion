@@ -65,6 +65,13 @@ namespace Polygon {
             }
 
             area_positive = (get_area() > 0);
+
+            if (!vertices.empty()) {
+                auto first = vertices.front();
+                vertices.erase(vertices.begin());
+                vertices.push_back(first);
+            }
+
             head = &vertices.at(0); // SIMAO: garantir que head é actualizado depois de merge e prune
             
         }
@@ -175,24 +182,30 @@ namespace Polygon {
             return vertices;
         }
 
-        void merge(V *this_node, ContigPoly & other_poly, V *other_node){
+        std::vector<V*> merge(V *this_node, ContigPoly & other_poly, V *other_node){
             unsigned int this_index = index_from_pointer(this_node);
             unsigned int other_index = other_poly.index_from_pointer(other_node);
 
             
+            // std::cout << "indices: " << this_index << " " << other_index << "\n";
+            // std::cout << "vertices:\n";
+            // this_node->print();
+            // other_node->print();
+            // std::cout << "done\n";
+
             std::vector<V>& other_vertices = other_poly.get_vertices();
             unsigned int N1 = vertices.size();
             unsigned int N2 = other_vertices.size();
 
             // Update the angles;
-            this_node->angle_end = -vertices.at((this_index-1+N1)%N1).angle_start;
-            other_node->angle_end = -other_vertices.at((other_index-1+N2)%N2).angle_start;
+            this_node->angle_end = -other_vertices.at((this_index-1+N2)%N2).angle_start;
+            other_node->angle_end = -vertices.at((other_index-1+N1)%N1).angle_start;
             this_node->update_opening();
             other_node->update_opening();
 
             std::vector<V> new_vertices;
             
-            for(unsigned int i = 0; i < this_index; i++){
+            for(unsigned int i = this_index; i < N1; i++){
                 new_vertices.push_back(vertices.at(i));
             }
 
@@ -204,92 +217,121 @@ namespace Polygon {
                 new_vertices.push_back(other_vertices.at(i));
             }
             
-            for(unsigned int i = this_index; i < N1; i++){
+            for(unsigned int i = 0; i < this_index; i++){
                 new_vertices.push_back(vertices.at(i));
             }
 
-            // SIMAO: melhorar transferencia de memoria
+            // SIMAO: melhorar transferencia de memoria. Acho que consigo fazer isto in place?
             vertices = new_vertices;
+            head = &vertices.at(0);
+
+            return {&vertices.at(this_index), &vertices.at((this_index + N1)%(N1+N2))};
 
         }
 
-        // void prune_LL(std::vector<V*> update, std::function<unsigned int(unsigned int)> getter){
-        //     // Remove points from the LL which are coincident or have
-        //     // an opening angle of 0. This is repeated until no more points
-        //     // can be removed. It may happen that all points are removed, in
-        //     // which case the head becomes a nullptr
+        void prune_LL(std::vector<V*> update, std::function<unsigned int(unsigned int)> getter){
+            // Remove points from the LL which are coincident or have
+            // an opening angle of 0. This is repeated until no more points
+            // can be removed. It may happen that all points are removed, in
+            // which case the head becomes a nullptr
 
-        //     while(update.size()){
+            // set the linked list from vector
+            unsigned int size_ll = vertices.size();
+            V* last = &vertices.at(size_ll-1);
+
+            for(auto& vertex: vertices){
+                V* current = &vertex;
+                current->prev = last;
+                last->next = current;
+                last = current;
+            }            
+
+            std::vector<unsigned short> marked_for_removal;
+
+            while(update.size()){
                 
-        //         if(size_ll == 1){
-        //             delete head;
-        //             head = nullptr;
-        //             size_ll = 0;
-        //             break;
-        //         }
+                if(size_ll == 1){
+                    head = nullptr;
+                    marked_for_removal.push_back(0);
+                    size_ll = 0;
+                    break;
+                }
 
-        //         int i = getter(update.size());
-        //         auto it = update.begin()+i;
+                int i = getter(update.size());
+                auto it = update.begin()+i;
                 
 
-        //         V *current = *it;
-        //         update.erase(it);
+                V *current = *it;
+                update.erase(it);
 
-        //         if(std::find(update.begin(), update.end(), current) != update.end())
-        //             continue;
+                if(std::find(update.begin(), update.end(), current) != update.end())
+                    continue;
 
-        //         V *prev = current->prev;
-        //         V *next = current->next;
-        //         bool modified = true;
+                V *prev = current->prev;
+                V *next = current->next;
+                bool modified = true;
 
-        //         if(current->position == prev->position){
-        //             prev->angle_start = current->angle_start;
-        //             prev->update_opening();
-
-        //         } else if(current->position == next->position){
-        //             next->angle_end = current->angle_end;
-        //             next->update_opening();
+                if(current->position == prev->position){
+                    prev->angle_start = current->angle_start;
+                    prev->update_opening();
 
 
-        //         } else if(current->angle_opening.is_zero()){
+                } else if(current->position == next->position){
+                    next->angle_end = current->angle_end;
+                    next->update_opening();
 
-        //             // Check which neighbour is closest
-        //             Poin vec_prev = current->position - prev->position;
-        //             Num dist_prev2 = vec_prev.get_x()*vec_prev.get_x() + vec_prev.get_y()*vec_prev.get_y();
+                } else if(current->angle_opening.is_zero()){
 
-        //             Poin vec_next = current->position - next->position;
-        //             Num dist_next2 = vec_next.get_x()*vec_next.get_x() + vec_next.get_y()*vec_next.get_y();
+                    // Check which neighbour is closest
+                    Poin vec_prev = current->position - prev->position;
+                    Num dist_prev2 = vec_prev.get_x()*vec_prev.get_x() + vec_prev.get_y()*vec_prev.get_y();
 
-        //             if(dist_prev2 < dist_next2){
-        //                 prev->angle_start = -prev->angle_start;
-        //                 prev->update_opening();
+                    Poin vec_next = current->position - next->position;
+                    Num dist_next2 = vec_next.get_x()*vec_next.get_x() + vec_next.get_y()*vec_next.get_y();
 
-        //             } else {
-        //                 next->angle_end = -next->angle_end;
-        //                 next->update_opening();
-        //             }
-        //         } else if(current->angle_opening.is_180()){
-        //             // Nothing to do in this case
-        //         } else {
-        //             modified = false;
-        //         }
+                    std::cout << "3" << std::flush;
 
-        //         if(modified){
+                    if(dist_prev2 < dist_next2){
+                        prev->angle_start = -prev->angle_start;
+                        prev->update_opening();
 
-        //             next->prev = prev;
-        //             prev->next = next;
-        //             if(current == head){
-        //                 head = current->next;
-        //             }
+                    } else {
+                        next->angle_end = -next->angle_end;
+                        next->update_opening();
+                    }
+                } else if(current->angle_opening.is_180()){
+                    // Nothing to do in this case
+                } else {
+                    modified = false;
+                }
 
-        //             delete current;
-        //             size_ll--;
-        //             update.push_back(next);
-        //             update.push_back(prev);
-        //         }   
-        //     }
+                if(modified){
 
-        // }
+                    next->prev = prev;
+                    prev->next = next;
+                    if(current == head){
+                        head = current->next;
+                    }
+
+                    marked_for_removal.push_back(index_from_pointer(current));
+                    size_ll--;
+                    update.push_back(next);
+                    update.push_back(prev);
+                }
+
+            }
+
+            std::vector<V> new_vertices;
+
+            for (unsigned short index = 0; index < vertices.size(); index++) {
+                if (!(std::find(marked_for_removal.begin(), marked_for_removal.end(), index) != marked_for_removal.end())) {
+                    new_vertices.push_back(vertices.at(index));
+                }
+            }
+            vertices = new_vertices;
+            head = &vertices.at(0);
+
+        }
 
     //     bool is_canonical() const {
     //         // SIMAO
