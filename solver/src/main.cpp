@@ -59,8 +59,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
         exit(1);
     }
 
-    // exit(0);
-
 
     CalcSettings calc_settings("Double", "LLPoly", 
         "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 8);

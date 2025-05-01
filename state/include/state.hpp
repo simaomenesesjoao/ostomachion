@@ -193,8 +193,8 @@ namespace State{
         auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
 
         typename Poly::VertexType* head = poly.get_head();
-        _frame.merge(insertion_vertex, poly, head);
-        _frame.prune_LL({insertion_vertex, head}, getter);
+        auto modified = _frame.merge(insertion_vertex, poly, head);
+        _frame.prune_LL(modified, getter);
         
     }
 
@@ -369,7 +369,7 @@ namespace State{
     using StateGenerator = std::function<std::shared_ptr<IState>(const BarePoly&, const Pool<BarePoly>&, const CalcSettings&)>;
 
     StateGenerator factory(const std::string& name){
-        if(name == "State"){
+        if(name == "LLPoly"){
             return [](const BarePoly& starting_frame, 
                     const Pool<BarePoly>& poly_pool, 
                     const CalcSettings& settings){
@@ -377,7 +377,19 @@ namespace State{
                     using Poly = LLPoly<Float<double>>;
                 return std::make_shared<State<Poly>>(starting_frame, poly_pool, settings);
             };
+
+        } else if(name == "ContigPoly"){
+            return [](const BarePoly& starting_frame, 
+                    const Pool<BarePoly>& poly_pool, 
+                    const CalcSettings& settings){
+
+                    using Poly = ContigPoly<Float<double>>;
+                return std::make_shared<State<Poly>>(starting_frame, poly_pool, settings);
+            };
+
         } else {
+            std::cout << "Unsupported poly type chosen\n";
+            exit(1);
             return [](const BarePoly& starting_frame, 
                     const Pool<BarePoly>& poly_pool, 
                     const CalcSettings& settings){

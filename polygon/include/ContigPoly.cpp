@@ -153,9 +153,15 @@ namespace Polygon {
             
         }
 
-        // void advance_head() {
-        //     head = head->next;
-        // }
+        void advance_head() {
+            // SIMAO: corrigir caso em que não há elementos
+            std::vector<V> new_vertices;
+            for(unsigned int i = 1; i < vertices.size(); i++){
+                new_vertices.push_back(vertices.at(i));
+            }
+            new_vertices.push_back(vertices.at(0));
+            vertices = new_vertices;
+        }
 
         void flip_y(){
             // Flip the polygon along y, but preserve orientation. In practice, 
@@ -684,32 +690,32 @@ namespace Polygon {
 
         // SIMAO: pequeno refactor para aproveitar código de LLPoly aqui. Para agora está tudo repetido
         
-    //     unsigned int get_farthest_node(int center_x, int center_y) const {
-    //         // Get the node farthest from the center. If several nodes have the same distance
-    //         // choose the bottom-most one
-    //         V *current = head;
-    //         V *farthest = head;
-    //         unsigned int index_farthest = 0;
-    //         Num farthest_d{-1};
-    //         for(unsigned i = 0; i < size_ll; i++){
-    //             Num dx = current->position.get_x() - Num(center_x);
-    //             Num dy = current->position.get_y() - Num(center_y);
-    //             Num d = dx*dx + dy*dy;
+        unsigned int get_farthest_node(int center_x, int center_y) const {
+            // Get the node farthest from the center. If several nodes have the same distance
+            // choose the bottom-most one
+            unsigned int size_ll = vertices.size();
+            V *current = head;
+            V *farthest = head;
+            unsigned int index_farthest = 0;
+            Num farthest_d{-1};
+            for(unsigned i = 0; i < size_ll; i++){
+                Num dx = current->position.get_x() - Num(center_x);
+                Num dy = current->position.get_y() - Num(center_y);
+                Num d = dx*dx + dy*dy;
 
-    //             if(d > farthest_d or 
-    //                 (d == farthest_d and 
-    //                 current->position.get_y() < farthest->position.get_y())){
+                if(d > farthest_d or 
+                    (d == farthest_d and 
+                    current->position.get_y() < farthest->position.get_y())){
 
-    //                     farthest = current;
-    //                     index_farthest = i;
-    //                     farthest_d = d;
-    //             }
+                        farthest = current;
+                        index_farthest = i;
+                        farthest_d = d;
+                }
 
-    //             current = current->next;
-    //         }
-    //         return index_farthest;
-            
-    //     }
+                current = current->next;
+            }
+            return index_farthest;
+        }
 
         V* get_head() const {
             return head;
