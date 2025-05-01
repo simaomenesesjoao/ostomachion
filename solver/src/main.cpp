@@ -60,7 +60,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
     }
 
 
-    CalcSettings calc_settings("Double", "LLPoly", 
+    CalcSettings calc_settings("Double", "ContigPoly", 
         "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 8);
     AnalyticsSettings analytics_settings;
 

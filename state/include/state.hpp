@@ -189,9 +189,11 @@ namespace State{
         _history.push_back(std::pair<unsigned short, unsigned short>(poly_index, variation_index));
         _size++;
 
+        
         auto insertion_vertex = _frame.vertex_from_index(node_index);
         auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
 
+        _frame.connect_LL();
         typename Poly::VertexType* head = poly.get_head();
         auto modified = _frame.merge(insertion_vertex, poly, head);
         _frame.prune_LL(modified, getter);

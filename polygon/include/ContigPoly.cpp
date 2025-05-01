@@ -27,7 +27,7 @@ namespace Polygon {
     public:
         using VertexType = V;
 
-        ContigPoly():head{nullptr}, vertices{}, area_positive{false}, LL_active{false}{
+        ContigPoly(): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}{
             vertices.reserve(10);
         };
 
@@ -80,8 +80,9 @@ namespace Polygon {
 
         ContigPoly(ContigPoly const& other_poly):
             head{nullptr},
-            area_positive{other_poly.area_positive},
-            vertices{other_poly.vertices}{
+            vertices{other_poly.vertices},
+            area_positive{other_poly.area_positive}, 
+            LL_active{other_poly.LL_active} {
                 if(vertices.size() > 0)
                     head = &vertices.at(0);
             }
@@ -649,6 +650,11 @@ namespace Polygon {
         V* vertex_from_index(unsigned int index) {
             return &vertices.at(index);
         }
+        
+        const V* vertex_from_index(unsigned int index) const {
+            return &vertices.at(index);
+        }
+
 
         unsigned int get_obtusest_node() const {
             // Get the node with the largest internal opening

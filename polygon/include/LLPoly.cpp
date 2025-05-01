@@ -628,6 +628,15 @@ namespace Polygon {
             return current;
         }
 
+        
+        const V* vertex_from_index(unsigned int index) const {
+            V *current = head;
+            for(unsigned i=0; i<index; i++){
+                current = current->next;
+            }
+            return current;
+        }
+
         unsigned int get_obtusest_node() const {
             // Get the node with the largest internal opening
             V *current = head;
