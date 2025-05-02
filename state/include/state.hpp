@@ -193,7 +193,6 @@ namespace State{
         auto insertion_vertex = _frame.vertex_from_index(node_index);
         auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
 
-        _frame.connect_LL();
         typename Poly::VertexType* head = poly.get_head();
         auto modified = _frame.merge(insertion_vertex, poly, head);
         _frame.prune_LL(modified, getter);
@@ -338,7 +337,15 @@ namespace State{
         
         std::cout << "---- Printing state. Frame:\n";
         _frame.print();
-        std::cout << "current polygons:\n";
+        std::cout << "current polygon ids: ";
+        for(const auto& n: _num_polys){
+            std::cout << n << " ";
+        }
+        std::cout << "\n";
+        for(const auto& pair: _history){
+            std::cout << pair.first << " " << pair.second << " ";
+        }
+        std::cout << "\ncurrent polygons:\n";
         for(const auto& polyrow: _current_polys){
             for(const auto& poly: polyrow)
                 poly.print();
@@ -392,13 +399,6 @@ namespace State{
         } else {
             std::cout << "Unsupported poly type chosen\n";
             exit(1);
-            return [](const BarePoly& starting_frame, 
-                    const Pool<BarePoly>& poly_pool, 
-                    const CalcSettings& settings){
-
-                    using Poly = LLPoly<Float<double>>;
-                return std::make_shared<State<Poly>>(starting_frame, poly_pool, settings);
-            };
         }
     };
 

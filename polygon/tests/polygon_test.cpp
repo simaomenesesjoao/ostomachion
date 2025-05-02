@@ -259,8 +259,6 @@ TEMPLATE_TEST_CASE("Polygon get_obtusest", "-", P1, P2, P3, P4, P5, P6){
     REQUIRE(node3 == poly3.get_head()->next);
 }
 
-
-
 TEMPLATE_TEST_CASE("Polygon get_leftest", "-", P1, P2, P3, P4, P5, P6){
 
     TestType poly1({{0,12}, {12,12}, {0,0}});
@@ -282,3 +280,4 @@ TEMPLATE_TEST_CASE("Polygon get_leftest", "-", P1, P2, P3, P4, P5, P6){
     REQUIRE(node2 == poly2.get_head()->next);
     REQUIRE(node3 == poly3.get_head());
 }
+

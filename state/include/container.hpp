@@ -71,6 +71,7 @@ namespace Container{
         virtual std::optional<T> pop() = 0;
         virtual std::vector<T> get_data() = 0;
         virtual void clear() = 0;
+        virtual unsigned long size() const = 0;
         virtual void print() const = 0;
 
         IContainer(): num_processes{1}, analytics{}{}
@@ -144,7 +145,7 @@ namespace Container{
     
         }
     
-        unsigned long size() const {
+        unsigned long size() const override{
             return container.size();
         }
     

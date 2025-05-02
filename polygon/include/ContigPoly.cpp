@@ -73,6 +73,7 @@ namespace Polygon {
                 vertices.push_back(first);
             }
 
+            connect_LL();
             head = &vertices.at(0); // SIMAO: garantir que head é actualizado depois de merge e prune
             
         }
@@ -85,6 +86,7 @@ namespace Polygon {
             LL_active{other_poly.LL_active} {
                 if(vertices.size() > 0)
                     head = &vertices.at(0);
+                connect_LL();
             }
 
 
@@ -98,6 +100,7 @@ namespace Polygon {
             if(vertices.size() > 0)
                 head = &vertices.at(0);
 
+            connect_LL();
             return *this;
         }
 
@@ -205,11 +208,19 @@ namespace Polygon {
             unsigned int N1 = vertices.size();
             unsigned int N2 = other_vertices.size();
 
+
+            std::cout << "before angle update\n";
+            print();
+
             // Update the angles;
             this_node->angle_end = -other_vertices.at((this_index-1+N2)%N2).angle_start;
             other_node->angle_end = -vertices.at((other_index-1+N1)%N1).angle_start;
             this_node->update_opening();
             other_node->update_opening();
+
+
+            std::cout << "after angle update\n";
+            print();
 
             std::vector<V> new_vertices;
             
@@ -232,6 +243,8 @@ namespace Polygon {
             // SIMAO: melhorar transferencia de memoria. Acho que consigo fazer isto in place?
             vertices = new_vertices;
             head = &vertices.at(0);
+            connect_LL();
+            print();
 
             return {&vertices.at(this_index), &vertices.at((this_index + N1)%(N1+N2))};
 
@@ -240,8 +253,12 @@ namespace Polygon {
         void connect_LL(){
             // Iterates over the vertices and connects them in a linked-list. This is required
             // before running any algorithm that uses linked-lists
+            
 
             unsigned int size_ll = vertices.size();
+            if(size_ll == 0)
+                return;
+
             V* last = &vertices.at(size_ll-1);
 
             for(auto& vertex: vertices){
@@ -259,11 +276,15 @@ namespace Polygon {
             // can be removed. It may happen that all points are removed, in
             // which case the head becomes a nullptr
 
-            // set the linked list from vector
             unsigned int size_ll = vertices.size();
-            connect_LL();
             
-
+            std::cout << "before prune\n";
+            print();
+            connect_LL();
+            for(auto& vertex: vertices)
+                std::cout << &vertex << " " << vertex.next << " " << vertex.prev << "\n";
+            std::cout << "\n";
+            
             std::vector<unsigned short> marked_for_removal;
 
             while(update.size()){
@@ -341,7 +362,6 @@ namespace Polygon {
                     update.push_back(next);
                     update.push_back(prev);
                 }
-
             }
 
             std::vector<V> new_vertices;
@@ -356,6 +376,11 @@ namespace Polygon {
             head = nullptr;
             if(vertices.size() > 0)
                 head = &vertices.at(0);
+
+            connect_LL();
+            
+            std::cout << "after prune\n";
+            print();
 
         }
 

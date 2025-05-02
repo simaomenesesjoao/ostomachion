@@ -59,9 +59,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
         exit(1);
     }
 
-
     CalcSettings calc_settings("Double", "ContigPoly", 
-        "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 8);
+        "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 1);
     AnalyticsSettings analytics_settings;
 
     auto [states, analytics] = get_combinations(*input, calc_settings, analytics_settings);

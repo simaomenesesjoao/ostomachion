@@ -59,6 +59,7 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
             
             while(true){
                 auto state = container->pop();
+                (*state)->print();
                 if(!state)
                     break;
                 auto next_states = (*state)->find_next_states(analytics_thread.branch("find_next_states"));
