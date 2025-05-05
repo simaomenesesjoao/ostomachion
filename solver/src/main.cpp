@@ -52,15 +52,28 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
     // signal(SIGSEGV, crash_handler); // handle segmentation fault
     
+    std::string poly_type = "ContigPoly"; 
+    std::string puzzle_type = "Ostotiny";
+    unsigned int num_threads = 1;
+    if (argc > 3) {
+        poly_type = argv[1];
+        puzzle_type = argv[2];
+        num_threads = atoi(argv[3]);
+
+    } else {
+        std::cout << "Input not valid.\n";
+        // exit(1);
+    }
+
     // Outer-level function: set input, receive number of combinations
-    auto input = Input::get_premade_input("Ostomed");
+    auto input = Input::get_premade_input(puzzle_type);
     if(not input){
         std::cout << "Input not valid\n";
         exit(1);
     }
 
-    CalcSettings calc_settings("Double", "ContigPoly", 
-        "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, 1);
+    CalcSettings calc_settings("Double", poly_type, 
+        "Stack", "complete", "leftest", Polygon::Transformations::RotFlip, num_threads);
     AnalyticsSettings analytics_settings;
 
     auto [states, analytics] = get_combinations(*input, calc_settings, analytics_settings);

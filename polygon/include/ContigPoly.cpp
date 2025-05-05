@@ -23,17 +23,18 @@ namespace Polygon {
         std::vector<V> vertices;
         bool area_positive;
         bool LL_active;
+        unsigned int size_ll;
 
     public:
         using VertexType = V;
 
-        ContigPoly(): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}{
+        ContigPoly(): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}, size_ll{0}{
             vertices.reserve(10);
         };
 
         ContigPoly(const BarePoly& poly):ContigPoly{poly.point_list}{};
 
-        ContigPoly(const std::vector<std::vector<int>>& points): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}{
+        ContigPoly(const std::vector<std::vector<int>>& points): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}, size_ll{0}{
             // Turn the list of points into nodes, set them as the vertices of 
             // the polygon and calculate the angles between them
 
@@ -73,6 +74,7 @@ namespace Polygon {
                 vertices.push_back(first);
             }
 
+            size_ll = vertices.size();
             connect_LL();
             head = &vertices.at(0); // SIMAO: garantir que head é actualizado depois de merge e prune
             
@@ -83,10 +85,39 @@ namespace Polygon {
             head{nullptr},
             vertices{other_poly.vertices},
             area_positive{other_poly.area_positive}, 
-            LL_active{other_poly.LL_active} {
+            LL_active{other_poly.LL_active},
+            size_ll{other_poly.size_ll} {
                 if(vertices.size() > 0)
                     head = &vertices.at(0);
                 connect_LL();
+            }
+
+
+
+        ContigPoly(ContigPoly && other_poly):
+            head{other_poly.head},
+            vertices{std::move(other_poly.vertices)},
+            area_positive{other_poly.area_positive}, 
+            LL_active{other_poly.LL_active},
+            size_ll{other_poly.size_ll}{}
+
+            
+
+
+        ContigPoly(ContigPoly const& other_poly, unsigned int preallocate):
+            head{nullptr},
+            vertices{},
+            area_positive{other_poly.area_positive}, 
+            LL_active{other_poly.LL_active},
+            size_ll{other_poly.size_ll} {
+                vertices.reserve(preallocate);
+                vertices = other_poly.vertices;
+                
+                if(vertices.size() > 0)
+                    head = &vertices.at(0);
+
+                connect_LL();
+                
             }
 
 
@@ -96,12 +127,31 @@ namespace Polygon {
 
             head = nullptr;
             area_positive = other.area_positive;
+            size_ll = other.size_ll;
             vertices = other.vertices;
             if(vertices.size() > 0)
                 head = &vertices.at(0);
 
+            
             connect_LL();
             return *this;
+        }
+        
+
+        ContigPoly& operator=(ContigPoly&& other){
+            if(&other == this)
+                return *this;
+
+            head = other.head;
+            area_positive = other.area_positive;
+            size_ll = other.size_ll;
+            vertices = std::move(other.vertices);
+            
+            return *this;
+        }
+        
+        void toggle_area_sign(){
+            area_positive = !area_positive;
         }
 
         Num get_area(){
@@ -116,7 +166,8 @@ namespace Polygon {
 
         void translate(Poin const& dr){
             
-            for(auto& vertex: vertices){
+            for(unsigned int i = 0; i < vertices.size(); i++){
+                V& vertex = vertices.at(i);
                 vertex.position = vertex.position + dr;
             }
 
@@ -125,17 +176,18 @@ namespace Polygon {
         void rotate(Ang const& angle, Poin const& rot_center){
             // Rotate the polygon by angle around the rotation center
 
-            for(auto& vertex: vertices){
+            for(unsigned int i = 0; i < vertices.size(); i++){
+                V& vertex = vertices.at(i);
                 vertex.angle_end = vertex.angle_end + angle;
                 vertex.angle_start = vertex.angle_start + angle;
                 vertex.position = rot_center + (vertex.position - rot_center).rotate(angle);
             }
         }
 
-        ContigPoly copy_into(const V& vertex) const {
+        ContigPoly copy_into(const V& vertex, unsigned int preallocate) const {
             // Copies the polygon into the specified vertex position
 
-            ContigPoly poly2(*this);
+            ContigPoly poly2(*this, preallocate);
             poly2.translate(vertex.position - head->position);
             poly2.rotate(vertex.angle_start - head->angle_end, vertex.position);
             return poly2;
@@ -180,82 +232,100 @@ namespace Polygon {
             std::reverse(vertices.begin(), vertices.end());
         }
 
-        unsigned int index_from_pointer(V* pointer){
+        // unsigned int index_from_pointer(V* pointer){
 
-            for(unsigned int i = 0; i < vertices.size(); i++)
-                if(&vertices.at(i) == pointer)
-                    return i;
+        //     for(unsigned int i = 0; i < vertices.size(); i++)
+        //         if(&vertices.at(i) == pointer)
+        //             return i;
 
-            assert(false); // SIMAO: implementar exceptions
-        }
+        //     assert(false); // SIMAO: implementar exceptions
+        // }
 
         std::vector<V>& get_vertices() {
             return vertices;
         }
 
+        const std::vector<V>& get_vertices() const {
+            return vertices;
+        }
+
+
+
         std::vector<V*> merge(V *this_node, ContigPoly & other_poly, V *other_node){
-            unsigned int this_index = index_from_pointer(this_node);
-            unsigned int other_index = other_poly.index_from_pointer(other_node);
 
+            size_ll += other_poly.size_ll;
+
+            // Connect the two linked lists
+            V *temp = other_node->prev;
             
-            // std::cout << "indices: " << this_index << " " << other_index << "\n";
-            // std::cout << "vertices:\n";
-            // this_node->print();
-            // other_node->print();
-            // std::cout << "done\n";
+            other_node->prev = this_node->prev;
+            other_node->prev->next = other_node;
 
-            std::vector<V>& other_vertices = other_poly.get_vertices();
-            unsigned int N1 = vertices.size();
-            unsigned int N2 = other_vertices.size();
+            this_node->prev = temp;
+            this_node->prev->next = this_node;
 
+            // Delete the linked list from one of the polygons to 
+            // avoid deleting twice in the destructor
+            other_poly.head = nullptr;
 
-            std::cout << "before angle update\n";
-            print();
+            // Update the angles
+            this_node->angle_end = -this_node->prev->angle_start;
+            other_node->angle_end = -other_node->prev->angle_start;
 
-            // Update the angles;
-            this_node->angle_end = -other_vertices.at((this_index-1+N2)%N2).angle_start;
-            other_node->angle_end = -vertices.at((other_index-1+N1)%N1).angle_start;
             this_node->update_opening();
             other_node->update_opening();
 
-
-            std::cout << "after angle update\n";
-            print();
-
-            std::vector<V> new_vertices;
-            
-            for(unsigned int i = this_index; i < N1; i++){
-                new_vertices.push_back(vertices.at(i));
-            }
-
-            for(unsigned int i = other_index; i < N2; i++){
-                new_vertices.push_back(other_vertices.at(i));
-            }
-
-            for(unsigned int i = 0; i < other_index; i++){
-                new_vertices.push_back(other_vertices.at(i));
-            }
-            
-            for(unsigned int i = 0; i < this_index; i++){
-                new_vertices.push_back(vertices.at(i));
-            }
-
-            // SIMAO: melhorar transferencia de memoria. Acho que consigo fazer isto in place?
-            vertices = new_vertices;
-            head = &vertices.at(0);
-            connect_LL();
-            print();
-
-            return {&vertices.at(this_index), &vertices.at((this_index + N1)%(N1+N2))};
+            return {this_node, other_node};
 
         }
 
-        void connect_LL(){
-            // Iterates over the vertices and connects them in a linked-list. This is required
-            // before running any algorithm that uses linked-lists
+
+        std::vector<V*> copy_merge(const ContigPoly & other_poly, unsigned int anchor_index){
+
+            V* current = other_poly.head;
+            for(unsigned int i = 0; i < other_poly.size_ll; i++){
+                vertices.emplace_back(*current);         
+                current = current->next;
+            }
+
+            for(unsigned int i = 0; i < other_poly.size_ll; i++){
+                unsigned int j = i + size_ll;
+                vertices.at(j).next = &vertices.at(size_ll + (i + 1)%other_poly.size_ll);
+                vertices.at(j).prev = &vertices.at(size_ll + (i - 1 + other_poly.size_ll)%other_poly.size_ll);
+            }
+
+            V* other_node = &vertices.at(size_ll + anchor_index);
+            // V* other_node = vertex_from_index(anchor_index);
+            V* this_node = head;
+            
             
 
-            unsigned int size_ll = vertices.size();
+            size_ll += other_poly.size_ll;
+
+            // Connect the two linked lists
+            V *temp = other_node->prev;
+            
+            other_node->prev = this_node->prev;
+            other_node->prev->next = other_node;
+
+            this_node->prev = temp;
+            this_node->prev->next = this_node;
+
+            // Update the angles
+            this_node->angle_end = -this_node->prev->angle_start;
+            other_node->angle_end = -other_node->prev->angle_start;
+
+            this_node->update_opening();
+            other_node->update_opening();
+
+            return {this_node, other_node};
+
+        }
+
+
+        void connect_LL(){
+            // Iterates over the vertices and connects them in a linked-list
+
             if(size_ll == 0)
                 return;
 
@@ -276,25 +346,33 @@ namespace Polygon {
             // can be removed. It may happen that all points are removed, in
             // which case the head becomes a nullptr
 
-            unsigned int size_ll = vertices.size();
+            // std::cout << "Entered pruneLL\n" << std::flush;
+            // std::cout << "size ll: " << size_ll << "\n";
+            // std::cout << "pointers that will be updated\n";
+            // for(auto& v: update){
+            //     std::cout << v << "\n";
+            // }
             
-            std::cout << "before prune\n";
-            print();
-            connect_LL();
-            for(auto& vertex: vertices)
-                std::cout << &vertex << " " << vertex.next << " " << vertex.prev << "\n";
-            std::cout << "\n";
+            // std::cout << "vertices\n";
+            // for(auto& vertex: vertices){
+            //     std::cout << &vertex << " " << vertex.next << " " << vertex.prev << " ";
+            //     vertex.print();
+            // }
+            // std::cout << "\n";
+
+
+            // std::cout << "linked list\n";
+            // V* c = head;
+            // for(unsigned int i = 0; i < size_ll; i++){
+            //     c->print();
+            //     c = c->next;
+            // }
+            // std::cout << "\n";
             
-            std::vector<unsigned short> marked_for_removal;
 
             while(update.size()){
                 
                 if(size_ll == 1){
-                    // std::cout << "-Mrking for removal " << index_from_pointer(head) << " ";
-                    // head->print();
-                    
-                    
-                    marked_for_removal.push_back(index_from_pointer(head));
                     head = nullptr;
                     size_ll = 0;
                     break;
@@ -354,33 +432,53 @@ namespace Polygon {
                         head = current->next;
                     }
 
-                    marked_for_removal.push_back(index_from_pointer(current));
-                    // std::cout << "marking for removal " << index_from_pointer(current) << " ";
-                    // current->print();
-
                     size_ll--;
                     update.push_back(next);
                     update.push_back(prev);
                 }
             }
 
-            std::vector<V> new_vertices;
-
-            for (unsigned short index = 0; index < vertices.size(); index++) {
-                if (!(std::find(marked_for_removal.begin(), marked_for_removal.end(), index) != marked_for_removal.end())) {
-                    new_vertices.push_back(vertices.at(index));
-                    
-                }
-            }
-            vertices = new_vertices;
-            head = nullptr;
-            if(vertices.size() > 0)
-                head = &vertices.at(0);
-
-            connect_LL();
+            // std::vector<V> new_vertices;
+            // new_vertices.reserve(size_ll);
             
-            std::cout << "after prune\n";
-            print();
+            // V* current = head;
+            // for(unsigned int i = 0; i < size_ll; i++){
+            //     new_vertices.push_back(*current);
+            //     current = current->next;
+            // }
+
+            // vertices = new_vertices;
+            // connect_LL();
+            // if(vertices.size() > 0)
+            //     head = &vertices.at(0);
+
+
+
+            // std::cout << "After prune\n";
+            // std::cout << "size ll: " << size_ll << "\n";
+            // std::cout << "head: " << head <<  "\n";
+            // for(auto& v: update){
+            //     std::cout << v << "\n";
+            // }
+            
+            // std::cout << "vertices\n";
+            // for(auto& vertex: vertices){
+            //     std::cout << &vertex << " " << vertex.next << " " << vertex.prev << " ";
+            //     vertex.print();
+            // }
+            // std::cout << "\n";
+
+            // std::cout << "linked list\n";
+            // std::cout << "head: " << head << "\n";
+            // c = head;
+            // for(unsigned int i = 0; i < size_ll; i++){
+            //     c->print();
+            //     c = c->next;
+            // }
+            // std::cout << "Finished prune\n\n";
+            
+            // std::cout << "after prune\n";
+            // print();
 
         }
 
@@ -415,7 +513,6 @@ namespace Polygon {
 
             // The polygons might be identical even though the heads are different
             unsigned int index = 0;
-            unsigned int size_ll = vertices.size();
             for(unsigned int i = 0; i < size_ll; i++){
 
                 if(vertices.at(i).position == other_poly.vertices.at(0).position){
@@ -458,7 +555,6 @@ namespace Polygon {
             // Returns false if it lies on the border or on a vertex
             // Check if the point P is part of a vertex or edge
 
-            unsigned int size_ll = vertices.size();
             
             {           
                 V *current = head;
@@ -512,7 +608,6 @@ namespace Polygon {
 
         bool edge_edge_intersection(const ContigPoly& other) const {
             V *current{head};
-            unsigned int size_ll = vertices.size();
             unsigned int other_size_ll = other.vertices.size();
 
             // Check for edge-edge intersections
@@ -541,7 +636,6 @@ namespace Polygon {
         bool edge_node_intersection(const ContigPoly& other) const{
             // Check if an edge of 'this' polygon intersects a vertex of the 'other'
 
-            unsigned int size_ll = vertices.size();
             unsigned int other_size_ll = other.vertices.size();
 
             V *current{head};
@@ -568,7 +662,6 @@ namespace Polygon {
 
         bool node_node_intersection(const ContigPoly& other) const{
 
-            unsigned int size_ll = vertices.size();
             unsigned int other_size_ll = other.vertices.size();
             V *A{head};
             for(unsigned i=0; i<size_ll; i++){
@@ -592,7 +685,6 @@ namespace Polygon {
         bool points_inside(const ContigPoly& other) const {
             // Checks if any vertex from polygon 'other' is inside this polygon
 
-            unsigned int size_ll = vertices.size();
             V *current{other.head};
             for(unsigned i=0; i<size_ll; i++){
                 if(is_point_inside(current->position)){
@@ -673,34 +765,44 @@ namespace Polygon {
         }
 
         V* vertex_from_index(unsigned int index) {
-            return &vertices.at(index);
-        }
-        
-        const V* vertex_from_index(unsigned int index) const {
-            return &vertices.at(index);
+            V *current = head;
+            for(unsigned i=0; i<index; i++){
+                current = current->next;
+            }
+            return current;
         }
 
+        
+        const V* vertex_from_index(unsigned int index) const {
+            V *current = head;
+            for(unsigned i=0; i<index; i++){
+                current = current->next;
+            }
+            return current;
+        }
 
         unsigned int get_obtusest_node() const {
             // Get the node with the largest internal opening
             
-            const V *largest = head;
-            unsigned index_largest = 0;
-            unsigned int size_ll = vertices.size();
+            // const V *largest = head;
+            // unsigned index_largest = 0;
+            
 
-            for(unsigned i = 0; i < size_ll; i++){
-                const V* current = &vertices.at(i);
-                if(largest->angle_opening < current->angle_opening){
-                    largest = current;
-                    index_largest = i;
-                }
-            }
-            return index_largest;
+            // for(unsigned i = 0; i < size_ll; i++){
+            //     const V* current = &vertices.at(i);
+            //     if(largest->angle_opening < current->angle_opening){
+            //         largest = current;
+            //         index_largest = i;
+            //     }
+            // }
+            // return index_largest;
+            return 24346; // SIMAO fix
         }
 
         unsigned get_leftest_node() const {
             // Get the left-most node, then bottom-most
-            unsigned int size_ll = vertices.size();
+            // std::cout << "entered leftest\n";
+            
             V *current = head;
             V *leftest = head;
             unsigned index_leftest = 0;
@@ -715,6 +817,7 @@ namespace Polygon {
 
                 current = current->next;
             }
+            // std::cout << "exited leftest\n";
             return index_leftest;
             
         }
@@ -724,7 +827,7 @@ namespace Polygon {
         unsigned int get_farthest_node(int center_x, int center_y) const {
             // Get the node farthest from the center. If several nodes have the same distance
             // choose the bottom-most one
-            unsigned int size_ll = vertices.size();
+            
             V *current = head;
             V *farthest = head;
             unsigned int index_farthest = 0;
@@ -753,7 +856,7 @@ namespace Polygon {
         }
 
         unsigned int size() const {
-            return vertices.size();
+            return size_ll;
         }
 
     //     std::vector<std::vector<double>> as_vector() const {

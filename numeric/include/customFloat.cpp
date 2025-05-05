@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cmath>
 
+#define tol 1e-6
+
 template <typename T>
 class Float{
     
@@ -152,7 +154,6 @@ public:
 
 private:
     T x;
-    T tol = 1e-6;
 };
 
 template <typename T, int... Ints>

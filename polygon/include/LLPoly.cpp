@@ -83,6 +83,7 @@ namespace Polygon {
         }
 
 
+
         void build_this(const LLPoly& other_poly){
 
             area_positive = other_poly.area_positive;
@@ -127,6 +128,10 @@ namespace Polygon {
             delete_this();
         }
 
+        void toggle_area_sign(){
+            area_positive = !area_positive;
+        }
+
 
 
         LLPoly& operator=(LLPoly const& other){
@@ -135,6 +140,31 @@ namespace Polygon {
 
             delete_this();
             build_this(other);
+            return *this;
+        }
+
+        LLPoly(LLPoly&& other):
+            head{other.head}, 
+            size_ll{other.size_ll}, 
+            area_positive{other.area_positive}{
+        
+            other.head = nullptr;
+            other.size_ll = 0;
+        
+        }
+
+        LLPoly& operator=(LLPoly&& other){
+            if(this != &other){
+                delete_this();
+
+                head = other.head;
+                size_ll = other.size_ll;
+                area_positive = other.area_positive;
+
+                other.head = nullptr;
+                other.size_ll = 0;
+        
+            }
             return *this;
         }
 
@@ -171,7 +201,7 @@ namespace Polygon {
             }
         }
 
-        LLPoly copy_into(const V& vertex) const {
+        LLPoly copy_into(const V& vertex, unsigned int) const {
             // Copies the polygon into the specified vertex position
 
             LLPoly poly2(*this);
@@ -228,6 +258,42 @@ namespace Polygon {
             }   
         }
 
+
+        std::vector<V*> copy_merge(const LLPoly & other_poly, unsigned int anchor_index){
+            
+            LLPoly new_poly = other_poly;
+
+            V* this_node = head;
+            V* other_node = new_poly.vertex_from_index(anchor_index);
+
+            // Connect the two linked lists
+            V *temp = other_node->prev;
+            
+            other_node->prev = this_node->prev;
+            other_node->prev->next = other_node;
+
+            this_node->prev = temp;
+            this_node->prev->next = this_node;
+
+            // Delete the linked list from one of the polygons to 
+            // avoid deleting twice in the destructor
+            unsigned new_size = new_poly.size_ll + this->size_ll;
+            this->size_ll = new_size;
+            new_poly.size_ll = 0;
+            new_poly.head = nullptr;
+
+            // Update the angles
+            this_node->angle_end = -this_node->prev->angle_start;
+            other_node->angle_end = -other_node->prev->angle_start;
+
+            this_node->update_opening();
+            other_node->update_opening();
+        
+            
+            return {this_node, other_node};
+        }
+
+
         std::vector<V*> merge(V *this_node, LLPoly & other_poly, V *other_node){
 
             // Connect the two linked lists
@@ -261,6 +327,16 @@ namespace Polygon {
             // an opening angle of 0. This is repeated until no more points
             // can be removed. It may happen that all points are removed, in
             // which case the head becomes a nullptr
+
+
+            // std::cout << "Entering prune\nsize_ll: " << size_ll << "\n"; 
+            // print();
+            // V* c = head;
+            // for(unsigned int i = 0; i < size_ll; i++){
+            //     std::cout << c << " " << c->prev << " " << c->next << " " << c->position.get_x() << " " << c->position.get_y() << "\n";
+            //     c = c->next;
+            // }
+
 
             while(update.size()){
                 
@@ -338,7 +414,22 @@ namespace Polygon {
                     update.push_back(prev);
                 }   
             }
+            // std::cout << "Left prune\nsize_ll: " << size_ll << "\n"; 
+            // print();
+            // c = head;
+            // for(unsigned int i = 0; i < size_ll; i++){
+            //     std::cout << c << " " << c->prev << " " << c->next << " " << c->position.get_x() << " " << c->position.get_y() << "\n";
+            //     c = c->next;
+            // }
 
+        }
+
+        std::vector<V> get_vertices() {
+            return {*head};
+        }
+
+        const std::vector<V>& get_vertices() const {
+            return {*head};
         }
 
         bool is_canonical() const {
@@ -596,8 +687,27 @@ namespace Polygon {
         }
 
         bool overlaps(const LLPoly& other) const{
+            // std::cout << "inside overlaps\n";
+            
             if(head==nullptr or other.head == nullptr)
                 return false;
+
+            // std::cout << "overlaps\nsize_ll: " << size_ll << "\n"; 
+            // print();
+            // V* c = head;
+            // for(unsigned int i = 0; i < size_ll; i++){
+            //     std::cout << c << " " << c->prev << " " << c->next << " " << c->position.get_x() << " " << c->position.get_y() << "\n";
+            //     c = c->next;
+            // }
+
+
+            // std::cout << "overlaps\nsize_ll: " << other.size_ll << "\n"; 
+            // other.print();
+            // c = other.head;
+            // for(unsigned int i = 0; i < other.size_ll; i++){
+            //     std::cout << c << " " << c->prev << " " << c->next << " " << c->position.get_x() << " " << c->position.get_y() << "\n";
+            //     c = c->next;
+            // }
 
             // bool cond1 = edge_edge_intersection(other);
             // bool cond2 = node_node_intersection(other);
@@ -615,9 +725,11 @@ namespace Polygon {
             // return cond1 or cond2 or cond3 or cond4 or cond5 or cond6;
 
             // return edge_edge_intersection(other);
-            return edge_edge_intersection(other) or node_node_intersection(other) 
+            bool has_overlap = edge_edge_intersection(other) or node_node_intersection(other) 
             or edge_node_intersection(other) or other.edge_node_intersection(*this) 
                 or points_inside(other) or other.points_inside(*this);
+            // std::cout << "left overlaps\n";
+            return has_overlap;
         }
 
         V* vertex_from_index(unsigned int index) {

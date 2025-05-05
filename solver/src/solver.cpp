@@ -58,10 +58,13 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
             AnalyticsThread& analytics_thread = analytics.at(i);
             
             while(true){
+                
+                // std::cout << "--- container size: " << container->size() << "\n";
                 auto state = container->pop();
-                (*state)->print();
+                
                 if(!state)
                     break;
+                // (*state)->print();
                 auto next_states = (*state)->find_next_states(analytics_thread.branch("find_next_states"));
                 // SIMAO: container não tem nada que saber se o estado está 
                 // finalizado ou não. essa lógica pode ser passada para aqui
@@ -81,13 +84,14 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
     analytics.at(0).summary();
 
 
-    std::cout << "total states: " << container->get_data().size() << "\n";
+    unsigned int total_states = container->get_data().size();
     for(auto& state: container->get_data()){
         state->activate_history(input.frame, *PolyPoolPtr, settings);
-        // state->print();
     }
 
     auto uniques = find_uniques_brute(container->get_data(), settings.transformation);
+    
+    std::cout << "total states: " << total_states << "\n";
     std::cout << "total unique: " << uniques.size() << "\n";
 
     return {uniques, container->get_analytics()};
