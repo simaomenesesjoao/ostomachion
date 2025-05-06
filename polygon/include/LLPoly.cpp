@@ -25,8 +25,9 @@ namespace Polygon {
     public:
         using VertexType = V;
 
-        LLPoly():head{nullptr}, size_ll{0}{};
 
+        LLPoly():head{nullptr}, size_ll{0}, area_positive{false}{};
+        LLPoly(unsigned int):LLPoly(){};
         LLPoly(const BarePoly& poly):LLPoly{poly.point_list}{};
 
         LLPoly(const std::vector<std::vector<int>>& points): head{nullptr}, size_ll{0}, area_positive{false}{
@@ -208,6 +209,14 @@ namespace Polygon {
             poly2.translate(vertex.position - head->position);
             poly2.rotate(vertex.angle_start - head->angle_end, vertex.position);
             return poly2;
+        }
+
+
+        void move_into(const V& vertex) {
+            // Moves the polygon into the specified vertex position
+
+            translate(vertex.position - head->position);
+            rotate(vertex.angle_start - head->angle_end, vertex.position);
         }
 
 

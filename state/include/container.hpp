@@ -89,15 +89,13 @@ namespace Container{
     class Stack : public IContainer<T> {
     private:
         std::list<T> container;
-        std::list<T> final_container;
     
     public:
         static std::string name;
         
         Stack(){}
         Stack(Stack&& other):
-            container{std::move(other.container)},
-            final_container{std::move(other.final_container)}{}
+            container{std::move(other.container)}{}
 
         void print() const override {
             std::cout << "Printing container\n";
@@ -116,22 +114,11 @@ namespace Container{
     
             for(auto& state: states){            
     
-                if(state->finalized()){
-                    // std::cout << "Added to final\n";
-    
-                    auto p1 = std::chrono::high_resolution_clock::now();
-                    final_container.push_back(state);
-                    auto p2 = std::chrono::high_resolution_clock::now();
-                    this->analytics.d1 += p2-p1;
-                    this->analytics.count1++;
-                } else {
-                    // std::cout << "not final\n";
-                    auto p1 = std::chrono::high_resolution_clock::now();
-                    container.push_back(state);
-                    auto p2 = std::chrono::high_resolution_clock::now();
-                    this->analytics.d2 += p2-p1;
-                    this->analytics.count2++;
-                }
+                auto p1 = std::chrono::high_resolution_clock::now();
+                container.push_back(state);
+                auto p2 = std::chrono::high_resolution_clock::now();
+                this->analytics.d2 += p2-p1;
+                this->analytics.count2++;
             }
     
             this->num_processes--;
@@ -177,7 +164,7 @@ namespace Container{
         }
     
         std::vector<T> get_data()  {
-            return std::vector<T>(final_container.begin(), final_container.end());
+            return std::vector<T>(container.begin(), container.end());
         }
     
         void clear() override {
@@ -202,15 +189,13 @@ namespace Container{
         
         std::unordered_set<T, HashStruct> visited;
         std::list<T> container;
-        std::list<T> final_container;
 
     public:
         static std::string name;
         
         Hash(){};
         Hash(Hash&& other):
-            container{std::move(other.container)},
-            final_container{std::move(other.final_container)}{}
+            container{std::move(other.container)}{}
 
         void insert(std::vector<T>& states) override {
             auto s1 = std::chrono::high_resolution_clock::now();
@@ -224,11 +209,7 @@ namespace Container{
                 
                 if(is_new_state){
                     count++;
-                    if(state.size() == T::element_type::In::get_max_size()){
-                        final_container.push_back(std::move(state));
-                    } else {
-                        container.push_back(std::move(state));
-                    }
+                    container.push_back(std::move(state));
                 }
             }
 
@@ -273,8 +254,8 @@ namespace Container{
             return state;
         }
 
-        std::vector<T> get_solutions() override{
-            return std::vector<T>(final_container.begin(), final_container.end());
+        std::vector<T> get_data() override{
+            return std::vector<T>(container.begin(), container.end());
         }
 
         void clear() override {
@@ -307,7 +288,7 @@ namespace Container{
         };
 
         std::unordered_set<T, HashStruct, EqualStruct> container_in, container_out;
-        std::list<T> final_container;
+        
 
     public:
         static std::string name;
@@ -316,8 +297,7 @@ namespace Container{
 
         HashLevel(HashLevel&& other):
             container_in{std::move(other.container_in)},
-            container_out{std::move(other.container_out)},
-            final_container{std::move(other.final_container)}{}
+            container_out{std::move(other.container_out)}{}
 
         void insert(std::vector<T>& states) override {
             auto s1 = std::chrono::high_resolution_clock::now();
@@ -330,9 +310,6 @@ namespace Container{
                 auto [it, success] = container_out.insert(state);
                 if(success){
                     count++;
-
-                    if(state->size() == T::element_type::In::get_max_size())
-                        final_container.push_back(state);
                 }
             }
 
@@ -387,8 +364,9 @@ namespace Container{
             return state;
         }
 
-        std::vector<T> get_solutions() override{
-            return std::vector<T>(final_container.begin(), final_container.end());
+        std::vector<T> get_data() override{
+            return std::vector<T>(container_out.begin(), container_out.end()); // SIMAO: provavelmente está errado. uso in ou out?
+            
         }
 
         void clear() override {

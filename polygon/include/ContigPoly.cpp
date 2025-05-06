@@ -28,13 +28,31 @@ namespace Polygon {
     public:
         using VertexType = V;
 
-        ContigPoly(): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}, size_ll{0}{
-            vertices.reserve(10);
-        };
+        ContigPoly(): 
+            head{nullptr}, 
+            vertices{}, 
+            area_positive{false},
+            LL_active{false}, 
+            size_ll{0}{}
 
-        ContigPoly(const BarePoly& poly):ContigPoly{poly.point_list}{};
+        ContigPoly(unsigned int preallocate):
+            head{nullptr}, 
+            vertices{}, 
+            area_positive{false},
+            LL_active{false}, 
+            size_ll{0}{
+            vertices.reserve(preallocate);
+        }
 
-        ContigPoly(const std::vector<std::vector<int>>& points): head{nullptr}, vertices{}, area_positive{false}, LL_active{false}, size_ll{0}{
+        ContigPoly(const BarePoly& poly):
+            ContigPoly{poly.point_list}{};
+
+        ContigPoly(const std::vector<std::vector<int>>& points): 
+            head{nullptr}, 
+            vertices{}, 
+            area_positive{false}, 
+            LL_active{false}, 
+            size_ll{0}{
             // Turn the list of points into nodes, set them as the vertices of 
             // the polygon and calculate the angles between them
 
@@ -191,6 +209,14 @@ namespace Polygon {
             poly2.translate(vertex.position - head->position);
             poly2.rotate(vertex.angle_start - head->angle_end, vertex.position);
             return poly2;
+        }
+
+
+        void move_into(const V& vertex) {
+            // Moves the polygon into the specified vertex position
+
+            translate(vertex.position - head->position);
+            rotate(vertex.angle_start - head->angle_end, vertex.position);
         }
 
 

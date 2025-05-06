@@ -10,3 +10,5 @@ ex:
 - build/main ContigPoly Ostomachion 8
 
 With 8 threads, this program finds the correct solution in 3 minutes 20 seconds on my laptop.
+
+I noticed that the program spends a long time doing memory allocations and deallocations, so I want to preallocate everything when using ContigPoly.

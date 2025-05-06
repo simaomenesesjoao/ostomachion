@@ -30,63 +30,74 @@ std::vector<std::shared_ptr<State::IState>> find_uniques_brute(
     return uniques;
 }
 
-
-
 std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinations(
     const Input::Input& input,
     const CalcSettings& settings,
     [[maybe_unused]] const AnalyticsSettings& analytics_settings){ // SIMAO: implementar
 
-    auto PolyPoolPtr = std::make_shared<Polygon::Pool<Polygon::BarePoly>>(input.polygon_pool);
-    auto first_state = State::factory(settings.poly_type)(input.frame, *PolyPoolPtr, settings);
+    // auto PolyPoolPtr = std::make_shared<Polygon::Pool<Polygon::BarePoly>>(input.polygon_pool);
+    auto state_factory = State::factory(settings.poly_type, input.frame, input.polygon_pool, settings);
     // first_state.iterate(input.initializer); // SIMAO: implementar
 
-    auto container = Container::factory<std::shared_ptr<State::IState>>(settings.container_type);
-    container->insert({first_state});
 
-    std::vector<std::thread> threads;
-    std::vector<AnalyticsThread> analytics;
+    // unsigned int memory_size = 100;
+    // State::MemoryPool memory_pool;
+    // memory_pool.initialize(memory_size, state_factory);
     
 
-    for(unsigned int i=0; i<settings.num_threads; i++){
-        analytics.emplace_back(AnalyticsThread());
-    }
+    auto container = Container::factory<std::shared_ptr<State::IState>>(settings.container_type);
+    // auto first_state = memory_pool.get();
+    // first_state->set_initial_state();
+    // container->insert({first_state});
 
-    for(unsigned int i=0; i<settings.num_threads; i++){
+    // first_state->print();
+    exit(1);
+    std::vector<std::thread> threads;
+    
+    // for(unsigned int i=0; i<settings.num_threads; i++){
         
-        threads.emplace_back([i, &analytics, &container, &settings](){
-            AnalyticsThread& analytics_thread = analytics.at(i);
+    //     threads.emplace_back([i, &memory_pool, &container, &settings](){
+    //         // AnalyticsThread& analytics_thread = analytics.at(i);
             
-            while(true){
+    //         std::vector<std::shared_ptr<State::IState>> finalized;
+    //         while(true){
                 
-                // std::cout << "--- container size: " << container->size() << "\n";
-                auto state = container->pop();
+    //             auto state = container->pop();
                 
-                if(!state)
-                    break;
-                // (*state)->print();
-                auto next_states = (*state)->find_next_states(analytics_thread.branch("find_next_states"));
-                // SIMAO: container não tem nada que saber se o estado está 
-                // finalizado ou não. essa lógica pode ser passada para aqui
-                container->insert(next_states);
-            }
+    //             if(!state)
+    //                 break;
+
+    //             if((*state)->finalized()){
+    //                 finalized.push_back(*state);
+
+    //             } else {
+    //                 auto next_states = (*state)->find_next_states();
+    //                 container->insert(next_states);
+    //                 // SIMAO: será necessário metodo para finalizar State?
+    //                 memory_pool.release(*state); 
+
+    //             }
+                
+                
+                
+    //         }
             
-        });
-    }
+    //     });
+    // }
 
     for(auto& thread: threads)
         thread.join();
 
 
-    for(unsigned int i = 1; i < settings.num_threads; i++)
-        analytics.at(0).join(analytics.at(i));
+    // for(unsigned int i = 1; i < settings.num_threads; i++)
+    //     analytics.at(0).join(analytics.at(i));
 
-    analytics.at(0).summary();
+    // analytics.at(0).summary();
 
 
     unsigned int total_states = container->get_data().size();
     for(auto& state: container->get_data()){
-        state->activate_history(input.frame, *PolyPoolPtr, settings);
+        state->activate_history();
     }
 
     auto uniques = find_uniques_brute(container->get_data(), settings.transformation);

@@ -144,6 +144,11 @@ namespace Polygon{
             return transformation_;
         }
 
+        std::vector<Poly>& get_variations() {
+            return variations_;
+        }
+
+
         const std::vector<Poly>& get_variations() const {
             return variations_;
         }

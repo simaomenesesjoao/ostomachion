@@ -1,6 +1,7 @@
 #include "solver.cpp"
 #include "settings.hpp"
-
+#include <string>
+#include <iostream>
 
 // std::string demangle(const char* name) {
 //     int status = 0;
