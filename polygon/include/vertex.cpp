@@ -33,9 +33,25 @@ public:
         update_opening();
     }
 
+
+    const Ang& get_opening() const {
+        return angle_opening;
+    }
+
     void print() const {
         Poin pos = position;
         std::cout << "(x,y)=(" << (float)pos.get_x() << "," << (float)pos.get_y() << ") " 
+                    << (float)angle_start << " " << (float)angle_end << " " << (float)angle_opening << std::endl;
+
+    }
+
+    void print_ll() const {
+        Poin pos = position;
+        float x = (float)pos.get_x();
+        float y = (float)pos.get_y();
+
+        std::cout << this << " " << next << " " << prev
+                    << "(x,y)=(" << x << "," << y << ") " 
                     << (float)angle_start << " " << (float)angle_end << " " << (float)angle_opening << std::endl;
 
     }

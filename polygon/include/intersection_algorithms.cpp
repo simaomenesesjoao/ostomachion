@@ -173,26 +173,6 @@ bool nodes_compatible(const Vertex<Num>& node1, const Vertex<Num>& node2){
     return shoelace_area<Num>({S1,E1,S2,E2}) > 0;
 }
 
-
-template <typename Num>
-bool angles_compatible_v1(Angle<Num> const& a, Angle<Num> const& b){
-    bool a_larger_180 = a.is_larger_than_180();
-    bool b_larger_180 = b.is_larger_than_180();
-    if(a_larger_180 and b_larger_180)
-        return false;
-
-    if(not a_larger_180 and not b_larger_180)
-        return true;
-
-    Angle<Num> c{a+b};
-
-    return c.is_larger_than_180() or c.is_zero();
-
-
-}
-
-
-
 template <typename Num>
 bool angles_compatible(Angle<Num> const& a, Angle<Num> const& b){
     // Checks if a+b <= 360. It's implemented by checking if

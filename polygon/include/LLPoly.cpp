@@ -15,7 +15,6 @@ namespace Polygon {
 
     private:
         using Poin = Point<Num>;
-        using Ang = Angle<Num>;
         using V = Vertex<Num>;
 
         V *head;
@@ -23,6 +22,7 @@ namespace Polygon {
         bool area_positive;
 
     public:
+        using Ang = Angle<Num>;
         using VertexType = V;
 
 
@@ -433,6 +433,17 @@ namespace Polygon {
 
         }
 
+
+
+        // SIMAO: implementar isto?
+        V& get_vertex([[maybe_unused]] unsigned int i) {
+            return *head;
+        }
+
+        const V& get_vertex_not_mod([[maybe_unused]] unsigned int i) const {
+            return *head;
+        }
+
         std::vector<V> get_vertices() {
             return {*head};
         }
@@ -502,13 +513,23 @@ namespace Polygon {
         }
 
         void print() const{
+            std::cout << "Polygon of size " << size_ll << "\n";
             V *node = head;
-            std::cout << "Polygon\n";
             for(unsigned i=0; i<size_ll; i++){
                 node->print();
                 node = node->next;
             }
         }
+
+        void print_ll() const{
+            std::cout << "Polygon of size " << size_ll << "\n";
+            V *node = head;
+            for(unsigned i=0; i<size_ll; i++){
+                node->print_ll();
+                node = node->next;
+            }
+        }
+
 
         bool is_point_inside(Poin const& P, Poin const& Q = {100,101}) const{
             // Checks whether point P is inside the polygon. 

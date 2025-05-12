@@ -19,7 +19,7 @@ public:
     counter{0},
     duration{0},
     builder{nullptr}{
-        std::cout << "error\n";
+        std::cout << "Error\n";
         exit(1);
     };
 
@@ -58,7 +58,7 @@ public:
         auto it = branches.find(name);
         if (it != branches.end())
             return it->second;
-        else{
+        else {
             TimingBranch new_branch(this);
             branches.insert({name, new_branch});
             return branches[name];
@@ -89,6 +89,12 @@ public:
 
     void join(const AnalyticsThread& other) {
         for(const auto& [name, obj]: other.branches){
+            auto it = branches.find(name);
+
+            if (it == branches.end()){
+                TimingBranch new_branch(this);
+                branches.insert({name, new_branch});
+            }
             branches[name].join(obj);
         }
     }

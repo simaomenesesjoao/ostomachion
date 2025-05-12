@@ -25,8 +25,16 @@ public:
     bool is_zero() const;
     bool is_180() const;
     bool is_larger_than_180() const;
+
     Num get_cos() const;
     Num get_sin() const;
+
+    Num& get_cos_mod();
+    Num& get_sin_mod();
+
+
+    const Num& get_cos_mod_const() const;
+    const Num& get_sin_mod_const() const;
     template <typename U> explicit operator U() const;
 
     template <typename N>

@@ -6,31 +6,34 @@
 #include "settings.hpp"
 #include "customFloat.cpp"
 #include "analytics.hpp"
+#include "memory_pool.hpp"
 
 namespace State{
 
-    class MemoryPool;
+    // class MemoryPool;
         
 
     class IState {
     public:
-        friend MemoryPool;
+        // friend IAllocator;
         virtual std::vector<std::shared_ptr<IState>> find_next_states() = 0;
         virtual void set_initial_state() = 0;
         virtual bool finalized() const = 0;
+        virtual unsigned int size() const = 0;
         virtual void print() const = 0;
         virtual void print_output() const = 0;
+        virtual unsigned long get_age() const = 0;
+        virtual AnalyticsThread& get_analytics() = 0;
         virtual bool equals(std::shared_ptr<IState>, Polygon::Transformations) const = 0;
         virtual void activate_history() = 0;
-        virtual ~IState() = default;
+        virtual ~IState();
 
-    private:
-        virtual unsigned int get_memory_index() const ;
+    // private:
+    //     virtual unsigned int get_memory_index() const {return 0;};
     };
     
 
-    using namespace Polygon;
-    using StateGenerator = std::function<std::shared_ptr<IState>(MemoryPool*, unsigned int)>;
+    IState::~IState(){};
 
     template <typename Poly>
     class State: public IState {
@@ -39,13 +42,14 @@ namespace State{
         State(const Polygon::BarePoly& puzzle_frame,
               const Polygon::Pool<Polygon::BarePoly>& poly_pool, 
               const CalcSettings&, 
-              MemoryPool*, 
-              unsigned int);
+              Allocator::IAllocator<std::shared_ptr<IState>>*);
 
         void set_initial_state() override;
-        void create_new_state(const State&, unsigned short, unsigned short, unsigned short);
-        // std::vector<std::vector<Poly>>& get_used_polys();
+        void create_new_state(const State&, const Poly&, unsigned short, unsigned short, unsigned short);
+        // void create_inplace(const Poly&, unsigned short, unsigned short, unsigned short);
+        std::vector<std::vector<Poly>>& get_used_polys();
 
+        void fast_copy(Poly&, const Poly&, const Poly::VertexType&);
         bool all_polys_match(const std::vector<Poly>& polyrow1, 
                              const std::vector<Poly>& polyrow2, 
                              std::function<Poly(const Poly&)> f) const;
@@ -58,82 +62,101 @@ namespace State{
         void iterate(const std::vector<std::pair<unsigned short, unsigned short>>&);
         void activate_history() override;
 
+        unsigned long get_age() const override;
         bool is_valid() const;
         bool finalized() const override;
+        unsigned int size() const override;
         void print() const override;
         void print_output() const override;
+        AnalyticsThread& get_analytics() override;
+
+        void get_data_from(const State& other){
+            _size = other._size;
+            
+            _frame = other._frame;
+            _poly_temp = other._poly_temp;
+            
+            _current_polys = other._current_polys;
+            _num_polys = other._num_polys;
+            _history = other._history;
+
+
+            _getter = other._getter;
+            
+        };
         
 
 
     private:
-        unsigned int _preallocate;
+        const unsigned int _preallocate;
         unsigned int _size;
-        unsigned int _memory_index;
+        unsigned int _age;
         Poly _frame;
         Poly _poly_temp;
         const Poly _default_frame;
         Polygon::Pool<Poly> _poly_pool;
+        const Polygon::Pool<Poly> _const_poly_pool;
         std::vector<std::vector<Poly>> _current_polys;
         std::vector<unsigned short> _num_polys;
         std::vector<std::pair<unsigned short, unsigned short>> _history;
-        std::function<bool(const Poly&, const Poly&, TimingBranch&)> _overlapper;
-        std::function<unsigned int(const Poly&)> _selector;
+        const std::function<bool(const Poly&, const Poly&, TimingBranch&)> _overlapper;
+        const std::function<unsigned int(const Poly&)> _selector;
         std::function<unsigned int(unsigned int)> _getter;
-        TimingBranch _analytics;
-        MemoryPool* _memory_pool;
+        AnalyticsThread _analytics;
+        Allocator::IAllocator<std::shared_ptr<IState>>* const _allocator;
 
-        unsigned int get_memory_index() const override;
+        // unsigned int get_memory_index() const override;
     };
 
 
-    class MemoryPool {
-        private:
-            std::vector<unsigned int> available_indices;
-            std::vector<std::shared_ptr<IState>> state_pool;
-            unsigned int capacity;
-            std::mutex mtx;
+    // class MemoryPool {
+    //     private:
+    //         std::vector<unsigned int> available_indices;
+    //         std::vector<std::shared_ptr<IState>> state_pool;
+    //         unsigned int capacity;
+    //         std::mutex mtx;
         
-        public:
-            MemoryPool(): capacity{0}{};
+    //     public:
+    //         MemoryPool(): capacity{0}{};
         
-            void initialize(unsigned int size, StateGenerator factory){
-                capacity = size;
-                state_pool.reserve(size);
-                available_indices.reserve(size);
-                for(unsigned int i = 0; i < size; i++){
-                    // state_pool.push_back(factory(this, i));
-                    available_indices.push_back(i);
-                }
-            }
+    //         void initialize(unsigned int size, StateGenerator factory){
+    //             capacity = size;
+    //             state_pool.reserve(size);
+    //             available_indices.reserve(size);
+    //             for(unsigned int i = 0; i < size; i++){
+    //                 state_pool.push_back(factory(this, i));
+    //                 available_indices.push_back(i);
+    //             }
+    //         }
 
-            std::shared_ptr<IState> get(){
-                std::lock_guard<std::mutex> lock(mtx);
+    //         std::shared_ptr<IState> get(){
+    //             std::lock_guard<std::mutex> lock(mtx);
 
-                if(available_indices.size() == 0){
-                    std::cout << "MemoryPool maximum capacity reached. Exiting.\n";
-                    exit(1);
-                }
+    //             if(available_indices.size() == 0){
+    //                 std::cout << "MemoryPool maximum capacity reached. Exiting.\n";
+    //                 exit(1);
+    //             }
 
-                unsigned int index = available_indices.back();
-                available_indices.pop_back();
+    //             unsigned int index = available_indices.back();
+    //             available_indices.pop_back();
 
-                return state_pool.at(index);
+    //             return state_pool.at(index);
 
-            }
+    //         }
 
-            void release(std::shared_ptr<IState> state){
-                std::lock_guard<std::mutex> lock(mtx);
-                available_indices.push_back(state->get_memory_index());
+    //         void release(std::shared_ptr<IState> state){
+    //             std::lock_guard<std::mutex> lock(mtx);
+    //             available_indices.push_back(state->get_memory_index());
                 
-            }
+    //         }
         
-        };
+    //     };
         
 
-    // template <typename Poly>
-    // std::vector<std::vector<Poly>>& State<Poly>::get_used_polys() {
-    //     return _current_polys;
-    // }
+    template <typename Poly>
+    std::vector<std::vector<Poly>>& State<Poly>::get_used_polys() {
+        return _current_polys;
+    }
     
 
     template <typename Poly>
@@ -160,20 +183,21 @@ namespace State{
     State<Poly>::State(const Polygon::BarePoly& puzzle_frame, 
                        const Polygon::Pool<Polygon::BarePoly>& poly_pool, 
                        const CalcSettings& settings, 
-                       MemoryPool* memory_pool,
-                       unsigned int memory_index):
+                       Allocator::IAllocator<std::shared_ptr<IState>>* allocator):
         _preallocate{20},
         _size{0},
-        _memory_index{memory_index},
+        _age{0},
         _frame{Poly(_preallocate)},
         _poly_temp{Poly(_preallocate)},
         _default_frame{Poly(puzzle_frame)},
-        _poly_pool{Polygon::Pool<Poly>(poly_pool.convert<Poly>())},
-        _num_polys(_poly_pool.pool.size()),
+        _poly_pool{Polygon::Pool<Poly>(poly_pool.convert_sort<Poly>())},
+        _const_poly_pool{Polygon::Pool<Poly>(poly_pool.convert_sort<Poly>())},
+        _current_polys{_poly_pool.num_total_polys()},
+        _num_polys(_poly_pool.num_distinct_polys()),
         _history{},
         _overlapper{Polygon::overlapper_factory<Poly>(settings.overlapper)},
         _selector{Polygon::selector_factory<Poly>(settings.node_selector)},
-        _memory_pool{memory_pool}{
+        _allocator{allocator}{
         
         // Default allocation, preparing State to do calculations with 
         // as few memory allocations as possible
@@ -186,40 +210,163 @@ namespace State{
     template <typename Poly>
     void State<Poly>::set_initial_state(){
         _frame = _default_frame;
+        _poly_pool = _const_poly_pool;
+        _size = 0;
+        _age = 0;
+        for(auto& n: _num_polys){
+            n = 0;
+        }
+        _history.clear();
+
         // analytics.reset(); // SIMAO: implementar
     }
 
     template <typename Poly>
+    void State<Poly>::fast_copy(Poly& to, const Poly& from, const Poly::VertexType& vertex){
+        // "to" already has most of the structure in place: the linked list and opening angle.
+        // the only thing that needs to change is start/end angles and positions
+        
+        TimingBranch& timing1 = _analytics.branch("fast copy1");
+        TimingBranch& timing2 = _analytics.branch("fast copy2");
+        TimingBranch& timing3 = _analytics.branch("fast copy3");
+
+        timing1.start();
+        // use one of the "to" angles as a placeholder
+        auto& angle = to.get_vertex(0).angle_opening;
+        const auto& a = from.get_head()->angle_end;
+        const auto& b = vertex.angle_start;
+
+        timing1.end();
+        angle.get_cos_mod() = b.get_cos_mod_const()*a.get_cos_mod_const() + b.get_sin_mod_const()*a.get_sin_mod_const();
+        angle.get_sin_mod() = b.get_sin_mod_const()*a.get_cos_mod_const() - b.get_cos_mod_const()*a.get_sin_mod_const();
+
+        // angle.cos = b.cos*a.cos + b.sin*a.sin;
+        // angle.sin = b.sin*a.cos - b.cos*a.sin;
+        // auto angle = vertex.angle_start - from.get_head()->angle_end; // this - a
+        unsigned int size_ll = from.size();
+        // V* current_from{from.head}, current_to{to.head};
+        
+
+        // Copy the head into place first, so it can be used for reference later
+        const auto& vertex_from = from.get_vertex_not_mod(0);
+        auto& vertex_to = to.get_vertex(0);
+
+        timing2.start();
+        vertex_to.position = vertex_from.position.rotate(angle);
+        auto dr = vertex.position - vertex_to.position;
+        vertex_to.position = vertex.position;
+        vertex_to.angle_end = vertex_from.angle_end + angle;
+        vertex_to.angle_start = vertex_from.angle_start + angle;
+        timing2.end();
+        
+        timing3.start();
+        for(unsigned int i = 1; i < size_ll; i++){
+            const auto& vertex_from = from.get_vertex_not_mod(i);
+            auto& vertex_to = to.get_vertex(i);
+            vertex_to.position = vertex_from.position.rotate(angle);
+            vertex_to.position = vertex_to.position + dr;
+            vertex_to.angle_end = vertex_from.angle_end + angle;
+            vertex_to.angle_start = vertex_from.angle_start + angle;
+        }
+        timing3.end();
+
+        to.get_vertex(0).angle_opening = from.get_vertex_not_mod(0).get_opening();
+
+        // std::cout << "a";
+
+        // rotate(vertex.angle_start - head->angle_end);
+        // translate(vertex.position - head->position);
+    }
+
+    template <typename Poly>
     void State<Poly>::create_new_state(const State& state, 
+                                       const Poly& transformed_poly,
                                        unsigned short node_index,
                                        unsigned short poly_index, 
                                        unsigned short variation_index){
-        // timing.start();
+        
+        TimingBranch& timing1 = _analytics.branch("create new");
+        TimingBranch& timing2 = _analytics.branch("merge");
+        TimingBranch& timing3 = _analytics.branch("prune");
+        timing1.start();
 
-        _num_polys.at(poly_index)++;
-        _history.push_back({poly_index, variation_index});
+        _age++; // How many times this piece of memory was used
+        // if(_age%3 == 2){
+        //     _poly_pool = _const_poly_pool;
+        // }
+
+        _num_polys = state._num_polys;
+        _num_polys.at(poly_index)++; 
+
+        _size = state._size;
         _size++; // SIMAO: substituir _size por nome melhor
 
-
-        // TimingBranch& timing1 = timing.builder->branch("copy merge");        
-        // timing1.start();
-        // timing1.end();
-
+        _history = state._history;
+        _history.push_back({poly_index, variation_index});
+        
         // Copy without allocation (hopefully) SIMAO: verificar
+
+
+        // std::cout << "original\n";
+        // state._frame.print_ll();
+        // transformed_poly.print_ll();
+
         _frame = state._frame;
-        _poly_temp = state._poly_temp;
+        _poly_temp = transformed_poly;
+
+        // std::cout << "copied\n";
+        // _frame.print_ll();
+        // _poly_temp.print_ll();
 
         
         auto insertion_vertex = _frame.vertex_from_index(node_index);
         auto head = _poly_temp.get_head();
+
+        timing2.start();
         auto modified = _frame.merge(insertion_vertex, _poly_temp, head);
+        timing2.end();
+        // std::cout << "After merge\n";
+        // _frame.print_ll();
+
+        timing3.start();
         _frame.prune_LL(modified, _getter);
+        timing3.end();
+        // std::cout << "After prune\n";
+        // _frame.print_ll();
+        timing1.end();
     }
 
-    template <typename Poly>
-    unsigned int State<Poly>::get_memory_index() const {
-        return _memory_index;
-    }
+
+    // template <typename Poly>
+    // void State<Poly>::create_inplace(const Poly& transformed_poly,
+    //                                  unsigned short node_index,
+    //                                  unsigned short poly_index, 
+    //                                  unsigned short variation_index){
+    //     // timing.start();
+    //     _num_polys.at(poly_index)++;
+
+    //     _size++; // SIMAO: substituir _size por nome melhor
+
+    //     _history.push_back({poly_index, variation_index});
+        
+
+    //     // TimingBranch& timing1 = timing.builder->branch("copy merge");        
+    //     // timing1.start();
+    //     // timing1.end();
+
+    //     // Copy without allocation (hopefully) SIMAO: verificar
+
+    //     _poly_temp = transformed_poly;
+        
+    //     auto insertion_vertex = _frame.vertex_from_index(node_index);
+    //     auto head = _poly_temp.get_head();
+
+    //     auto modified = _frame.merge(insertion_vertex, _poly_temp, head);
+
+    //     _frame.prune_LL(modified, _getter);
+    // }
+
+
 
     template <typename Poly>
     bool State<Poly>::equals_derived(const State& other, Polygon::Transformations transf) const {
@@ -288,25 +435,6 @@ namespace State{
         return remaining;
     }
 
-    // template <typename Poly>
-    // void State<Poly>::insert_polygon(unsigned int node_index, 
-    //     unsigned short poly_index, unsigned short variation_index, Poly&& poly){
-        
-
-    //     _num_polys.at(poly_index)++;
-    //     _history.push_back(std::pair<unsigned short, unsigned short>(poly_index, variation_index));
-        
-    //     _size++;
-
-        
-    //     auto insertion_vertex = _frame.vertex_from_index(node_index);
-    //     auto getter = [](unsigned int){return 0;}; // SIMAO: permitir seleccionar getter
-
-        //     typename Poly::VertexType* head = poly.get_head();
-        //     auto modified = _frame.merge(insertion_vertex, poly, head);
-    //     _frame.prune_LL(modified, getter);
-        
-    // }
 
     template <typename Poly>
     void State<Poly>::activate_history(){
@@ -317,145 +445,197 @@ namespace State{
     
     template <typename Poly>
     void State<Poly>::iterate(const std::vector<std::pair<unsigned short, unsigned short>>& history){
-        std::cout << history.at(0).first;
-        // AnalyticsThread analytics;
-        // // std::cout << "--------------------------------------------- entered iterate -----------------------------\n";
-        // // std::cout << "frame before merge:\n";
-        // // _frame.print();
+        
 
-        // _current_polys = std::vector<std::vector<Poly>>(_poly_pool.pool.size());
+        AnalyticsThread analytics;
 
-        // for(const auto& [poly_index, variation_index]: history){
-        //     // std::cout << "poly and variation index: " << poly_index << " " << variation_index << "\n";
+        // std::cout << "\n\n\nEntered iterate\n";
+        
 
-        //     unsigned short node_index = _selector(_frame);
-        //     const auto& insertion_vertex = *(_frame.vertex_from_index(node_index));
-        //     const auto& restricted_poly = _poly_pool.pool.at(poly_index);
-        //     const auto& restriction = restricted_poly.get_restriction();
-        //     const auto& transformed_poly = restricted_poly.get_variations().at(variation_index);
+        _current_polys = std::vector<std::vector<Poly>>(_poly_pool.num_total_polys());
+
+        for(const auto& [poly_index, variation_index]: history){
+            std::cout << "----- applying history " << poly_index << " " << variation_index  << " to state:\n";
+            print();
+            std::cout << "poly and variation index: " << poly_index << " " << variation_index << "\n";
+
+            unsigned short node_index = _selector(_frame);
+            const auto& insertion_vertex = *_frame.vertex_from_index(node_index);
+            auto& restricted_poly = _poly_pool.pool.at(poly_index);
+            const auto& restriction = restricted_poly.get_restriction();
+            auto& transformed_poly = restricted_poly.get_variations().at(variation_index);
             
-        //     if(!angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening)){
-        //         std::cout << "angles not compatible\n";
-        //         assert(false);
-        //     }
+            if(!angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening)){
+                std::cout << "angles not compatible\n";
+                assert(false);
+            }
             
 
-        //     Poly new_poly = transformed_poly.copy_into(insertion_vertex, 50); // SIMAO: corrigir
+            transformed_poly.print_ll();
+            insertion_vertex.print();
+            transformed_poly.move_into(insertion_vertex);
+            transformed_poly.print_ll();
+
+            // auto head = transformed_poly.head;
+            // transformed_poly.translate(vertex.position - head->position);
+            // transformed_poly.rotate(vertex.angle_start - head->angle_end, vertex.position);
+
+            // std::cout << "considering transformed poly:\n";
+            // transformed_poly.print_ll();
 
 
-        //     if(restriction.is_valid() and !_overlapper(new_poly, restriction, analytics.branch("a"))){
-        //         std::cout << "### error ### problem with restriction\n";
-        //         restriction.print();
-        //         new_poly.print();
-        //         assert(false);
-        //     }
+
+            if(restriction.is_valid() and !_overlapper(transformed_poly, restriction, analytics.branch("a"))){
+                std::cout << "### error ### problem with restriction\n";
+                restriction.print();
+                transformed_poly.print();
+                assert(false);
+            }
                 
-        //     if(_overlapper(new_poly, _frame, analytics.branch("a"))){
-        //         std::cout << "problem with overlap\n";
-        //         new_poly.print();
-        //         assert(false);
-        //     }
+            if(_overlapper(transformed_poly, _frame, analytics.branch("a"))){
+                std::cout << "problem with overlap\n";
+                _frame.print();
+                transformed_poly.print();
+                assert(false);
+            }
 
-        //     _current_polys.at(poly_index).push_back(new_poly);
-        //     // new_poly.print();
-        //     // unsigned int count = 0;
-        //     // for(auto& polyrow: _current_polys)
-        //     //     count += polyrow.size();
-        //     // std::cout << "size: " << count << "\n";
-        //     insert_polygon(node_index, poly_index, variation_index, std::move(new_poly));
-        //     // std::cout << "frame after merge:\n";
-        //     // _frame.print();
-        // }
+            
+            auto new_state = _allocator->allocate();
+            std::shared_ptr<State> new_state_cast = std::dynamic_pointer_cast<State>(new_state); // retains ref counting
+
+            _current_polys.at(poly_index).push_back(transformed_poly);
+            auto polys = _current_polys;
+
+            new_state_cast->create_new_state(*this, transformed_poly, node_index, poly_index, variation_index);
+
+            get_data_from(*new_state_cast);
+            _current_polys = polys;
+
+            _allocator->release({new_state});
+            
+
+            std::cout << "Successfully applied history. Result:\n";
+            print();
+        }
         
     }
 
 
     template <typename Poly>
     std::vector<std::shared_ptr<IState>> State<Poly>::find_next_states() {
-        // timing.start();
+        TimingBranch& timing  = _analytics.branch("find_next_states");
+        TimingBranch& timing2 = _analytics.branch("angles compatible");
+        TimingBranch& timing3 = _analytics.branch("move polygon");
+        TimingBranch& timing4 = _analytics.branch("allocate");
+        timing.start();
+        // std::cout << "\n\nStarting find_next_states:\n";
+        // print();
+        // std::cout << "\n";
         
-        TimingBranch timing; // SIMAO: remover isto
-        // std::cout << "Inside find_next\n";
-        // _frame.print();
-        // for(auto& vertex: _frame.get_vertices())
-        //     std::cout << &vertex << " " << vertex.next << " " << vertex.prev << "\n";
-        // std::cout << "\n";
-
-
-        // std::cout << "linked list\n";
-        // auto c = _frame.get_head();
-        // for(unsigned int i = 0; i < _frame.size(); i++){
-        //     c->print();
-        //     c = c->next;
-        // }
-        // std::cout << "\n";
-
         if(!is_valid() and finalized())
             std::cout << "impossible\n";
 
         if(!is_valid() or finalized())
             return {};
 
+
         unsigned int node_index = _selector(_frame);
         const auto& insertion_vertex = *_frame.vertex_from_index(node_index);
+        unsigned int num_allocated = 5;
+        std::vector<std::shared_ptr<IState>> allocated;
+        allocated.reserve(num_allocated);
         
         std::vector<std::shared_ptr<IState>> next_states;
         next_states.reserve(100);
         for(auto [poly_index, restricted_poly]: get_remaining_poly_pool()){
             short variation_index = -1;
+
+            // std::cout << "variations inside find_next\n";
+            // for(auto const& v: restricted_poly->get_variations())
+            //     v.print();
+
             for(auto& transformed_poly: restricted_poly->get_variations()){
+                
                 variation_index++;
+                // std::cout << "considering variation " << variation_index << " in poly index " << poly_index << "\n";
+                // transformed_poly.print_ll();
 
-                // timing2.start();
+                timing2.start();
                 bool compatible = angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening);
-                // timing2.end();
+                timing2.end();
+                // std::cout << "head: " << transformed_poly.get_head()->angle_opening << " --- vertex " << insertion_vertex.angle_opening << "\n";
 
 
-                if(compatible){
-                    // std::cout << "compatible\n";
-                    // TimingBranch& timing3 = timing.builder->branch("copy into");
-                    // timing3.start(); 
+                if(!compatible)
+                    break;
                     
-                    transformed_poly.move_into(insertion_vertex);
-                    // timing3.end();
+                // std::cout << "compatible\n";
+                // TimingBranch& timing3 = timing.builder->branch("copy into");
+                timing3.start(); 
+                // transformed_poly.move_into(insertion_vertex);
 
-                    const auto& restriction = restricted_poly->get_restriction();
-                    if(restriction.is_valid() and !_overlapper(transformed_poly, restriction, timing.builder->branch("overlap restriction")))
-                        continue;
+                // auto new_p = transformed_poly;
+                // new_p.move_into(insertion_vertex);
+                // std::cout << "copied poly with move_into:\n";
+                // new_p.print();
 
-                    if(!_overlapper(transformed_poly, _frame, timing.builder->branch("overlap frame"))){
+                const auto& const_poly = _const_poly_pool.pool.at(poly_index).get_variations().at(variation_index);
+                // std::cout << "printing const poly:\n";
+                // const_poly.print();
 
-                        // TimingBranch& timing1 = timing.builder->branch("creation wrapper");
-                        // timing1.start();
-                        // std::cout << "doesnt overlap\n";
-                        // timing1.start();
-                        // std::shared_ptr<State> new_state = std::make_shared<State>(*this);
-                        // timing1.end();
+                // std::cout << "printing transformed poly before:\n";
+                // transformed_poly.print();
+                fast_copy(transformed_poly, const_poly, insertion_vertex);
 
-                        // TimingBranch& timing4 = timing.builder->branch("insertion");
-                        // timing4.start();
-                        // new_state->insert_polygon(node_index, poly_index, variation_index, std::move(new_poly));
-                        // next_states.push_back(new_state);
-                        // timing4.end();
+                // std::cout << "printing transformed poly after:\n";
+                // transformed_poly.print();
+                // std::cout << "done\n";
+                
+                timing3.end();
+                // std::cout << "It's compatible, moving into\n";
+                // transformed_poly.print_ll();
+                
 
+                const auto& restriction = restricted_poly->get_restriction();
+                if(restriction.is_valid() and !_overlapper(transformed_poly, restriction, _analytics.branch("overlap restriction")))
+                    continue;
 
-                        auto new_state = _memory_pool->get();
-                        // IState* new_state_ptr = new_state.get();
-                        // State* cast_ptr = dynamic_cast<State*>(new_state_ptr);
-                        // // std::shared_ptr<State> new_state_cast = std::dynamic_pointer_cast<State>(new_state); // retains ref counting
+                // std::cout << "overlaps restriction. go on!\n";
 
-                        // cast_ptr->create_new_state(*this, node_index, poly_index, variation_index);
-                        
-                        // timing1.end();
-                        next_states.push_back(new_state);
+                if(!_overlapper(transformed_poly, _frame, _analytics.branch("overlap frame"))){
+                    // std::cout << "no overlap. go on!\n";
+
+                    timing4.start();
+                    
+                    if(allocated.size() == 0){
+                        allocated = std::move(_allocator->allocate(num_allocated));
                     }
+                    std::shared_ptr<IState> new_state = allocated.back();
+                    allocated.pop_back();
 
+                    // auto new_state = _allocator->allocate();
+
+                    std::shared_ptr<State> new_state_cast = std::dynamic_pointer_cast<State>(new_state); // retains ref counting
+                    if(!new_state_cast)
+                        throw;
+                    timing4.end();
+
+                    new_state_cast->create_new_state(*this, transformed_poly, node_index, poly_index, variation_index);
+                    
+                    // new_state_cast->print();
+                    
+                    // timing1.end();
+                    next_states.push_back(new_state);
                 }
+
+            
 
             }
         }
         timing.end();
-        // std::cout << "left find_next\n";
+        // std::cout << "left find_next\n\n";
+        _allocator->release(allocated);
+
         return next_states;
     }
 
@@ -466,27 +646,50 @@ namespace State{
 
     template <typename Poly>
     bool State<Poly>::finalized() const {
-        return _size == _poly_pool.size;
+        return _size == _poly_pool.num_total_polys();
     }
+
+
+    template <typename Poly>
+    AnalyticsThread& State<Poly>::get_analytics() {
+        return _analytics;
+    }
+
+    template <typename Poly>
+    unsigned int State<Poly>::size() const {
+        return _size;
+    }
+
+
+    template <typename Poly>
+    unsigned long State<Poly>::get_age() const{
+        return _age;
+    }
+    
     
     template <typename Poly>
     void State<Poly>::print() const {
-        
-        std::cout << "---- Printing state  -------\nFrame:\n";
+        std::cout << "-- Printing state -- Size: " << _size << " age: " << _age << "\n Frame: ";
         _frame.print();
+
         std::cout << "current polygon ids: ";
         for(const auto& n: _num_polys){
             std::cout << n << " ";
         }
-        std::cout << "\nHistory:\n";
+
+        std::cout << "\nHistory:";
         for(const auto& pair: _history){
             std::cout << pair.first << " " << pair.second << " ";
         }
+
         std::cout << "\ncurrent polygons:\n";
         for(const auto& polyrow: _current_polys){
             for(const auto& poly: polyrow)
                 poly.print();
         }
+
+        // std::cout << "PolyPool:\n";
+        // _poly_pool.print();
     }
 
 
@@ -511,29 +714,31 @@ namespace State{
     }
 
 
+    using namespace Polygon;
+    using StateGenerator = std::function<std::shared_ptr<IState>(Allocator::IAllocator<std::shared_ptr<IState>>*)>;
 
     StateGenerator factory(const std::string& name, const BarePoly& starting_frame, 
                            const Pool<BarePoly>& poly_pool, const CalcSettings& settings){
         if(name == "LLPoly"){
-            return [&](MemoryPool* memory_pool, unsigned int memory_index){
+            return [&](Allocator::IAllocator<std::shared_ptr<IState>>* memory_pool){
 
                 using Poly = LLPoly<Float<double>>; 
                 // using Poly = LLPoly<Float<float>>; // SIMAO: verificar se depois de tratar da alocação de memoria, isto torna o código mais rápido
-                return std::make_shared<State<Poly>>(starting_frame, poly_pool, settings, memory_pool, memory_index);
+                return std::make_shared<State<Poly>>(starting_frame, poly_pool, settings, memory_pool);
             };
 
         } else if(name == "ContigPoly"){
-            return [&](MemoryPool* memory_pool, unsigned int memory_index){
+            return [&](Allocator::IAllocator<std::shared_ptr<IState>>* memory_pool){
 
                 using Poly = ContigPoly<Float<double>>;
-                // using Poly = ContigPoly<Float<float>>;
-                return std::make_shared<State<Poly>>(starting_frame, poly_pool, settings, memory_pool, memory_index);
+                // using Poly = ContigPoly<double>;
+                return std::make_shared<State<Poly>>(starting_frame, poly_pool, settings, memory_pool);
             };
 
         } else {
             std::cout << "Unsupported poly type chosen\n";
             exit(1);
         }
-    };
+    }
 
 } // State

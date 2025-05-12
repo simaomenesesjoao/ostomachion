@@ -77,6 +77,23 @@ namespace Input{
             });
             return Input(frame, polygon_pool, {});
         
+        } else if(name == "Ostomid2") {
+            Polygon::BarePoly frame({{6,6}, {6,-6}, {-6,-6}, {-6,6}});
+            Polygon::Pool<Polygon::BarePoly> polygon_pool({
+                R(P({{0,0},  {2,10}, {0,12}})),
+                R(P({{0,0},  {4,8},  {2,10}})),
+                R(P({{0,0},  {3,0},  {3,6 }})).restriction(P({{-6,-6}, {0,-6}, {0,0}})),
+                R(P({{0,12}, {6,6},  {6,12}})),
+                R(P({{3,0},  {6,0},  {6,6 }, {4,8}, {3,6}})),
+                R(P({{0,12}, {6,6},  {6,12}})),
+                R(P({{6,6},  {8,4},  {9,6 },   {6,12}})),
+                R(P({{9,6},  {12,8}, {12,12},  {6,12}})),
+                R(P({{8,4},  {12,0}, {9,6 }})),
+                R(P({{9,6},  {12,0}, {12,8}}))
+            });
+            return Input(frame, polygon_pool, {});
+        
+
         } else if(name == "Ostomed") {
             Polygon::BarePoly frame({{6,6}, {6,-6}, {-6,-6}, {-6,6}});
             Polygon::Pool<Polygon::BarePoly> polygon_pool({

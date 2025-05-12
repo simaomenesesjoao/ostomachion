@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 namespace Polygon{
 
@@ -10,6 +11,8 @@ namespace Polygon{
         BarePoly(){};
 
         void flip_x() {
+
+            // SIMAO: esta função será mesmo necessária?
             // std::cout << "Entering flip_x\n";
 
             std::vector<std::vector<int>> new_point_list;
@@ -26,6 +29,14 @@ namespace Polygon{
             //     std::cout << "(x,y)=(" << p.at(0) << "," << p.at(1) << ") ";
             point_list = new_point_list;
 
+        }
+
+        void print() const {
+            std::cout << "BarePoly: ";
+            for(const auto& point: point_list){
+                std::cout << "(" << point.at(0) << "," << point.at(1) << ") ";
+            }
+            std::cout << "\n";
         }
 
         void advance_head(){

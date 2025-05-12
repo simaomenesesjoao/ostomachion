@@ -54,7 +54,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
     // signal(SIGSEGV, crash_handler); // handle segmentation fault
     
     std::string poly_type = "ContigPoly"; 
-    std::string puzzle_type = "Ostotiny";
+    std::string puzzle_type = "Ostomini";
     unsigned int num_threads = 1;
     if (argc > 3) {
         poly_type = argv[1];
@@ -79,7 +79,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv){
 
     auto [states, analytics] = get_combinations(*input, calc_settings, analytics_settings);
     
-    std::cout << states.size() << "\n";
+    // std::cout << states.size() << "\n";
 
     // for(const auto& s: states){
     //     s->print_output();

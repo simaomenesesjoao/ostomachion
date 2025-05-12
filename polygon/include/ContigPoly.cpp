@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <cassert>
+
 #include "points_vectors.cpp" // SIMAO: remover
 #include "vertex.cpp"
 #include "intersection_algorithms.cpp"
@@ -16,7 +17,6 @@ namespace Polygon {
 
     private:
         using Poin = Point<Num>;
-        using Ang = Angle<Num>;
         using V = Vertex<Num>;
 
         V* head;
@@ -26,6 +26,7 @@ namespace Polygon {
         unsigned int size_ll;
 
     public:
+        using Ang = Angle<Num>;
         using VertexType = V;
 
         ContigPoly(): 
@@ -122,36 +123,55 @@ namespace Polygon {
             
 
 
-        ContigPoly(ContigPoly const& other_poly, unsigned int preallocate):
-            head{nullptr},
-            vertices{},
-            area_positive{other_poly.area_positive}, 
-            LL_active{other_poly.LL_active},
-            size_ll{other_poly.size_ll} {
-                vertices.reserve(preallocate);
-                vertices = other_poly.vertices;
+        // ContigPoly(ContigPoly const& other_poly, unsigned int preallocate):
+        //     head{nullptr},
+        //     vertices{},
+        //     area_positive{other_poly.area_positive}, 
+        //     LL_active{other_poly.LL_active},
+        //     size_ll{other_poly.size_ll} {
+        //         vertices.reserve(preallocate);
+        //         vertices = other_poly.vertices;
                 
-                if(vertices.size() > 0)
-                    head = &vertices.at(0);
+        //         if(vertices.size() > 0)
+        //             head = &vertices.at(0);
 
-                connect_LL();
+        //         connect_LL();
                 
-            }
+        //     }
 
 
         ContigPoly& operator=(ContigPoly const& other){
             if(&other == this)
                 return *this;
 
-            head = nullptr;
+            // if(other.head == nullptr){
+            //     size_ll = 0;
+            //     head = nullptr;
+            //     return *this;
+            // }
+                
+
             area_positive = other.area_positive;
             size_ll = other.size_ll;
-            vertices = other.vertices;
+
+
+            
+            V* current = other.head;
+            vertices.clear();
+            for(unsigned int i = 0; i < size_ll; i++){
+                vertices.push_back(*current);
+                current = current->next;
+            }
+
+            head = nullptr;
             if(vertices.size() > 0)
                 head = &vertices.at(0);
 
+            for(unsigned int i = 0; i < size_ll; i++){
+                vertices.at(i).next = &vertices.at((i+1)%size_ll);
+                vertices.at(i).prev = &vertices.at((i-1+size_ll)%size_ll);
+            }
             
-            connect_LL();
             return *this;
         }
         
@@ -202,21 +222,31 @@ namespace Polygon {
             }
         }
 
-        ContigPoly copy_into(const V& vertex, unsigned int preallocate) const {
-            // Copies the polygon into the specified vertex position
+        void rotate(Ang const& angle){
+            // Rotate the polygon by angle around the rotation center
 
-            ContigPoly poly2(*this, preallocate);
-            poly2.translate(vertex.position - head->position);
-            poly2.rotate(vertex.angle_start - head->angle_end, vertex.position);
-            return poly2;
+            for(unsigned int i = 0; i < vertices.size(); i++){
+                V& vertex = vertices.at(i);
+                vertex.angle_end = vertex.angle_end + angle;
+                vertex.angle_start = vertex.angle_start + angle;
+                vertex.position = vertex.position.rotate(angle);
+            }
         }
+
+        // ContigPoly copy_into(const V& vertex, unsigned int preallocate) const {
+        //     // Copies the polygon into the specified vertex position
+
+        //     ContigPoly poly2(*this, preallocate);
+        //     poly2.translate(vertex.position - head->position);
+        //     poly2.rotate(vertex.angle_start - head->angle_end, vertex.position);
+        //     return poly2;
+        // }
 
 
         void move_into(const V& vertex) {
             // Moves the polygon into the specified vertex position
-
+            rotate(vertex.angle_start - head->angle_end);
             translate(vertex.position - head->position);
-            rotate(vertex.angle_start - head->angle_end, vertex.position);
         }
 
 
@@ -271,6 +301,15 @@ namespace Polygon {
             return vertices;
         }
 
+        V& get_vertex(unsigned int i) {
+            return vertices.at(i);
+        }
+
+
+        const V& get_vertex_not_mod(unsigned int i) const {
+            return vertices.at(i);
+        }
+
         const std::vector<V>& get_vertices() const {
             return vertices;
         }
@@ -293,6 +332,7 @@ namespace Polygon {
             // Delete the linked list from one of the polygons to 
             // avoid deleting twice in the destructor
             other_poly.head = nullptr;
+            other_poly.size_ll = 0;
 
             // Update the angles
             this_node->angle_end = -this_node->prev->angle_start;
@@ -306,47 +346,47 @@ namespace Polygon {
         }
 
 
-        std::vector<V*> copy_merge(const ContigPoly & other_poly, unsigned int anchor_index){
+        // std::vector<V*> copy_merge(const ContigPoly & other_poly, unsigned int anchor_index){
 
-            V* current = other_poly.head;
-            for(unsigned int i = 0; i < other_poly.size_ll; i++){
-                vertices.emplace_back(*current);         
-                current = current->next;
-            }
+        //     V* current = other_poly.head;
+        //     for(unsigned int i = 0; i < other_poly.size_ll; i++){
+        //         vertices.emplace_back(*current);         
+        //         current = current->next;
+        //     }
 
-            for(unsigned int i = 0; i < other_poly.size_ll; i++){
-                unsigned int j = i + size_ll;
-                vertices.at(j).next = &vertices.at(size_ll + (i + 1)%other_poly.size_ll);
-                vertices.at(j).prev = &vertices.at(size_ll + (i - 1 + other_poly.size_ll)%other_poly.size_ll);
-            }
+        //     for(unsigned int i = 0; i < other_poly.size_ll; i++){
+        //         unsigned int j = i + size_ll;
+        //         vertices.at(j).next = &vertices.at(size_ll + (i + 1)%other_poly.size_ll);
+        //         vertices.at(j).prev = &vertices.at(size_ll + (i - 1 + other_poly.size_ll)%other_poly.size_ll);
+        //     }
 
-            V* other_node = &vertices.at(size_ll + anchor_index);
-            // V* other_node = vertex_from_index(anchor_index);
-            V* this_node = head;
+        //     V* other_node = &vertices.at(size_ll + anchor_index);
+        //     // V* other_node = vertex_from_index(anchor_index);
+        //     V* this_node = head;
             
             
 
-            size_ll += other_poly.size_ll;
+        //     size_ll += other_poly.size_ll;
 
-            // Connect the two linked lists
-            V *temp = other_node->prev;
+        //     // Connect the two linked lists
+        //     V *temp = other_node->prev;
             
-            other_node->prev = this_node->prev;
-            other_node->prev->next = other_node;
+        //     other_node->prev = this_node->prev;
+        //     other_node->prev->next = other_node;
 
-            this_node->prev = temp;
-            this_node->prev->next = this_node;
+        //     this_node->prev = temp;
+        //     this_node->prev->next = this_node;
 
-            // Update the angles
-            this_node->angle_end = -this_node->prev->angle_start;
-            other_node->angle_end = -other_node->prev->angle_start;
+        //     // Update the angles
+        //     this_node->angle_end = -this_node->prev->angle_start;
+        //     other_node->angle_end = -other_node->prev->angle_start;
 
-            this_node->update_opening();
-            other_node->update_opening();
+        //     this_node->update_opening();
+        //     other_node->update_opening();
 
-            return {this_node, other_node};
+        //     return {this_node, other_node};
 
-        }
+        // }
 
 
         void connect_LL(){
@@ -570,9 +610,20 @@ namespace Polygon {
         }
 
         void print() const{
-            std::cout << "Polygon\n";
-            for(const auto& vertex: vertices){
-                vertex.print();
+            std::cout << "Polygon of size " << size_ll << "\n";
+            V *node = head;
+            for(unsigned i=0; i<size_ll; i++){
+                node->print();
+                node = node->next;
+            }
+        }
+
+        void print_ll() const{
+            std::cout << "Polygon of size " << size_ll << "\n";
+            V *node = head;
+            for(unsigned i=0; i<size_ll; i++){
+                node->print_ll();
+                node = node->next;
             }
         }
 
@@ -634,7 +685,7 @@ namespace Polygon {
 
         bool edge_edge_intersection(const ContigPoly& other) const {
             V *current{head};
-            unsigned int other_size_ll = other.vertices.size();
+            unsigned int other_size_ll = other.size();
 
             // Check for edge-edge intersections
             for(unsigned i=0; i<size_ll; i++){
@@ -662,7 +713,7 @@ namespace Polygon {
         bool edge_node_intersection(const ContigPoly& other) const{
             // Check if an edge of 'this' polygon intersects a vertex of the 'other'
 
-            unsigned int other_size_ll = other.vertices.size();
+            unsigned int other_size_ll = other.size();
 
             V *current{head};
             for(unsigned i=0; i<size_ll; i++){
@@ -688,7 +739,7 @@ namespace Polygon {
 
         bool node_node_intersection(const ContigPoly& other) const{
 
-            unsigned int other_size_ll = other.vertices.size();
+            unsigned int other_size_ll = other.size();
             V *A{head};
             for(unsigned i=0; i<size_ll; i++){
                 

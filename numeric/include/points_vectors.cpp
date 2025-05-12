@@ -57,6 +57,20 @@ template <typename Num>
 Num Angle<Num>::get_sin() const{ return sin;}
 
 
+
+template <typename Num>
+Num& Angle<Num>::get_cos_mod() { return cos;}
+
+template <typename Num>
+Num& Angle<Num>::get_sin_mod() { return sin;}
+
+template <typename Num>
+const Num& Angle<Num>::get_cos_mod_const() const { return cos;}
+
+template <typename Num>
+const Num& Angle<Num>::get_sin_mod_const() const { return sin;}
+
+
 template <typename Num>
 Angle<Num> Angle<Num>::operator+(Angle const& a) const{
     Num new_cos = cos*a.cos - sin*a.sin;
@@ -156,7 +170,7 @@ bool Angle<Num>::is_180() const{
 
 template <typename Num>
 std::ostream& operator<<(std::ostream& stream, Angle<Num> const& angle){
-    stream << "ang=(" << angle.get_sin() << " " << angle.get_cos() << ")";
+    stream << "ang=(" << angle.get_cos() << " " << angle.get_sin() << ")";
     return stream;    
 }
 
