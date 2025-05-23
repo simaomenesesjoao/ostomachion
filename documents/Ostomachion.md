@@ -145,4 +145,9 @@ Overlaps happen when the angle swept by the puzzle polygon overlaps with the ang
 
 # Numerical representation
 
-To tackle computational geometry problems, one usually uses a floating point representation of the positions, which is fast and efficient, but it is an approximation. This approximation is so good that most of the time you won’t even notice it is approximate (more on this later…). However, I became curious
+So far, we realized that the Ostomachion can be solved by translating and rotating polygons around. Next, we need to to figure out a way to represent them in code. We could just use a floating-point representation for the angles and coordinates , but I'd like to use this section to explore a different approach: can we do this in a mathematically exact way in code? 
+
+To support translating and rotating points around, we need to support addition and and multiplication. We also need to support angle addition when we want to stack polygons on top of each other and keep track of the angle of each edge.
+
+Rotating points is more easily done if we work with sines and cosines instead of the angle itself. And we can support angle addition and subtraction because we know the formula for the sine and cosine of the sum and difference.
+
