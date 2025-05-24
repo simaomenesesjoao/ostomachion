@@ -90,7 +90,7 @@ namespace State{
         _num_polys = other._num_polys;
         _history = other._history;
         _getter = other._getter;
-    };
+    }
 
     template <typename Poly>
     std::vector<std::vector<Poly>>& State<Poly>::get_used_polys() {
@@ -310,7 +310,6 @@ namespace State{
 
         AnalyticsThread analytics;
 
-        // std::cout << "\n\n\nEntered iterate\n";
         
 
         _current_polys = std::vector<std::vector<Poly>>(_poly_pool.num_total_polys());

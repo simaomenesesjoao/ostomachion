@@ -1,12 +1,33 @@
 # Ostomachion
 
-## Introduction
+Title: Ostomachion
 
-…
+Subtitle: From mathematical exactness to high-performance computing
+
+Tags: HPC
+
+# Introduction
+The Ostomachion is a puzzle as old as ancient Greece, having fascinated philosophers, mathematicians and the curious minds for millennia. It's an especially interesting puzzle to think about when you're bored in conferences. It's deceivingly simple: given a square tiled with several different shapes, how many ways are there to rearrange the shapes such that they all still fit in the square? The particular selection of shapes comprising the puzzle that fascinated Aristotle was called Ostomachion, and it looked like this:
+
+
+![image.png](image.png)
+
+Moving these shapes around, we can find a few more solutions to this puzzle
+
+image image image
+
+Figuring out how many distinct configurations of shapes exist took two millennia and the advent of modern combinatorics and computing. The answer is 17152. 
+
+In this series of blog posts, I will explain how I approached this problem from a computational perspective. This turned out to be a half-year endeavour, but a very rich and fruitful journey, and it all started when my girlfriend showed me a page on a book. It led me through the design of a special numerical system and subsequent approximations in the sake of computational efficiency. It led me through group theory, data structures, modern C++ and high-performance-oriented design. With these blog posts, I hope to share my enthusiasm for all the things I learned, and hopefully challenge someone to come up with a more efficient solution! 
+
+
+
+
+## References:
+
 
 [https://www.mat.uc.pt/~jaimecs/matelem/stomachion](https://www.mat.uc.pt/~jaimecs/matelem/stomachion)
 
-![image.png](image.png)
 
 # Ostomachion algorithm
 
@@ -143,11 +164,45 @@ Overlaps happen when the angle swept by the puzzle polygon overlaps with the ang
 
 ![image.png](image%2016.png)
 
-# Numerical representation
+# Mathematical structure
 
-So far, we realized that the Ostomachion can be solved by translating and rotating polygons around. Next, we need to to figure out a way to represent them in code. We could just use a floating-point representation for the angles and coordinates , but I'd like to use this section to explore a different approach: can we do this in a mathematically exact way in code? 
+So far, we realized that the Ostomachion can be solved by translating and rotating polygons around. Next, we need to to figure out a way to represent them in code. We could just use a floating-point representation for the angles and coordinates, but I'd like to use this section to explore a different approach: <b>can we do this in a mathematically exact way in code</b>?
 
-To support translating and rotating points around, we need to support addition and and multiplication. We also need to support angle addition when we want to stack polygons on top of each other and keep track of the angle of each edge.
+There are three main things we need to ensure: 
+- <b>angles</b> representing the angle the edges make with the x axis and the opening angle between edges. They need to support angle addition and subtraction
+- <b>vectors</b> representing the locations of the polygon's vertices. These need to support vector addition, dot product and rotation by an angle
+- we need to be able to <b>compare</b> these vectors and angles to determine polygon overlap
 
-Rotating points is more easily done if we work with sines and cosines instead of the angle itself. And we can support angle addition and subtraction because we know the formula for the sine and cosine of the sum and difference.
+For practical purposes, we only ever need the sine and cosine of the angle, because that's what's required for rotations. Rotation of a vector by an angle then consists of a simple set of products and additions, no need to calculate trigonometric functions. Let's then represent the angle by a unit vector whose coordinates are $\left(\cos, \sin\right)$, or alternatively, as a complex number $z=\cos + i\sin$. Likewise, the vectors are simply represented by their coordinates $\left(x, y\right)$, or alternatively, as the complex number $z=x+i y$. Complex numbers are a really good fit for this problem because they encapsulate the idea of rotation and translation very naturally within their structure:
+- Vector addition becomes complex number addition
+- Rotation of a vector by an angle becomes complex number multiplication
 
+## Type of number
+what type of number should we use for the complex number components? If we want mathematical exactness, floating point numbers are right out. Looking at the Ostomachion puzzle pieces, they have one very important property: all their vertices lie on integer coordinates! Analyzing the angles that the edges make with the $x$ axis, each edge can be seen as the hypotenuse of a right triangle with integer legs, which means that <b>all</b> of the sines and cosines in the image are of the form 
+
+$$\frac{a}{b}\sqrt{c}$$
+
+where $a$, $b$ and $c$ are all integers. This can be used as the basis for our numeric system. 
+
+First, let's notice that this representation can be made unique by requiring that $c$ be expressable as a product of non-repeated primes, that is, the square root cannot be further simplified. Second, suppose we start with a vector of integer coordinates $z=x+iy$ and rotate it by an angle represented by $w=\frac{a}{b}\sqrt{c}+i\frac{d}{e}\sqrt{f}$. Then, the new point will be 
+$$z\prime = zw=\left(x \frac{a}{b}\sqrt{c} - y\frac{d}{e}\sqrt{f}\right) + i\left(y \frac{a}{b}\sqrt{c} + x\frac{d}{e}\sqrt{f}\right)$$
+
+As the vectors get translated and rotated, their components will pick up more and more radicals, and some radicals will combine with others. We can already see that a general representation of a number in this numeric system will be composed of a sum of many fractions multiplied by square roots:
+
+$$ x = \sum_i \frac{a_i}{b_i}\sqrt{c_i}$$
+
+What square roots should be included exactly? To answer this, we need to iterate over all puzzle pieces, compute their sines and cosines and see what is inside the square root after simplification. Surprisingly, only four different square roots appear: $\sqrt{2}$, $\sqrt{5}$, $\sqrt{13}$ and $\sqrt{17}$. This means that $\sqrt{c_i}$ can only assume $2^4$ different values, consisting of all possible combinations of products of these square roots and $\sqrt{1}$. 
+
+These kinds of numbers are a type of <b>algebraic numbers</b> and are closed under the basic arithmetic operations of addition, subtraction, multiplication and division. They are represented as $\mathbb{Q}[\sqrt{2}, \sqrt{5}, \sqrt{13}, \sqrt{17}]$.
+
+## Comparing algebraic numbers
+Being able to compare two numbers is a basic essential operation to determine polygon overlap. We all know how to do it for normal numbers, but algebraic numbers pose a challenge because we cannot approximate the square roots. Without loss of generality, let's assume we want to know whether an algebraic number $x > 0$. How do we determine whether that sum evaluates to a positive or a negative number?
+
+To answer this, it helps to begin with a simpler example, the set of algebraic numbers that only contains $\sqrt{2}$, that is numbers $x\in\mathbb{Q}[\sqrt{2}]$ of the form $a+b\sqrt{2}$ where $a,b\in\mathbb{Q}$ are rational numbers. We can determine how $x$ relates to $0$ by doing the following checks:
+- if any of $a$ and $b$ are zero, the sign is the same as the non-zero fractional number. $x$ is zero only if both $a$ and $b$ are zero
+- if $a$ and $b$ are both positive, then $x$ is positive
+- if $a$ and $b$ are both negative, then $x$ is negative
+- if $a>0$ and $b<0$, then $(a+b\sqrt{2})(a-b\sqrt{2})$ has the same sign as $x$, but evaluates to the simpler rational expression $a^2 - 2b^2$ which we know how to evaluate
+- identically, if $a<0$ and $b>0$, $x$ has the same sign as $2b^2 - a^2$
+
+## Comparing angles
