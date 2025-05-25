@@ -18,9 +18,11 @@ namespace State{
         virtual unsigned int size() const = 0;
         virtual void print() const = 0;
         virtual void print_output() const = 0;
+        virtual void print_history() const = 0;
         virtual AnalyticsThread& get_analytics() = 0;
         virtual bool equals(std::shared_ptr<IState>, Polygon::Transformations) const = 0;
         virtual void activate_history() = 0;
+        virtual void set_history(const std::vector<std::pair<unsigned short, unsigned short>> &) = 0;
         virtual ~IState();
 
     };
@@ -53,11 +55,13 @@ namespace State{
         std::vector<std::shared_ptr<IState>> find_next_states() override;
         void iterate(const std::vector<std::pair<unsigned short, unsigned short>>&);
         void activate_history() override;
+        void set_history(const std::vector<std::pair<unsigned short, unsigned short>> &) override;
 
         bool is_valid() const;
         bool finalized() const override;
         unsigned int size() const override;
         void print() const override;
+        void print_history() const override;
         void print_output() const override;
         AnalyticsThread& get_analytics() override;
 
@@ -97,6 +101,10 @@ namespace State{
         return _current_polys;
     }
     
+    template <typename Poly>
+    void State<Poly>::set_history(const std::vector<std::pair<unsigned short, unsigned short>> & history) {
+        _history = history;
+    }
 
     template <typename Poly>
     bool State<Poly>::all_polys_match(const std::vector<Poly>& polyrow1, 
@@ -130,7 +138,7 @@ namespace State{
         _default_frame{Poly(puzzle_frame)},
         _poly_pool{Polygon::Pool<Poly>(poly_pool.convert_sort<Poly>())},
         _const_poly_pool{Polygon::Pool<Poly>(poly_pool.convert_sort<Poly>())},
-        _current_polys{_poly_pool.num_total_polys()},
+        _current_polys{_poly_pool.num_distinct_polys()},
         _num_polys(_poly_pool.num_distinct_polys()),
         _history{},
         _overlapper{Polygon::overlapper_factory<Poly>(settings.overlapper)},
@@ -306,18 +314,12 @@ namespace State{
     
     template <typename Poly>
     void State<Poly>::iterate(const std::vector<std::pair<unsigned short, unsigned short>>& history){
-        
 
         AnalyticsThread analytics;
 
-        
-
-        _current_polys = std::vector<std::vector<Poly>>(_poly_pool.num_total_polys());
+        _current_polys = std::vector<std::vector<Poly>>(_poly_pool.num_distinct_polys());
 
         for(const auto& [poly_index, variation_index]: history){
-            std::cout << "----- applying history " << poly_index << " " << variation_index  << " to state:\n";
-            print();
-            std::cout << "poly and variation index: " << poly_index << " " << variation_index << "\n";
 
             unsigned short node_index = _selector(_frame);
             const auto& insertion_vertex = *_frame.vertex_from_index(node_index);
@@ -330,36 +332,20 @@ namespace State{
                 assert(false);
             }
             
-
-            transformed_poly.print_ll();
-            insertion_vertex.print();
             transformed_poly.move_into(insertion_vertex);
-            transformed_poly.print_ll();
-
-            // auto head = transformed_poly.head;
-            // transformed_poly.translate(vertex.position - head->position);
-            // transformed_poly.rotate(vertex.angle_start - head->angle_end, vertex.position);
-
-            // std::cout << "considering transformed poly:\n";
-            // transformed_poly.print_ll();
-
-
 
             if(restriction.is_valid() and !_overlapper(transformed_poly, restriction, analytics.branch("a"))){
-                std::cout << "### error ### problem with restriction\n";
                 restriction.print();
                 transformed_poly.print();
                 assert(false);
             }
                 
             if(_overlapper(transformed_poly, _frame, analytics.branch("a"))){
-                std::cout << "problem with overlap\n";
                 _frame.print();
                 transformed_poly.print();
                 assert(false);
             }
 
-            
             auto new_state = _allocator->allocate();
             std::shared_ptr<State> new_state_cast = std::dynamic_pointer_cast<State>(new_state); // retains ref counting
 
@@ -367,14 +353,9 @@ namespace State{
             auto polys = _current_polys;
 
             new_state_cast->create_new_state(*this, transformed_poly, node_index, poly_index, variation_index);
-
             get_data_from(*new_state_cast);
             _current_polys = polys;
-
             _allocator->release({new_state});
-
-            std::cout << "Successfully applied history. Result:\n";
-            print();
         }
         
     }
@@ -496,9 +477,40 @@ namespace State{
 
 
     template <typename Poly>
+    void State<Poly>::print_history() const {
+        
+        for(const auto& pair: _history){
+            std::cout << pair.first << " " << pair.second << " ";
+        }
+
+        std::cout << "\n";
+    }
+
+
+
+    template <typename Poly>
     void State<Poly>::print_output() const {
         
+        std::cout << "History:";
+        for(const auto& pair: _history){
+            std::cout << pair.first << " " << pair.second << " ";
+        }
+
+        {
+            auto v = _frame.get_head();
+            std::cout << "{";
+            for(unsigned int i=0; i<_frame.size(); i++){
+                auto x = v->position.get_x();
+                auto y = v->position.get_y();
+                v = v->next;
+
+                std::cout << "(" << x << "," << y << ")";
+            }
+            std::cout << "}";
+        }
+        
         for(const auto& polyrow: _current_polys){
+            std::cout << "<";
             for(const auto& poly: polyrow){
                 auto v = poly.get_head();
                 std::cout << "[";
@@ -511,6 +523,7 @@ namespace State{
                 }
                 std::cout << "]";
             }
+            std::cout << ">";
         }
         std::cout << "\n";
     }
