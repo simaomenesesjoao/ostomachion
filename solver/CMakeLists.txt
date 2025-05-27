@@ -7,6 +7,14 @@ set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
 
 project(Main1 VERSION 1.0)
 
+add_executable(state_from_history src/state_from_history.cpp)
+target_link_libraries(state_from_history PUBLIC gmp gmpxx pthread)
+target_include_directories(state_from_history PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../numeric/include)
+target_include_directories(state_from_history PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../polygon/include)
+target_include_directories(state_from_history PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../state/include)
+target_include_directories(state_from_history PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../solver/include)
+target_include_directories(state_from_history PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../profiling)
+
 add_executable(interactive src/interactive_state.cpp)
 target_link_libraries(interactive PUBLIC gmp gmpxx pthread)
 target_include_directories(interactive PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../numeric/include)

@@ -119,7 +119,7 @@ std::pair<std::vector<std::shared_ptr<State::IState>>, Analytics> get_combinatio
 
     
     for(auto& state: finalized){
-        state->activate_history();
+        state->activate_history(true);
     }
 
     auto uniques = find_uniques_brute(finalized, settings.transformation);

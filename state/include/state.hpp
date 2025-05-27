@@ -21,8 +21,8 @@ namespace State{
         virtual void print_history() const = 0;
         virtual AnalyticsThread& get_analytics() = 0;
         virtual bool equals(std::shared_ptr<IState>, Polygon::Transformations) const = 0;
-        virtual void activate_history() = 0;
-        virtual void set_history(const std::vector<std::pair<unsigned short, unsigned short>> &) = 0;
+        virtual void activate_history(bool) = 0;
+        virtual void set_history(const std::vector<std::tuple<unsigned short, unsigned short, unsigned short>> &) = 0;
         virtual ~IState();
 
     };
@@ -53,9 +53,9 @@ namespace State{
 
         std::vector<std::pair<unsigned int, Polygon::RestrictedPoly<Poly>*>> get_remaining_poly_pool();
         std::vector<std::shared_ptr<IState>> find_next_states() override;
-        void iterate(const std::vector<std::pair<unsigned short, unsigned short>>&);
-        void activate_history() override;
-        void set_history(const std::vector<std::pair<unsigned short, unsigned short>> &) override;
+        void iterate(const std::vector<std::tuple<unsigned short, unsigned short, unsigned short>>&, bool);
+        void activate_history(bool) override;
+        void set_history(const std::vector<std::tuple<unsigned short, unsigned short, unsigned short>> &) override;
 
         bool is_valid() const;
         bool finalized() const override;
@@ -77,9 +77,9 @@ namespace State{
         const Polygon::Pool<Poly> _const_poly_pool;
         std::vector<std::vector<Poly>> _current_polys;
         std::vector<unsigned short> _num_polys;
-        std::vector<std::pair<unsigned short, unsigned short>> _history;
+        std::vector<std::tuple<unsigned short, unsigned short, unsigned short>> _history;
         const std::function<bool(const Poly&, const Poly&, TimingBranch&)> _overlapper;
-        const std::function<unsigned int(const Poly&)> _selector;
+        const std::function<std::vector<unsigned int>(const Poly&)> _selector;
         std::function<unsigned int(unsigned int)> _getter;
         AnalyticsThread _analytics;
         Allocator::IAllocator<std::shared_ptr<IState>>* const _allocator;
@@ -102,7 +102,7 @@ namespace State{
     }
     
     template <typename Poly>
-    void State<Poly>::set_history(const std::vector<std::pair<unsigned short, unsigned short>> & history) {
+    void State<Poly>::set_history(const std::vector<std::tuple<unsigned short, unsigned short, unsigned short>> & history) {
         _history = history;
     }
 
@@ -222,7 +222,7 @@ namespace State{
         _size++; // SIMAO: substituir _size por nome melhor
 
         _history = state._history;
-        _history.push_back({poly_index, variation_index});
+        _history.push_back({node_index, poly_index, variation_index});
 
         _frame = state._frame;
         _poly_temp = transformed_poly;
@@ -306,41 +306,42 @@ namespace State{
 
 
     template <typename Poly>
-    void State<Poly>::activate_history(){
+    void State<Poly>::activate_history(bool respect_restrictions){
         auto history = _history;
         set_initial_state();
-        iterate(history);
+        iterate(history, respect_restrictions);
     }
     
     template <typename Poly>
-    void State<Poly>::iterate(const std::vector<std::pair<unsigned short, unsigned short>>& history){
+    void State<Poly>::iterate(const std::vector<std::tuple<unsigned short, unsigned short, unsigned short>>& history, bool respect_restrictions){
 
         AnalyticsThread analytics;
 
         _current_polys = std::vector<std::vector<Poly>>(_poly_pool.num_distinct_polys());
 
-        for(const auto& [poly_index, variation_index]: history){
+        for(const auto& [node_index, poly_index, variation_index]: history){
 
-            unsigned short node_index = _selector(_frame);
             const auto& insertion_vertex = *_frame.vertex_from_index(node_index);
             auto& restricted_poly = _poly_pool.pool.at(poly_index);
             const auto& restriction = restricted_poly.get_restriction();
             auto& transformed_poly = restricted_poly.get_variations().at(variation_index);
             
-            if(!angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening)){
+            if(respect_restrictions and !angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening)){
                 std::cout << "angles not compatible\n";
                 assert(false);
             }
             
             transformed_poly.move_into(insertion_vertex);
 
-            if(restriction.is_valid() and !_overlapper(transformed_poly, restriction, analytics.branch("a"))){
+            if(respect_restrictions and (restriction.is_valid() and !_overlapper(transformed_poly, restriction, analytics.branch("a")))){
+                std::cout << "restriction not respected\n";
                 restriction.print();
                 transformed_poly.print();
                 assert(false);
             }
                 
-            if(_overlapper(transformed_poly, _frame, analytics.branch("a"))){
+            if(respect_restrictions and _overlapper(transformed_poly, _frame, analytics.branch("a"))){
+                std::cout << "overlap not respected\n";
                 _frame.print();
                 transformed_poly.print();
                 assert(false);
@@ -375,52 +376,57 @@ namespace State{
         if(!is_valid() or finalized())
             return {};
 
-        unsigned int node_index = _selector(_frame);
-        const auto& insertion_vertex = *_frame.vertex_from_index(node_index);
         unsigned int num_allocated = 5;
         std::vector<std::shared_ptr<IState>> allocated;
         allocated.reserve(num_allocated);
-        
+
         std::vector<std::shared_ptr<IState>> next_states;
         next_states.reserve(100);
-        for(auto [poly_index, restricted_poly]: get_remaining_poly_pool()){
-            short variation_index = -1;
-            for(auto& transformed_poly: restricted_poly->get_variations()){
-                
-                variation_index++;
-                
-                timing2.start();
-                bool compatible = angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening);
-                timing2.end();
-                
-                if(!compatible)
-                    break;
-                    
-                timing3.start(); 
-                const auto& const_poly = _const_poly_pool.pool.at(poly_index).get_variations().at(variation_index);
-                fast_copy(transformed_poly, const_poly, insertion_vertex);
-                timing3.end();
 
-                const auto& restriction = restricted_poly->get_restriction();
-                if(restriction.is_valid() and !_overlapper(transformed_poly, restriction, _analytics.branch("overlap restriction")))
-                    continue;
-
-                if(!_overlapper(transformed_poly, _frame, _analytics.branch("overlap frame"))){
-                    timing4.start();
+        std::vector<unsigned int> node_indices = _selector(_frame);
+        for(unsigned int node_index: node_indices){
+                
+            const auto& insertion_vertex = *_frame.vertex_from_index(node_index);
+            
+            for(auto [poly_index, restricted_poly]: get_remaining_poly_pool()){
+                short variation_index = -1;
+                for(auto& transformed_poly: restricted_poly->get_variations()){
                     
-                    if(allocated.size() == 0){
-                        allocated = std::move(_allocator->allocate(num_allocated));
+                    variation_index++;
+                    
+                    timing2.start();
+                    bool compatible = angles_compatible(transformed_poly.get_head()->angle_opening, insertion_vertex.angle_opening);
+                    timing2.end();
+                    
+                    if(!compatible)
+                        break;
+                        
+                    timing3.start(); 
+                    const auto& const_poly = _const_poly_pool.pool.at(poly_index).get_variations().at(variation_index);
+                    fast_copy(transformed_poly, const_poly, insertion_vertex);
+                    timing3.end();
+
+                    const auto& restriction = restricted_poly->get_restriction();
+                    if(restriction.is_valid() and !_overlapper(transformed_poly, restriction, _analytics.branch("overlap restriction")))
+                        continue;
+
+                    if(!_overlapper(transformed_poly, _frame, _analytics.branch("overlap frame"))){
+                        timing4.start();
+                        
+                        if(allocated.size() == 0){
+                            allocated = std::move(_allocator->allocate(num_allocated));
+                        }
+                        std::shared_ptr<IState> new_state = allocated.back();
+                        allocated.pop_back();
+
+                        std::shared_ptr<State> new_state_cast = std::dynamic_pointer_cast<State>(new_state); // retains ref counting
+                        if(!new_state_cast)
+                            throw;
+                        timing4.end();
+
+                        new_state_cast->create_new_state(*this, transformed_poly, node_index, poly_index, variation_index);
+                        next_states.push_back(new_state);
                     }
-                    std::shared_ptr<IState> new_state = allocated.back();
-                    allocated.pop_back();
-
-                    std::shared_ptr<State> new_state_cast = std::dynamic_pointer_cast<State>(new_state); // retains ref counting
-                    if(!new_state_cast)
-                        throw;
-                    timing4.end();
-
-                    new_state_cast->create_new_state(*this, transformed_poly, node_index, poly_index, variation_index);
-                    next_states.push_back(new_state);
                 }
             }
         }
@@ -464,8 +470,8 @@ namespace State{
         }
 
         std::cout << "\nHistory:";
-        for(const auto& pair: _history){
-            std::cout << pair.first << " " << pair.second << " ";
+        for(const auto& triple: _history){
+            std::cout << std::get<0>(triple) << " " << std::get<1>(triple) << " " << std::get<2>(triple) << " ";
         }
 
         std::cout << "\ncurrent polygons:\n";
@@ -479,8 +485,9 @@ namespace State{
     template <typename Poly>
     void State<Poly>::print_history() const {
         
-        for(const auto& pair: _history){
-            std::cout << pair.first << " " << pair.second << " ";
+        
+        for(const auto& triple: _history){
+            std::cout << std::get<0>(triple) << " " << std::get<1>(triple) << " " << std::get<2>(triple) << " ";
         }
 
         std::cout << "\n";
@@ -492,8 +499,8 @@ namespace State{
     void State<Poly>::print_output() const {
         
         std::cout << "History:";
-        for(const auto& pair: _history){
-            std::cout << pair.first << " " << pair.second << " ";
+        for(const auto& triple: _history){
+            std::cout << std::get<0>(triple) << " " << std::get<1>(triple) << " " << std::get<2>(triple) << " ";
         }
 
         {

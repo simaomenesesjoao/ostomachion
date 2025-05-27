@@ -899,6 +899,17 @@ namespace Polygon {
             
         }
 
+
+        std::vector<unsigned int> get_all_nodes() const {
+            
+            std::vector<unsigned int> node_indices(size_ll);
+            for(unsigned int i = 0; i < size_ll; i++){
+                node_indices.at(i) = i;
+            }
+            return node_indices;
+            
+        }
+        
         // SIMAO: pequeno refactor para aproveitar código de LLPoly aqui. Para agora está tudo repetido
         
         unsigned int get_farthest_node(int center_x, int center_y) const {

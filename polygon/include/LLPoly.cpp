@@ -794,7 +794,7 @@ namespace Polygon {
             return index_largest;
         }
 
-        unsigned get_leftest_node() const {
+        unsigned int get_leftest_node() const {
             // Get the left-most node, then bottom-most
             V *current = head;
             V *leftest = head;
@@ -815,6 +815,16 @@ namespace Polygon {
         }
 
         
+        std::vector<unsigned int> get_all_nodes() const {
+            
+            std::vector<unsigned int> node_indices(size_ll);
+            for(unsigned int i = 0; i < size_ll; i++){
+                node_indices.at(i) = i;
+            }
+            return node_indices;
+            
+        }
+
         unsigned int get_farthest_node(int center_x, int center_y) const {
             // Get the node farthest from the center. If several nodes have the same distance
             // choose the bottom-most one

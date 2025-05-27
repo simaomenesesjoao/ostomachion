@@ -32,7 +32,7 @@ def parse_states_string(states_string):
     states_list = []
 
     for state in states:
-        
+
         # Find the history
         b = state.split("{")[0].split(":")[1].split(" ")
         history = [int(i) for i in b if len(i) > 0]
@@ -73,13 +73,14 @@ def parse_states_string(states_string):
     return states_list
 
 class API:
-    def __init__(self, cpp_program, puzzle_type):
+    def __init__(self, cpp_program, puzzle_type, selection_type, respect_restrictions):
         self.cpp_program = cpp_program
         self.puzzle_type = puzzle_type
+        self.selection_type = selection_type
+        self.respect_restrictions = respect_restrictions
 
     def get_next_state(self, state):
-            
-        arguments = [self.puzzle_type] + [str(index) for index in state.history]
+        arguments = [self.puzzle_type, self.selection_type, self.respect_restrictions] + [str(index) for index in state.history]
 
         # Run the C++ program with arguments using subprocess
         result = subprocess.run([self.cpp_program] + arguments, capture_output=True, text=True)

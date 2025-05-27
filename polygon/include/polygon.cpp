@@ -300,19 +300,23 @@ namespace Polygon{
 
 
     template <typename Poly>
-    std::function<unsigned int (const Poly&)> selector_factory(const std::string& name){
+    std::function<std::vector<unsigned int>(const Poly&)> selector_factory(const std::string& name){
         
         if(name == "farthest"){
             return [](const Poly& poly){ 
-                return poly.get_farthest_node(0,0);
+                return std::vector<unsigned int>{poly.get_farthest_node(0,0)};
+            };
+        } else if(name == "all") {
+            return [](const Poly& poly){ 
+                return poly.get_all_nodes();
             };
         } else if(name == "obtusest") {
             return [](const Poly& poly){ 
-                return poly.get_obtusest_node();
+                return std::vector<unsigned int>{poly.get_obtusest_node()};
             };
         } else if(name == "leftest") {
             return [](const Poly& poly){ 
-                return poly.get_leftest_node();
+                return std::vector<unsigned int>{poly.get_leftest_node()};
             };
         } else {
             assert(false); // SIMAO: substituir por exception
