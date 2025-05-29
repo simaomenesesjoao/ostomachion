@@ -40,9 +40,9 @@ Our ultimate goal is to find every single way to arrange the polygons inside the
 
 Placing a polygon in some random location might easily give rise to an impossible state. For example, placing a triangle like this makes it impossible to add anything else in the bottom, making a solution with this triangle in place impossible.
 
-![image.png](image%201.png)
+![image.png](c2a_impossible_state.svg)
 
-To understand where we can actually place them, let’s look at the solution shown above. We notice that in virtue of tiling the square, in a valid solution
+To understand where we can actually place them, let’s look at the initial puzzle. We notice that in virtue of tiling the square, in a valid solution
 
 - every polygon shares every edge with some other polygon or the frame
 - no vertex is alone. Every vertex is shared with another polygon or the frame
@@ -61,7 +61,7 @@ So, each time that we want to add a new polygon, we choose one of the unused pol
 
 In the next step, we now have more vertices to choose from where it can be placed. It can either be placed in one of the vertices of the frame or the previously placed polygon. This step is repeated until no more polygons can be added. It may happen that the specific choice of polygon positions is not valid: at some point we will reach a situation where anywhere we try to add a new polygon, it will overlap with some other polygon. To find all possible solutions to the Ostomachion, we just need to repeat these steps with every possible combination of polygons, and see which ones produce actually valid configurations. Concretely, we start with the empty frame, list out all ways to introduce one polygon to it satisfying rule #1, and then repeat this recursively for every new configuration produced. This generates a configuration space that needs to be traversed with some graph search algorithm. Here is an example of a (very) few branches of that graph:
 
-![image.png](image%205.png)
+![image.png](c2c_dag.svg)
 
 In reality, each of the nodes in the graph gives rise to a much larger number of children nodes (500 children is possible), considering we have to take into account every single possible polygon that fits in every vertex and every possible way to put it there. Note that this graph is an acyclic directed graph. There are several ways to get to the same configuration. In principle, this is enough to find us every possible solution to the Ostomachion puzzle. 
 
