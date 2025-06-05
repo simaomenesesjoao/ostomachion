@@ -10,13 +10,20 @@ Tags: HPC
 The Ostomachion is a puzzle as old as ancient Greece, having fascinated philosophers, mathematicians and the curious minds alike for millennia. It's an especially interesting puzzle to think about when you're bored in conferences (speaking from experience). It's deceivingly simple: given a square tiled with several different shapes, how many ways are there to rearrange the shapes such that they all still fit in the square? The particular selection of shapes that fascinated Aristotle was called Ostomachion, and it looked like this:
 
 
-![image.png](c1a_og_solution.svg)
+
+<figure style="text-align: center;">
+  <img src="c1a_og_solution.svg" alt="Description of image">
+  <figcaption><strong>Figure 1.1:</strong> The Ostomachion puzzle.</figcaption>
+</figure>
 
 
 Moving these shapes around, we can find a few more solutions to this puzzle
 
 
-![image.png](c1b_3solutions.svg)
+<figure style="text-align: center;">
+  <img src="c1b_3solutions.svg" alt="Description of image">
+  <figcaption><strong>Figure 1.2:</strong> Three additional solutions to the puzzle.</figcaption>
+</figure>
 
 
 Figuring out how many distinct configurations of shapes exist took two millennia and the advent of modern combinatorics and computing. The answer is 17152. Or 536, if you don't count symmetries as distinct solutions.
@@ -40,7 +47,12 @@ Our ultimate goal is to find every single way to arrange the polygons inside the
 
 Placing a polygon in some random location might easily give rise to an impossible state. For example, placing a triangle like this makes it impossible to add anything else in the bottom, making a solution with this triangle in place impossible.
 
-![image.png](c2a_impossible_state.svg)
+<figure style="text-align: center;">
+  <img src="c2a_impossible_state.svg" alt="Description of image">
+  <figcaption><strong>Figure 1:</strong> Placing this triangle here produces a configuration where no solution can be found.</figcaption>
+</figure>
+
+
 
 To understand where we can actually place them, let’s look at the initial puzzle. We notice that in virtue of tiling the square, in a valid solution
 
@@ -53,11 +65,19 @@ This can be ensured by placing one polygon at a time, making sure it always shar
 
 So, each time that we want to add a new polygon, we choose one of the unused polygons from the polygon pool, select one of its vertices (call it a probing vertex) and move it into place by translating and rotating it until it lies on one of the edges. In the next step, we now have more vertices to choose from where it can be placed. It can either be placed in one of the vertices of the frame or the previously placed polygon. This step is repeated until no more polygons can be added. 
 
-![image.png](stop_motion_shapes.gif)
+<figure style="text-align: center;">
+  <img src="stop_motion_shapes.gif" alt="Description of image">
+  <figcaption><strong>Figure 1:</strong> Building a solution to the puzzle by choosing a known sequence of vertices.</figcaption>
+</figure>
+
 
 It may happen that the specific choice of polygon positions is not valid: at some point we will reach a situation where anywhere we try to add a new polygon, it will overlap with some other polygon. To find all possible solutions to the Ostomachion, we just need to repeat the previous steps with every possible combination of polygons, and see which ones produce valid configurations. Concretely, we start with the empty frame, list out all ways to introduce one polygon to it satisfying rule #1, and then repeat this recursively for every new configuration produced. This generates a configuration space that needs to be traversed with some graph search algorithm. Here is an example of a (very) few branches of that graph:
 
-![image.png](c2c_dag.svg)
+<figure style="text-align: center;">
+  <img src="c2c_dag.svg" alt="Description of image">
+  <figcaption><strong>Figure 1:</strong> A few branches of the Ostomachion configuration space.</figcaption>
+</figure>
+
 
 In reality, each of the nodes in the graph gives rise to a much larger number of children nodes (it's common to have more than 300 children), considering we have to take into account every single possible polygon that fits in every vertex and every possible way to put it there. This graph is an acyclic directed graph: there are several ways to get to the same configuration. Some branche produce impossible configurations very early on, some other branches will only reveal to be impossible at the very end, A very small fraction of the branches will give rise to proper solution, but in principle, this is enough to find us every possible solution to the Ostomachion puzzle. 
 
@@ -71,7 +91,25 @@ We need to narrow down the search space. With the current approach, to make sure
 
 One question remains: can we choose just any anchor vertex for this purpose? Unfortunately, <b>no</b>. And the reason for this is as subtle as the letter “b” in “subtle”. Suppose our criterion to choose an anchor vertex is to always choose the widest angle. Then, the achor for the configuration on the left below is the inner-most vertex of the red triangle. Placing the next triangle in that anchor, we have now made it impossible to find solutions which might have the orange triangle in the following specific position:
 
-![image.png](c2d_one_poly.svg) ![image.png](c2d_two_poly_good.svg) ![image.png](c2d_two_poly_bad.svg)
+
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="c2d_one_poly.svg">
+    <p>1. Starting configuration</p>
+  </div>
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="c2d_two_poly_good.svg">
+    <p>2. Triangle inserted at widest angle</p>
+  </div>
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="c2d_two_poly_bad.svg">
+    <p>3. Yellow triangle will never be considered </p>
+  </div>
+</div>
+
+<p style="text-align: center;"><strong>Figure 1:</strong> Inserting polygons at the widest angles creates impossible configurations.</p>
+
 
 This only happens because one of the edges of the orange triangle intersects a vertex of the red triangle. By requiring all anchors' angles to be smaller than 180º, we will never end up in this situation because the anchor would never be a potential intersection for some other edge.
 
@@ -122,11 +160,12 @@ Since we want to merge shapes together, assigning an orientation will make the p
 
 After merging, some of the edges will be overlapping, representing paths going back and forth which can be simplified. Some adjacent vertices might also be overlapping, in which case one of them gets removed. This process is repeated until the frame cannot be simplified further. At its limit, it will simplify down to the empty set when a solution has been found.
 
-![image.png](image%208.png)
+<!-- ![image.png](c3a_merge.svg)
 
 ![image.png](image%209.png)
 
-![image.png](image%2010.png)
+![image.png](image%2010.png) -->
+![image.png](ll_animation.gif)
 
 The resulting frame polygon is in general non-convex, so we need to come up with an algorithm that is able to detect when two general polygons overlap. This is the subject of the next section.
 
