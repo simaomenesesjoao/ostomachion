@@ -148,7 +148,7 @@ Taking inspiration from game design, adding a bounding box to each polygon reduc
 
 ## Solution 3: merge and prune
 
-In the first iteration, a polygon is added to the frame, sharing one of the edges. This new configuration of frame + polygon can itself be considered a frame for the next iteration. It just requires a little bit of pruning to make sure that no useless edges and vertices get left behind, that is vertices and edges already completely surrounded by polygons. The resulting frame may be a non-convex polygon with many edges, but now we just need to keep track of the frame and which polygons haven’t been added yet - no need to store additional spatial information. Combined with the fact that most overlaps are determined by edge intersections makes this a good candidate for the most efficient solution.  
+In the first iteration, a polygon is added to the frame, sharing one of the edges. This new configuration of frame + polygon can itself be considered a frame for the next iteration. It just requires a little bit of pruning to make sure that no useless edges and vertices get left behind, that is vertices and edges already completely surrounded by polygons. The resulting frame may be a non-convex polygon with many edges, but now we just need to keep track of the frame and which polygons haven’t been added yet - no need to store additional spatial information. Combined with the fact that most overlaps are determined by edge intersections makes this a good candidate for the most efficient solution.
 
 Merging and pruning removes redundancy and has a small memory footprint, but most importantly, it seemed like a fun thing to implement. So this was my method of choice. This is how it works:
 
@@ -156,16 +156,31 @@ Merging and pruning removes redundancy and has a small memory footprint, but mos
 
 Since we want to merge shapes together, assigning an orientation will make the process easier. Let’s consider the frame to have its edges oriented in a clockwise fashion and all the polygons that we want to insert to be oriented anti-clockwise. Then, when the polygon anchors on to the frame and lies on one of the edges, the resulting shape can still be interpreted as a clockwise-oriented frame. Further, let’s define the “outside” portion of a polygon to always lie to the right of its oriented edge. So in the case of the frame, this definition of outside corresponds to the region where we want to place the puzzle polygons. This allows us to claim that a polygon can be added if it does not overlap with the frame, i.e. their inside regions do not overlap. This idea will become useful later.
 
+
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="images_b/frame_000.svg">
+    <p>1. Starting configuration</p>
+  </div>
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="images_b/frame_002.svg">
+    <p>2. Add a polygon</p>
+  </div>
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="images_b/frame_004.svg">
+    <p>3. Merge the linked lists </p>
+  </div>
+</div>
+
+<p style="text-align: center;"><strong>Figure 2:</strong> Inserting polygons inside the frame requires merging the two linked lists.</p>
+
+
 ## Prune
 
 After merging, some of the edges will be overlapping, representing paths going back and forth which can be simplified. Some adjacent vertices might also be overlapping, in which case one of them gets removed. This process is repeated until the frame cannot be simplified further. At its limit, it will simplify down to the empty set when a solution has been found.
 
-<!-- ![image.png](c3a_merge.svg)
-
-![image.png](image%209.png)
-
-![image.png](image%2010.png) -->
-![image.png](ll_animation.gif)
+![image.png](images/output.gif)
 
 The resulting frame polygon is in general non-convex, so we need to come up with an algorithm that is able to detect when two general polygons overlap. This is the subject of the next section.
 
@@ -175,7 +190,7 @@ This verification is at the core of solving the Ostomachion puzzle. We need to r
 
 The most obvious sign that the polygon is not inside the frame is when any of their its edges intersects with those of the frame. It means that some portion of it is inside and another is outside the frame, so it cannot be entirely contained in the frame. If no intersection occurs, we still need to check whether it is inside the frame or not. This is easily done with the ray tracing algorithm. The red polygons are invalid, the blue ones are valid.
 
-![image.png](image%2011.png)
+![image.png](c3c_edges_intersect.svg)
 
 These two situations cover most of the common polygon overlaps, that is, the ones that don’t involve any coincidences. When vertices coincide with other vertices or edges, things start getting interesting. Let’s analyze some cases where neither of the previous approaches could detect overlap.
 
@@ -183,13 +198,32 @@ These two situations cover most of the common polygon overlaps, that is, the one
 
 The figure on the left shows cases where polygon edges intersect with frame vertices and polygon vertices intersect frame edges. The figure on the right shows cases where polygon vertices intersect with frame edges but those create a coincident edge.
 
-![image.png](image%2012.png)
 
-![image.png](image%2013.png)
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="c3d_edges_vertex_intersect.svg">
+    <p>1. Edges intersect vertices</p>
+  </div>
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="c3e_edges_vertex_intersect.svg">
+    <p>2. Edges coincide</p>
+  </div>
+</div>
+
+<p style="text-align: center;"><strong>Figure 2:</strong> First cases where a simple edge intersection algorithm would not work: when edges intersect vertices.</p>
+
 
 Grabbing the frame and stretching it out into a straight line, what’s actually going on becomes clearer after drawing out all the arrows and focusing only on the vertices. The polygon and frame overlap whenever any vertex opens outwards or crosses the frame. If every vertex opens inwards, then the polygon and frame don’t overlap.
 
-![image.png](image%2014.png)
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
+  <div style="flex: 1 1 200px; text-align: center;">
+    <img src="c3f_stretched.svg">
+  </div>
+</div>
+
+<p style="text-align: center;"><strong>Figure 2:</strong> Stretch</p>
 
 Keeping in mind that the frame can also intersect the puzzle polygons’ edges, this verification needs to be done for both the puzzle polygon and the frame.
 
