@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2025-06-07T01:58:53.069863</dc:date>
+    <dc:date>2025-06-08T01:24:10.661220</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -57,6 +57,57 @@ z
     <g id="ytick_6"/>
     <g id="ytick_7"/>
    </g>
+   <g id="line2d_1">
+    <path d="M 275.469231 17.861538 
+L 275.469231 273.738462 
+L 28.293317 273.738462 
+L 32.585624 269.473846 
+L 254.007692 269.473846 
+L 65.912379 232.097487 
+L 31.328437 266.458308 
+L 25.258197 266.458308 
+L 103.776923 188.446154 
+L 17.930769 145.8 
+L 17.930769 17.861538 
+L 275.469231 17.861538 
+" clip-path="url(#peb30ffe76b)" style="fill: none; stroke: #ffffff; stroke-width: 4; stroke-linecap: square"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 275.469231 17.861538 
+L 275.469231 273.738462 
+L 28.293317 273.738462 
+L 32.585624 269.473846 
+L 254.007692 269.473846 
+L 65.912379 232.097487 
+L 31.328437 266.458308 
+L 25.258197 266.458308 
+L 103.776923 188.446154 
+L 17.930769 145.8 
+L 17.930769 17.861538 
+L 275.469231 17.861538 
+z
+" clip-path="url(#peb30ffe76b)" style="fill: none; opacity: 0"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 275.469231 17.861538 
+L 275.469231 273.738462 
+L 28.293317 273.738462 
+L 32.585624 269.473846 
+L 254.007692 269.473846 
+L 65.912379 232.097487 
+L 31.328437 266.458308 
+L 25.258197 266.458308 
+L 103.776923 188.446154 
+L 17.930769 145.8 
+L 17.930769 17.861538 
+L 275.469231 17.861538 
+" clip-path="url(#peb30ffe76b)" style="fill: none; stroke: #000000; stroke-width: 2; stroke-linecap: square"/>
+   </g>
   </g>
  </g>
+ <defs>
+  <clipPath id="peb30ffe76b">
+   <rect x="7.2" y="7.2" width="279" height="277.2"/>
+  </clipPath>
+ </defs>
 </svg>
