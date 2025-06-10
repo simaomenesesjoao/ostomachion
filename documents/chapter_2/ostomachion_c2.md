@@ -1,4 +1,4 @@
-# 2. Ostomachion algorithm
+# 2. Algorithm
 
 Our ultimate goal is to find every single way to arrange the polygons inside the frame. To get there, we first need to understand how to sequentially add polygons in such a way that only valid solutions are obtained and that no valid solution is unreachable. In this section, we will come up with a set of rules that will help build an algorithm for this purpose.
 

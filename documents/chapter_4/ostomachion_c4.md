@@ -1,5 +1,5 @@
 
-# Mathematical representation
+# 4. Mathematical representation
 
 So far, we realized that the Ostomachion can be solved by translating and rotating polygons around. Next, we need to to figure out a way to represent them in code. We could just use a floating-point representation for the angles and coordinates, but I'd like to use this section to explore a different approach: <b>can we do this in a mathematically exact way in code</b>?
 
