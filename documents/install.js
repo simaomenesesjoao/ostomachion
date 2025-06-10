@@ -4,14 +4,14 @@ import path from 'path';
 import { marked } from 'marked';
 
 // Usage: node install.js <destination_root>
-// Example: node install.js ./public/html
+// Run this script from the root of the source markdown folder
 
 if (process.argv.length < 3) {
   console.error('Usage: node install.js <destination_root>');
   process.exit(1);
 }
 
-const sourceRoot = process.cwd(); // current working directory (where you run the script)
+const sourceRoot = process.cwd(); // Current working directory as source root
 const destRoot = path.resolve(process.argv[2]);
 
 const katexCSS = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">`;
@@ -63,6 +63,9 @@ function ensureDirExists(dirPath) {
   }
 }
 
+// List of image extensions to copy
+const imageExtensions = ['.svg', '.gif', '.png', '.jpg', '.jpeg', '.webp'];
+
 function processFolder(currentSrcFolder, currentDestFolder) {
   ensureDirExists(currentDestFolder);
 
@@ -74,29 +77,27 @@ function processFolder(currentSrcFolder, currentDestFolder) {
 
     if (item.isDirectory()) {
       processFolder(srcPath, destPath);
-    } else if (item.isFile() && item.name.endsWith('.md')) {
-      let mdContent = fs.readFileSync(srcPath, 'utf-8');
+    } else if (item.isFile()) {
+      if (item.name.endsWith('.md')) {
+        let mdContent = fs.readFileSync(srcPath, 'utf-8');
 
-      // Optional: fix image paths here if needed (same folder-relative adjustment)
-      const basePath = './';
+        // Optional: fix relative image paths if needed here
 
-      mdContent = mdContent.replace(/(!\[.*?\]\()(.+?)(\))/g, (_, p1, p2, p3) => {
-        if (p2.startsWith('http') || p2.startsWith('/') || p2.startsWith(basePath)) return p1 + p2 + p3;
-        return p1 + basePath + p2 + p3;
-      });
+        const htmlContent = convertMdToHtml(mdContent, item.name.replace('.md', ''));
 
-      mdContent = mdContent.replace(/<img\s+([^>]*?)src=["'](?!https?:|\/|data:)([^"']+)["'](.*?)>/gi,
-        (_, before, src, after) => `<img ${before}src="${basePath + src}"${after}>`
-      );
+        const destHtmlPath = destPath.replace(/\.md$/, '.html');
+        fs.writeFileSync(destHtmlPath, htmlContent);
+        console.log(`Converted: ${srcPath} → ${destHtmlPath}`);
 
-      const htmlContent = convertMdToHtml(mdContent, item.name.replace('.md', ''));
-
-      const destHtmlPath = destPath.replace(/\.md$/, '.html');
-      fs.writeFileSync(destHtmlPath, htmlContent);
-
-      console.log(`Converted: ${srcPath} → ${destHtmlPath}`);
+      } else if (imageExtensions.includes(path.extname(item.name).toLowerCase())) {
+        // Copy image files as-is
+        fs.copyFileSync(srcPath, destPath);
+        console.log(`Copied image: ${srcPath} → ${destPath}`);
+      }
+      // else: ignore other file types
     }
   }
 }
 
+// Run the script
 processFolder(sourceRoot, destRoot);
